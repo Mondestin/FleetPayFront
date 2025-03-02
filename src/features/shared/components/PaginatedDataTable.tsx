@@ -18,7 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 interface Column<T> {
   header: string;
-  accessorKey: keyof T;
+  accessorKey: keyof T | string;
   cell?: (row: T) => React.ReactNode;
 }
 
@@ -29,12 +29,14 @@ interface PaginatedDataTableProps<T> {
   actions?: (row: T) => React.ReactNode;
   searchable?: boolean;
   searchKeys?: Array<keyof T>;
+  rowKeyField?: keyof T;
 }
 
-export function PaginatedDataTable<T>({ 
+export function PaginatedDataTable<T extends Record<string, any>>({ 
   data, 
   columns, 
   actions,
+  rowKeyField = 'id' as keyof T
 }: PaginatedDataTableProps<T>) {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -70,10 +72,10 @@ export function PaginatedDataTable<T>({
             </TableHeader>
             <TableBody>
               {currentData.length > 0 ? (
-                currentData.map((row, i) => (
+                currentData.map((row, index) => (
                   <TableRow 
-                    key={i}
-                    className={i % 2 === 0 ? 'bg-white' : 'bg-muted/50'}
+                    key={String(row[rowKeyField])}
+                    className={index % 2 === 0 ? 'bg-white' : 'bg-muted/50'}
                   >
                     {columns.map((column) => (
                       <TableCell key={String(column.accessorKey)}>

@@ -18,7 +18,6 @@ import { fr } from 'date-fns/locale'
 import { api } from '@/lib/api'
 import { PaginatedDataTable } from '@/features/shared/components/PaginatedDataTable'
 import { type PaymentReport } from '../data/schema'
-import { type Column } from '@/features/shared/components/DataTable'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Spinner } from "@/components/ui/spinner"
@@ -212,10 +211,11 @@ export function PaymentReportsList() {
       ) : paginatedReports ? (
         <PaginatedDataTable
           data={paginatedReports.data}
-          columns={columns as Column<PaymentReport>[]}
+          columns={columns}
           actions={actions}
           searchable={true}
           searchKeys={['driver', 'status', 'total_earnings', 'total_due']}
+          rowKeyField="id"
         />
       ) : (
         <div className="text-center py-4 text-red-500">

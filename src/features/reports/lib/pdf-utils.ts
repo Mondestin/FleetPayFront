@@ -5,11 +5,15 @@ export interface HeetchData {
   montant: string;
 }
 
-// Set up the worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+// Set up the worker using Vite's import.meta.url feature
+const workerUrl = new URL(
   'pdfjs-dist/build/pdf.worker.mjs',
   import.meta.url
 ).toString();
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
+
+
 
 export const handleHeetchPdfUpload = async (file: File, weekDate: Date) => {
   try {

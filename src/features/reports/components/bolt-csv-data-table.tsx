@@ -35,9 +35,9 @@ export function BoltCsvDataTable({ data, headers }: { data: BoltDriverData[], he
         </TableHeader>
         <TableBody>
           {data.map((row, index) => (
-            <TableRow key={index}>
+            <TableRow key={`${row.Driver}-${row['Driver\'s Phone']}-${index}`}>
               {headers.map((header) => (
-                <TableCell key={`${index}-${header}`}>
+                <TableCell key={`${row.Driver}-${header}`}>
                   {row[header as keyof BoltDriverData]}
                 </TableCell>
               ))}

@@ -132,7 +132,7 @@ export function ImportForm({ uploadStatus }: { uploadStatus: UploadStatus[] }) {
       platform: 'bolt',
       weekDate
     }))
-    console.log("formattedData", formattedData)
+    
     try {
       await api.post('/api/reports/platforms/import/bolt', {
         weekDate,
