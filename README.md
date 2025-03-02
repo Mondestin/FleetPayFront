@@ -1,67 +1,86 @@
-# Shadcn Admin Dashboard
+# FleetPay Dashboard
 
-Admin Dashboard UI crafted with Shadcn and Vite. Built with responsiveness and accessibility in mind.
+Application web de gestion des revenus des chauffeurs VTC, permettant l'importation et l'analyse des données depuis plusieurs plateformes (Bolt, Uber, Heetch).
 
-![alt text](public/images/shadcn-admin.png)
+## Fonctionnalités
 
-I've been creating dashboard UIs at work and for my personal projects. I always wanted to make a reusable collection of dashboard UI for future projects; and here it is now. While I've created a few custom components, some of the code is directly adapted from ShadcnUI examples.
+### Gestion des Revenus
+- **Import Multi-Plateformes**
+  - Import CSV pour Bolt avec validation des données
+  - Import CSV pour Uber avec validation des données
+  - Import PDF pour Heetch avec extraction automatique
+- **Rapports de Paiement**
+  - Suivi hebdomadaire des revenus
+  - Calcul automatique des commissions
+  - État des paiements (payé/en attente)
 
-> This is not a starter project (template) though. I'll probably make one in the future.
+### Gestion des Utilisateurs
+- Contrôle d'accès basé sur les rôles (User, Manager, Admin, Superadmin)
+- Gestion des statuts utilisateurs (Actif/Inactif)
+- Système d'authentification sécurisé
 
-## Features
+### Interface Utilisateur
+- Design responsive
+- Mode sombre/clair
+- Tables de données interactives
+- Retour en temps réel sur les validations
+- Barre de recherche globale
+- Sidebar personnalisable
 
-- Light/dark mode
-- Responsive
-- Accessible
-- With built-in Sidebar component
-- Global Search Command
-- 10+ pages
-- Extra custom components
+## Stack Technique
 
-## Tech Stack
+**Frontend:**
+- [React](https://reactjs.org/) + [Vite](https://vitejs.dev/)
+- [ShadcnUI](https://ui.shadcn.com) (TailwindCSS + RadixUI)
+- [TypeScript](https://www.typescriptlang.org/)
+- [TanStack Router](https://tanstack.com/router/latest)
+- [TanStack Query](https://tanstack.com/query/latest)
+- [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/)
 
-**UI:** [ShadcnUI](https://ui.shadcn.com) (TailwindCSS + RadixUI)
+**Outils:**
+- [PapaParse](https://www.papaparse.com/) (Parsing CSV)
+- [PDF.js](https://mozilla.github.io/pdf.js/) (Traitement PDF)
+- [Tabler Icons](https://tabler.io/icons)
+- [Eslint](https://eslint.org/) & [Prettier](https://prettier.io/)
 
-**Build Tool:** [Vite](https://vitejs.dev/)
+## Structure du Projet
 
-**Routing:** [TanStack Router](https://tanstack.com/router/latest)
-
-**Type Checking:** [TypeScript](https://www.typescriptlang.org/)
-
-**Linting/Formatting:** [Eslint](https://eslint.org/) & [Prettier](https://prettier.io/)
-
-**Icons:** [Tabler Icons](https://tabler.io/icons)
-
-## Run Locally
-
-Clone the project
-
-```bash
-  git clone https://github.com/satnaing/shadcn-admin.git
+```
+src/
+├── components/          # Composants UI réutilisables
+│   ├── ui/             # Composants de base (shadcn)
+│   └── layout/         # Composants de mise en page
+├── features/           # Modules par fonctionnalité
+│   ├── auth/           # Authentification
+│   ├── reports/        # Gestion des imports
+│   ├── payment-reports/# Rapports de paiement
+│   ├── drivers/        # Gestion des chauffeurs
+│   └── users/          # Gestion des utilisateurs
+├── lib/               # Utilitaires et configurations
+└── hooks/             # Hooks React personnalisés
 ```
 
-Go to the project directory
+## Installation
 
+1. Cloner le projet
 ```bash
-  cd shadcn-admin
+git clone [url-du-projet]
 ```
 
-Install dependencies
-
+2. Installer les dépendances
 ```bash
-  pnpm install
+pnpm install
 ```
 
-Start the server
-
+3. Lancer le serveur de développement
 ```bash
-  pnpm run dev
+pnpm run dev
 ```
 
-## Author
+## Captures d'écran
 
-Crafted with 🤍 by [@satnaing](https://github.com/satnaing)
+![alt text](public/images/screenshot.png)
 
-## License
+## Licence
 
-Licensed under the [MIT License](https://choosealicense.com/licenses/mit/)
+[MIT License](https://choosealicense.com/licenses/mit/)
