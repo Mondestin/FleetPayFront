@@ -1,25 +1,9 @@
 import { useState, useEffect } from 'react'
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query'
 import { paymentReportService } from '../data/payment-report-service'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { IconSearch, IconDownload, IconDotsVertical } from '@tabler/icons-react'
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination"
+import { IconSearch, IconDownload, IconDotsVertical, IconCash } from '@tabler/icons-react'
 import { WeekPicker } from '@/components/ui/week-picker'
 import {
   DropdownMenu,
@@ -32,6 +16,13 @@ import { utils, writeFile } from 'xlsx'
 import { format, startOfWeek } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { api } from '@/lib/api'
+import { PaginatedDataTable } from '@/features/shared/components/PaginatedDataTable'
+import { type PaymentReport } from '../data/schema'
+import { type Column } from '@/features/shared/components/DataTable'
+import { Badge } from '@/components/ui/badge'
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Spinner } from "@/components/ui/spinner"
+
 
 export function PaymentReportsList() {
   const [currentPage, setCurrentPage] = useState(1)
@@ -95,6 +86,97 @@ export function PaymentReportsList() {
     writeFile(wb, `rapports-paiements-${format(startOfWeek(selectedDate, { locale: fr }), 'yyyy-MM-dd')}.xlsx`)
   }
 
+  const columns = [
+    {
+      header: '#',
+      accessorKey: 'driver',
+      cell: (row: PaymentReport) => (
+        <Avatar className="h-8 w-8">
+          <AvatarFallback>
+            {row.driver.first_name[0]}{row.driver.last_name[0]}
+          </AvatarFallback>
+        </Avatar>
+      )
+    },
+    {
+      header: 'Chauffeur',
+      accessorKey: 'driver',
+      cell: (row: PaymentReport) => `${row.driver.first_name} ${row.driver.last_name}`
+    },
+    {
+      header: 'Bolt',
+      accessorKey: 'bolt_earnings',
+      cell: (row: PaymentReport) => `€${Number(row.bolt_earnings).toFixed(2)}`
+    },
+    {
+      header: 'Uber',
+      accessorKey: 'uber_earnings',
+      cell: (row: PaymentReport) => `€${Number(row.uber_earnings).toFixed(2)}`
+    },
+    {
+      header: 'Heetch',
+      accessorKey: 'heetch_earnings',
+      cell: (row: PaymentReport) => `€${Number(row.heetch_earnings).toFixed(2)}`
+    },
+    {
+      header: 'Total revenus',
+      accessorKey: 'total_earnings',
+      cell: (row: PaymentReport) => `€${row.total_earnings.toFixed(2)}`
+    },
+    {
+      header: 'Commission',
+      accessorKey: 'commission',
+      cell: () => 
+        <div className="flex items-center gap-2">
+          <Badge variant="destructive" className="gap-1">
+            <span>-€{commission.toFixed(2)}</span>
+          </Badge>
+        </div>
+    },
+    {
+      header: 'Montant dû',
+      accessorKey: 'total_due',
+      cell: (row: PaymentReport) => {
+        const amount = row.total_earnings - commission;
+        const isNegative = amount < 0;
+        
+        return (
+          <div className="flex items-center gap-2">
+            <Badge variant={isNegative ? "destructive" : "success"} className="gap-1">
+              <IconCash className="h-3 w-3" />
+              <span>€{amount.toFixed(2)}</span>
+            </Badge>
+          </div>
+        );
+      }
+    },
+    {
+      header: 'Statut',
+      accessorKey: 'status',
+      cell: (row: PaymentReport) => <StatusBadge status={row.status} />
+    }
+  ]
+
+  const actions = (row: PaymentReport) => (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="h-8 w-8 p-0">
+          <IconDotsVertical className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem
+          onClick={() => handleStatusChange(
+            row.id,
+            row.status === 'paid' ? 'pending' : 'paid'
+          )}
+        >
+          Marquer comme {row.status === 'paid' ? 'en attente' : 'payé'}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+
   return (
     <div className="space-y-4 p-4">
       <div className='flex items-center justify-between gap-4'>
@@ -123,98 +205,18 @@ export function PaymentReportsList() {
         </div>
       </div>
 
-      {!isLoading && paginatedReports ? (
-        <>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Chauffeur</TableHead>
-                <TableHead>Bolt</TableHead>
-                <TableHead>Uber</TableHead>
-                <TableHead>Heetch</TableHead>
-                <TableHead>Total revenus</TableHead>
-                <TableHead>Commission</TableHead>
-                <TableHead>Montant dû</TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead>Gérer</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {paginatedReports.data.map((report) => (
-                <TableRow key={report.id}>
-                  <TableCell className='font-medium'>
-                    {report.driver.first_name} {report.driver.last_name}
-                  </TableCell>
-                  <TableCell>€{Number(report.bolt_earnings).toFixed(2)}</TableCell>
-                  <TableCell>€{Number(report.uber_earnings).toFixed(2)}</TableCell>
-                  <TableCell>€{Number(report.heetch_earnings).toFixed(2)}</TableCell>
-                  <TableCell>€{report.total_earnings.toFixed(2)}</TableCell>
-                  <TableCell className="text-red-500">-€{commission.toFixed(2)}</TableCell>
-                  <TableCell className='font-medium'>
-                    €{(report.total_earnings - commission).toFixed(2)}
-                  </TableCell>
-                  <TableCell>
-                    <StatusBadge status={report.status} />
-                  </TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                          <IconDotsVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          onClick={() => handleStatusChange(
-                            report.id, 
-                            report.status === 'paid' ? 'pending' : 'paid'
-                          )}
-                        >
-                          Marquer comme {report.status === 'paid' ? 'en attente' : 'payé'}
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-
-          {paginatedReports.total > 0 ? (
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious 
-                    disabled={paginatedReports.current_page === 1}
-                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                  />
-                </PaginationItem>
-                
-                {Array.from({ length: Math.ceil(paginatedReports.total / paginatedReports.per_page) }, (_, i) => (
-                  <PaginationItem key={i}>
-                    <PaginationLink
-                      onClick={() => setCurrentPage(i + 1)}
-                      isActive={paginatedReports.current_page === i + 1}
-                    >
-                      {i + 1}
-                    </PaginationLink>
-                  </PaginationItem>
-                ))}
-
-                <PaginationItem>
-                  <PaginationNext
-                    disabled={paginatedReports.current_page >= Math.ceil(paginatedReports.total / paginatedReports.per_page)}
-                    onClick={() => setCurrentPage(prev => prev + 1)}
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          ) : (
-            <div className="text-center py-4 text-muted-foreground">
-              Aucun rapport trouvé
-            </div>
-          )}
-        </>
+      {isLoading ? (
+        <div className="flex justify-center items-center py-8">
+          <Spinner className="h-8 w-8 text-primary" />
+        </div>
+      ) : paginatedReports ? (
+        <PaginatedDataTable
+          data={paginatedReports.data}
+          columns={columns as Column<PaymentReport>[]}
+          actions={actions}
+          searchable={true}
+          searchKeys={['driver', 'status', 'total_earnings', 'total_due']}
+        />
       ) : (
         <div className="text-center py-4 text-red-500">
           Erreur lors du chargement des données

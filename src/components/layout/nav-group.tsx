@@ -27,10 +27,18 @@ import {
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu'
 import { NavCollapsible, NavItem, NavLink, type NavGroup } from './types'
+import { authService } from '@/features/auth/data/auth-service'
 
 export function NavGroup({ title, items }: NavGroup) {
   const { state } = useSidebar()
   const href = useLocation({ select: (location) => location.href })
+  const user = authService.getUser()
+  
+  // Hide subscription management for non-superadmin users
+  if (title === 'Gestion des abonnements' && user?.role !== 'superadmin') {
+    return null
+  }
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>{title}</SidebarGroupLabel>

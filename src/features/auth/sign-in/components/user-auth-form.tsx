@@ -15,6 +15,8 @@ import {
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
 import { useRouter } from '@tanstack/react-router'
+import { Spinner } from '@/components/ui/spinner'
+import { authService } from '../../data/auth-service'
 
 type UserAuthFormProps = HTMLAttributes<HTMLDivElement>
 
@@ -35,6 +37,7 @@ const formSchema = z.object({
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
   const router = useRouter()
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -45,13 +48,24 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     },
   })
 
-  function onSubmit() {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true)
-    router.navigate({ to: '/dashboard' })
+    setError('')
 
-    setTimeout(() => {
+    try {
+      const response = await authService.login({
+        email: values.email,
+        password: values.password,
+        device_name: 'iphone' // Or detect device name
+      })
+      
+      authService.setToken(response.token)
+      router.navigate({ to: '/dashboard' })
+    } catch (err) {
+      setError('Email ou mot de passe invalide')
+    } finally {
       setIsLoading(false)
-    }, 3000)
+    }
   }
 
   return (
@@ -85,7 +99,13 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
                 </FormItem>
               )}
             />
+            {error && (
+              <div className="text-sm text-red-500 mt-2">
+                {error}
+              </div>
+            )}
             <Button className='mt-2' disabled={isLoading} variant='primary'>
+              {isLoading && <Spinner className="h-4 w-4 mr-2" />}
               Se connecter
             </Button>
           </div>

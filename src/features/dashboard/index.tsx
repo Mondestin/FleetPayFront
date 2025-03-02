@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query'
-import { api } from '@/lib/api'
 import { driverService } from '@/features/drivers/data/driver-service'
 import { startOfWeek, endOfWeek, format } from 'date-fns'
 import { fr } from 'date-fns/locale'
@@ -14,7 +13,7 @@ import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { IconUsers, IconCash, IconTrendingUp, IconCalendar, IconAlertTriangle } from '@tabler/icons-react'
+import { IconUsers, IconCash, IconTrendingUp, IconCalendar } from '@tabler/icons-react'
 
 export default function Dashboard() {
   const today = new Date()
@@ -26,21 +25,7 @@ export default function Dashboard() {
     queryFn: () => driverService.getAll(),
   })
 
-  const { data: dashboardStats } = useQuery({
-    queryKey: ['dashboard-stats'],
-    queryFn: async () => {
-      const response = await api.get('/api/dashboard/stats')
-      return response.data
-    }
-  })
 
-  const { data: alerts } = useQuery({
-    queryKey: ['dashboard-alerts'],
-    queryFn: async () => {
-      const response = await api.get('/api/dashboard/alerts')
-      return response.data
-    }
-  })
 
   return (
     <>
@@ -83,11 +68,11 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <div className='text-2xl font-bold'>
-                  €{dashboardStats?.weeklyRevenue?.toFixed(2) || '0.00'}
+                  €{0 || '0.00'}
                 </div>
                 <p className='text-xs text-muted-foreground'>
-                  {dashboardStats?.revenueGrowth > 0 ? '+' : ''}
-                  {dashboardStats?.revenueGrowth}% vs semaine précédente
+                  {0 || 0}
+                  {0}% vs semaine précédente
                 </p>
               </CardContent>
             </Card>
@@ -99,10 +84,10 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <div className='text-2xl font-bold'>
-                  €{dashboardStats?.totalCommission?.toFixed(2) || '0.00'}
+                  €{0 || '0.00'}
                 </div>
                 <p className='text-xs text-muted-foreground'>
-                  {dashboardStats?.commissionsCompleted || 0} paiements traités
+                  {0 || 0} paiements traités
                 </p>
               </CardContent>
             </Card>
@@ -113,14 +98,14 @@ export default function Dashboard() {
                 <IconCalendar className='h-4 w-4 text-muted-foreground' />
               </CardHeader>
               <CardContent>
-                <div className='text-2xl font-bold'>{dashboardStats?.pendingImports || 0}</div>
+                <div className='text-2xl font-bold'>{0 || 0}</div>
                 <p className='text-xs text-muted-foreground'>
-                  {dashboardStats?.completedImports || 0} importations cette semaine
+                  {0} importations cette semaine
                 </p>
               </CardContent>
             </Card>
           </div>
-
+          {/*
           {alerts && alerts.length > 0 && (
             <Card className='border-orange-200 bg-orange-50 dark:bg-orange-950'>
               <CardHeader>
@@ -140,6 +125,7 @@ export default function Dashboard() {
               </CardContent>
             </Card>
           )}
+          */}
         </div>
       </Main>
     </>

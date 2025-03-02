@@ -58,13 +58,17 @@ export default function FilesManager() {
         </div>
         <div className='grid gap-8'>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-          
-            <ImportForm uploadStatus={uploadStatus} />
-            <UploadStatusTable 
-              uploadStatus={uploadStatus} 
-              onDeleteUpload={handleDeleteUpload}
-              weekStart={new Date()}
-            />
+            <div className='grid grid-cols-1 gap-4'>
+              <ImportForm uploadStatus={uploadStatus} />
+            </div>
+
+            <div className='grid grid-cols-1 gap-4'>
+              <UploadStatusTable 
+                uploadStatus={uploadStatus} 
+                onDeleteUpload={handleDeleteUpload}
+                weekStart={new Date()}
+              />
+            </div>
           </div>
         </div>
       </Main>

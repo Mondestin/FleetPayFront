@@ -1,30 +1,16 @@
 import { useState, useEffect } from 'react'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { driverService } from '../data/driver-service'
-
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-
 import { Input } from '@/components/ui/input'
 import { IconSearch } from '@tabler/icons-react'
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination"
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { StatusBadge } from '@/components/ui/status-badge'
-
+import { PaginatedDataTable } from '@/features/shared/components/PaginatedDataTable'
+import { type Driver } from '../data/schema'
+import { type Column } from '@/features/shared/components/DataTable'
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Spinner } from "@/components/ui/spinner"
 
 export function DriversList() {
   const [currentPage, setCurrentPage] = useState(1)
@@ -44,6 +30,45 @@ export function DriversList() {
     placeholderData: keepPreviousData
   })
 
+  const columns: Column<Driver>[] = [
+    {
+      header: '#',
+      accessorKey: 'first_name' as keyof Driver,
+      cell: (row: Driver) => (
+        <Avatar className="h-8 w-8">
+          <AvatarFallback>
+            {row.first_name[0]}{row.last_name[0]}
+          </AvatarFallback>
+        </Avatar>
+      )
+    },
+    {
+      header: 'Nom',
+      accessorKey: 'first_name',
+      cell: (row: Driver) => `${row.first_name} ${row.last_name}`
+    },
+    {
+      header: 'Email',
+      accessorKey: 'email' as keyof Driver,
+      cell: (row: Driver) => row.email ? row.email : ''
+    },
+    {
+      header: 'Téléphone',
+      accessorKey: 'phone_number' as keyof Driver,
+      cell: (row: Driver) => row.phone_number ? row.phone_number : ''
+    },
+    {
+      header: 'Statut',
+      accessorKey: 'status' as keyof Driver,
+      cell: (row: Driver) => <StatusBadge status={row.status} />
+    },
+    {
+      header: "Date d'inscription",
+      accessorKey: 'created_at' as keyof Driver,
+      cell: (row: Driver) => format(new Date(row.created_at), 'dd MMM yyyy', { locale: fr })
+    }
+  ]
+
   return (
     <div className="space-y-4 p-4">
       {/* Search */}
@@ -60,80 +85,16 @@ export function DriversList() {
       </div>
 
       {isLoading ? (
-        <div className="text-center py-8">Chargement...</div>
+        <div className="flex justify-center items-center py-8">
+          <Spinner className="h-8 w-8 text-primary" />
+        </div>
       ) : paginatedDrivers ? (
-        <>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nom</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Téléphone</TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead>Date d'inscription</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {paginatedDrivers.data.map((driver) => (
-                <TableRow key={driver.id}>
-                  <TableCell className="font-medium">
-                    {driver.first_name} {driver.last_name}
-                  </TableCell>
-                  <TableCell>{driver.email}</TableCell>
-                  <TableCell>{driver.phone_number}</TableCell>
-                  <TableCell>
-                    <StatusBadge status={driver.status} />
-                  </TableCell>
-                  <TableCell>
-                    {format(new Date(driver.created_at), 'dd MMM yyyy', { locale: fr })}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-
-          {paginatedDrivers.total > 0 ? (
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious 
-                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                    disabled={!paginatedDrivers.prev_page_url}
-                  />
-                </PaginationItem>
-                
-                {paginatedDrivers.links.map((link, i) => (
-                  <PaginationItem key={i}>
-                    {link.url && (
-                      <PaginationLink
-                        onClick={() => {
-                          if (link.url) {
-                            const page = new URL(link.url).searchParams.get('page') || '1'
-                            setCurrentPage(Number(page))
-                          }
-                        }}
-                        isActive={link.active}
-                      >
-                        {link.label.replace('&laquo; ', '').replace(' &raquo;', '')}
-                      </PaginationLink>
-                    )}
-                  </PaginationItem>
-                ))}
-
-                <PaginationItem>
-                  <PaginationNext
-                    onClick={() => setCurrentPage(prev => prev + 1)}
-                    disabled={!paginatedDrivers.next_page_url}
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          ) : (
-            <div className="text-center py-4 text-muted-foreground">
-              Aucun chauffeur trouvé
-            </div>
-          )}
-        </>
+        <PaginatedDataTable
+          data={paginatedDrivers.data}
+          columns={columns}
+          searchable={true}
+          searchKeys={['first_name', 'last_name', 'email']}
+        />
       ) : (
         <div className="text-center py-4 text-red-500">
           Erreur lors du chargement des données

@@ -29,11 +29,19 @@ import { IconUpload, IconCheck } from '@tabler/icons-react'
 import { handleHeetchPdfUpload, type HeetchData } from '../lib/pdf-utils'
 import { CsvDataTable } from './csv-data-table'
 import { PdfDataTable } from './pdf-data-table'
+import { BoltCsvDataTable } from './bolt-csv-data-table'
 
 interface DriverData {
   'Prénom du chauffeur': string
   'Nom du chauffeur': string
   'Revenus totaux : Prix net de la course': string
+}
+
+interface BoltDriverData {
+  'Driver': string
+  'Driver\'s Phone': string
+  'Email': string
+  'Projected payout|€': string
 }
 
 interface UploadStatus {
@@ -76,6 +84,7 @@ type FormValues = z.infer<typeof formSchema>
 
 export function ImportForm({ uploadStatus }: { uploadStatus: UploadStatus[] }) {
   const [csvData, setCsvData] = useState<DriverData[]>([])
+  const [boltCsvData, setBoltCsvData] = useState<BoltDriverData[]>([])
   const [pdfFile, setPdfFile] = useState<File | null>(null)
   const [pdfData, setPdfData] = useState<HeetchData[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -105,6 +114,7 @@ export function ImportForm({ uploadStatus }: { uploadStatus: UploadStatus[] }) {
     queryClient.invalidateQueries({ queryKey: ['import-status'] })
     form.reset()
     setCsvData([])
+    setBoltCsvData([])
     setPdfFile(null)
     toast({
       title: 'Données validées avec succès',
@@ -112,10 +122,26 @@ export function ImportForm({ uploadStatus }: { uploadStatus: UploadStatus[] }) {
     })
   }
 
-  const handleBoltData = async (weekDate: Date, data: DriverData[]) => {
-    // Implement Bolt data handling
-    console.log("weekDate", weekDate)
-    console.log("Bolt data", data)
+  const handleBoltData = async (weekDate: Date, data: BoltDriverData[]) => {
+    const formattedData = data.map(row => ({
+      firstName: row['Driver'].split(' ')[0],
+      lastName: row['Driver'].split(' ')[1] || '',
+      phoneNumber: row['Driver\'s Phone'],
+      email: row['Email'],
+      totalRevenue: row['Projected payout|€'],
+      platform: 'bolt',
+      weekDate
+    }))
+    console.log("formattedData", formattedData)
+    try {
+      await api.post('/api/reports/platforms/import/bolt', {
+        weekDate,
+        data: formattedData
+      })
+    } catch (error) {
+      console.error('Error processing Bolt data:', error)
+      throw error
+    }
   }
 
   const handleUberData = async (weekDate: Date, data: DriverData[]) => {
@@ -136,15 +162,14 @@ export function ImportForm({ uploadStatus }: { uploadStatus: UploadStatus[] }) {
     }
   }
 
-
-  const handlePlatformData = async (platform: string, weekDate: Date, data: DriverData[]) => {
+  const handlePlatformData = async (platform: string, weekDate: Date, data: DriverData[] | BoltDriverData[]) => {
     try {
       switch (platform) {
         case 'bolt':
-          await handleBoltData(weekDate, data)
+          await handleBoltData(weekDate, data as BoltDriverData[])
           break
         case 'uber':
-          await handleUberData(weekDate, data)
+          await handleUberData(weekDate, data as DriverData[])
           break
         case 'heetch':
            await handleHeetchPdfUpload(pdfFile!, weekDate)
@@ -154,10 +179,7 @@ export function ImportForm({ uploadStatus }: { uploadStatus: UploadStatus[] }) {
       }
       handleValidateData()
     } catch (error) {
-      toast({
-        title: 'Erreur lors de la validation des données',
-        variant: 'error',
-      })
+      console.error('Error processing data:', error)
     }
   }
 
@@ -193,11 +215,22 @@ export function ImportForm({ uploadStatus }: { uploadStatus: UploadStatus[] }) {
     Papa.parse(file, {
       header: true,
       complete: (results) => {
-        const parsedData = results.data as DriverData[]
-        setCsvData(parsedData)
+        // Determine if this is Bolt or Uber data based on headers
+        const isBoltData = results.meta.fields?.includes('Driver')
+        
+        if (isBoltData) {
+          const parsedData = results.data as BoltDriverData[]
+          setBoltCsvData(parsedData)
+          setCsvData([]) // Clear other data
+        } else {
+          const parsedData = results.data as DriverData[]
+          setCsvData(parsedData)
+          setBoltCsvData([]) // Clear other data
+        }
+
         toast({
           title: 'Import réussi',
-          description: `${parsedData.length} lignes chargées de ${file.name}`,
+          description: `${results.data.length} lignes chargées de ${file.name}`,
           variant: 'default',
         })
       },
@@ -312,13 +345,13 @@ export function ImportForm({ uploadStatus }: { uploadStatus: UploadStatus[] }) {
               <IconUpload className="mr-2 h-4 w-4" />
               Importer
             </Button>
-            {(csvData.length > 0 || pdfFile) && (
+            {(csvData.length > 0 || boltCsvData.length > 0 || pdfFile) && (
               <Button
                 type="button"
                 onClick={() => handlePlatformData(
                   form.getValues('platform'),
                   form.getValues('weekDate'),
-                  csvData
+                  form.getValues('platform') === 'bolt' ? boltCsvData : csvData
                 )}
                 className="bg-[#01631b] hover:bg-[#01631b]/90"
               >
@@ -338,6 +371,12 @@ export function ImportForm({ uploadStatus }: { uploadStatus: UploadStatus[] }) {
             'Nom du chauffeur',
             'Revenus totaux : Prix net de la course'
           ]} 
+        />
+      )}
+      {boltCsvData.length > 0 && (
+        <BoltCsvDataTable
+          data={boltCsvData}
+          headers={['Driver', 'Driver\'s Phone', 'Email', 'Projected payout|€']}
         />
       )}
 

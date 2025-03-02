@@ -9,6 +9,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -112,6 +113,11 @@ export function UserDialog({ open, onOpenChange, user }: Props) {
           <DialogTitle>
             {user ? 'Modifier l\'utilisateur' : 'Nouvel utilisateur'}
           </DialogTitle>
+          <DialogDescription>
+            {user 
+              ? 'Modifiez les informations de l\'utilisateur ci-dessous.' 
+              : 'Remplissez les informations pour créer un nouvel utilisateur.'}
+          </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
