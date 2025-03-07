@@ -2,7 +2,8 @@ export interface DriverData {
     'UUID du chauffeur': string
     'Prénom du chauffeur': string
     'Nom du chauffeur': string
-    'Revenus totaux : Prix net de la course': string
+    'Revenus totaux': string
+    'Versements': string
   }
   
   export interface BoltDriverData {

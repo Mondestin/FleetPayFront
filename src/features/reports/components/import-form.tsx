@@ -36,7 +36,8 @@ interface DriverData {
   'UUID du chauffeur': string
   'Prénom du chauffeur': string
   'Nom du chauffeur': string
-  'Revenus totaux : Prix net de la course': string
+  'Revenus totaux': string,
+  'Versements': string
 }
 
 interface BoltDriverData {
@@ -157,7 +158,7 @@ export function ImportForm({ uploadStatus }: { uploadStatus: UploadStatus[] }) {
       uberId: row['UUID du chauffeur'],
       firstName: row['Prénom du chauffeur'],
       lastName: row['Nom du chauffeur'],
-      totalRevenue: row['Revenus totaux : Prix net de la course'],
+      totalRevenue: (Number(row['Revenus totaux']) || 0) - ( - Number(row['Versements'] ) || 0),
       phoneNumber: '',
       email: '',
       fullName: row['Prénom du chauffeur'] + ' ' + row['Nom du chauffeur'],
@@ -165,6 +166,8 @@ export function ImportForm({ uploadStatus }: { uploadStatus: UploadStatus[] }) {
       weekDate,
       user: user?.id
     }))
+    console.log(formattedData)
+    
     try {
       await api.post('/api/reports/platforms/import/uber', {
         weekDate,

@@ -10,7 +10,8 @@ import {
 interface DriverData {
   'Prénom du chauffeur': string
   'Nom du chauffeur': string
-  'Revenus totaux : Prix net de la course': string
+  'Revenus totaux': string,
+  'Versements': string
 }
 
 export function CsvDataTable({ data, headers }: { data: DriverData[], headers: string[] }) {
@@ -37,7 +38,7 @@ export function CsvDataTable({ data, headers }: { data: DriverData[], headers: s
             <TableRow key={index}>
               {headers.map((header) => (
                 <TableCell key={`${index}-${header}`}>
-                  {row[header as keyof DriverData]}
+                    {row[header as keyof DriverData]}
                 </TableCell>
               ))}
             </TableRow>
