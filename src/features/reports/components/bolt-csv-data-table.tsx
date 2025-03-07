@@ -28,8 +28,8 @@ export function BoltCsvDataTable({ data, headers }: { data: BoltDriverData[], he
       <Table>
         <TableHeader>
           <TableRow>
-            {headers.map((header) => (
-              <TableHead key={header}>{header}</TableHead>
+            {headers.map((header, index) => (
+              <TableHead key={index}>{header}</TableHead>
             ))}
           </TableRow>
         </TableHeader>

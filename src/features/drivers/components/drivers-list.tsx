@@ -44,7 +44,7 @@ export function DriversList() {
     },
     {
       header: 'Nom',
-      accessorKey: 'first_name',
+      accessorKey: 'last_name' as keyof Driver,
       cell: (row: Driver) => `${row.first_name} ${row.last_name}`
     },
     {

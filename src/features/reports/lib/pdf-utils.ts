@@ -37,7 +37,9 @@ export const handleHeetchPdfUpload = async (file: File, weekDate: Date) => {
       lastName: row['chauffeur'].split(' ')[1] + ' ' + (
         row['chauffeur'].split(' ')[2] || ''
       ),
-
+      phoneNumber: '',
+      fullName: row['chauffeur'],
+      email: '',
       totalRevenue: (row['montant'].split(' ')[0]).replace(',', '.'),
       platform: 'heetch',
       weekDate

@@ -88,7 +88,7 @@ export function PaymentReportsList() {
   const columns = [
     {
       header: '#',
-      accessorKey: 'driver',
+      accessorKey: 'id' as keyof PaymentReport,
       cell: (row: PaymentReport) => (
         <Avatar className="h-8 w-8">
           <AvatarFallback>
@@ -98,8 +98,8 @@ export function PaymentReportsList() {
       )
     },
     {
-      header: 'Chauffeur',
-      accessorKey: 'driver',
+      header: 'Chauffeur' ,
+      accessorKey: 'driver' as keyof PaymentReport,
       cell: (row: PaymentReport) => `${row.driver.first_name} ${row.driver.last_name}`
     },
     {

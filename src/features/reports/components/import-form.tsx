@@ -123,11 +123,12 @@ export function ImportForm({ uploadStatus }: { uploadStatus: UploadStatus[] }) {
   }
 
   const handleBoltData = async (weekDate: Date, data: BoltDriverData[]) => {
-    const formattedData = data.map(row => ({
+    const formattedData = data.filter(row => row['Driver'] != null).map((row: BoltDriverData) => ({
       firstName: row['Driver'].split(' ')[0],
-      lastName: row['Driver'].split(' ')[1] || '',
+      lastName: (row['Driver'].split(' ')[1] || '') + ' ' + ((row['Driver'].split(' ')[2] || '')) + ' ' + ((row['Driver'].split(' ')[3] || '')),
       phoneNumber: row['Driver\'s Phone'],
       email: row['Email'],
+      fullName: row['Driver'],
       totalRevenue: row['Projected payout|€'],
       platform: 'bolt',
       weekDate
@@ -149,6 +150,9 @@ export function ImportForm({ uploadStatus }: { uploadStatus: UploadStatus[] }) {
       firstName: row['Prénom du chauffeur'],
       lastName: row['Nom du chauffeur'],
       totalRevenue: row['Revenus totaux : Prix net de la course'],
+      phoneNumber: '',
+      email: '',
+      fullName: row['Prénom du chauffeur'] + ' ' + row['Nom du chauffeur'],
       platform: 'uber',
       weekDate
     }))
@@ -286,8 +290,6 @@ export function ImportForm({ uploadStatus }: { uploadStatus: UploadStatus[] }) {
               </FormItem>
             )}
           />
-
-         
 
           {selectedPlatform && (
             <FormField

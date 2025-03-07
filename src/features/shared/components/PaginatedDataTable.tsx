@@ -64,10 +64,10 @@ export function PaginatedDataTable<T extends Record<string, any>>({
           <Table className='border rounded-lg border-separate border-spacing-0'>
             <TableHeader>
               <TableRow>
-                {columns.map((column) => (
-                  <TableHead key={String(column.accessorKey)} className='rounded-lg'>{column.header}</TableHead>
+                {columns.map((column, index) => (
+                  <TableHead key={`${String(column.accessorKey)}-${index}`} className='rounded-lg'>{column.header}</TableHead>
                 ))}
-                {actions && <TableHead>Actions</TableHead>}
+                {actions && <TableHead key="actions">Actions</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
