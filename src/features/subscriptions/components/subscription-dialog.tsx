@@ -59,8 +59,10 @@ export function SubscriptionDialog({ open, onOpenChange, subscription }: Props) 
       toast.success('Abonnement créé avec succès')
       onOpenChange(false)
     },
-    onError: () => {
-      toast.error('Erreur lors de la création')
+    onError: (error) => {
+      toast.error('Erreur lors de la création de l\'abonnement', {
+        description: error instanceof Error ? error.message : 'Une erreur est survenue'
+      })
     }
   })
 
@@ -72,13 +74,24 @@ export function SubscriptionDialog({ open, onOpenChange, subscription }: Props) 
       toast.success('Abonnement mis à jour avec succès')
       onOpenChange(false)
     },
-    onError: () => {
-      toast.error('Erreur lors de la mise à jour')
+    onError: (error) => {
+      toast.error('Erreur lors de la mise à jour de l\'abonnement', {
+        description: error instanceof Error ? error.message : 'Une erreur est survenue'
+      })
     }
   })
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    if (!formData.user_id) {
+      toast.error('Veuillez sélectionner un utilisateur')
+      return
+    }
+    if (!formData.amount) {
+      toast.error('Veuillez sélectionner un plan')
+      return
+    }
+
     if (subscription) {
       updateMutation.mutate({
         id: subscription.id,

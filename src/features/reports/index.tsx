@@ -8,6 +8,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { startOfWeek, format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { ImportForm } from './components/import-form'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { IconInfoCircle } from '@tabler/icons-react'
 
 interface ImportStatus {
   platform: 'uber' | 'bolt' | 'heetch'
@@ -48,27 +50,36 @@ export default function FilesManager() {
       </Header>
 
       <Main>
-        <div className="mb-4 flex items-center justify-between">
+        <div className="mb-4 items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold tracking-tight">Rapports de Paiement</h2>
             <p className="text-muted-foreground">
               Consultez les rapports de paiement
             </p>
           </div>
+          <div className='row mt-4'>
+          <Alert>
+            <IconInfoCircle className="h-4 w-4" />
+            <AlertDescription>
+              Pour éviter les incohérences de données, veuillez importer les fichiers dans cet ordre :
+              <ol className="mt-2 list-decimal list-inside">
+                <li>Bolt (CSV)</li>
+                <li>Uber (CSV)</li>
+                <li>Heetch (PDF)</li>
+              </ol>
+            </AlertDescription>
+          </Alert>
+          </div>
         </div>
-        <div className='grid gap-8'>
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-            <div className='grid grid-cols-1 gap-4'>
-              <ImportForm uploadStatus={uploadStatus} />
-            </div>
-
-            <div className='grid grid-cols-1 gap-4'>
-              <UploadStatusTable 
-                uploadStatus={uploadStatus} 
-                onDeleteUpload={handleDeleteUpload}
-                weekStart={new Date()}
-              />
-            </div>
+        <div className='space-y-8'>
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
+          <UploadStatusTable 
+              uploadStatus={uploadStatus} 
+              onDeleteUpload={handleDeleteUpload}
+              weekStart={new Date()}
+            />
+            <ImportForm uploadStatus={uploadStatus} />
+           
           </div>
         </div>
       </Main>

@@ -1,0 +1,42 @@
+import { CsvDataTable } from './csv-data-table'
+import { BoltCsvDataTable } from './bolt-csv-data-table'
+import { PdfDataTable } from './pdf-data-table'
+import { type DriverData, type BoltDriverData, type HeetchData } from '../types'
+
+interface DataTablesViewProps {
+  csvData: DriverData[]
+  boltCsvData: BoltDriverData[]
+  pdfData: HeetchData[]
+  isLoading: boolean
+  pdfFile: File | null
+}
+
+export function DataTablesView({ csvData, boltCsvData, pdfData, isLoading, pdfFile }: DataTablesViewProps) {
+  return (
+    <>
+      {csvData.length > 0 && (
+        <CsvDataTable 
+          data={csvData} 
+          headers={[
+            'Prénom du chauffeur',
+            'Nom du chauffeur',
+            'Revenus totaux : Prix net de la course'
+          ]} 
+        />
+      )}
+      {boltCsvData.length > 0 && (
+        <BoltCsvDataTable
+          data={boltCsvData}
+          headers={['Driver', 'Driver\'s Phone', 'Email', 'Projected payout|€']}
+        />
+      )}
+      {(isLoading || pdfData.length > 0) && (
+        <PdfDataTable
+          data={pdfData}
+          isLoading={isLoading}
+          fileName={pdfFile?.name || ''}
+        />
+      )}
+    </>
+  )
+} 

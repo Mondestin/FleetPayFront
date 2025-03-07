@@ -1,5 +1,6 @@
 import * as pdfjsLib from 'pdfjs-dist'
 import { api } from '@/lib/api'
+
 export interface HeetchData {
   chauffeur: string;
   montant: string;
@@ -13,9 +14,7 @@ const workerUrl = new URL(
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
 
-
-
-export const handleHeetchPdfUpload = async (file: File, weekDate: Date) => {
+export const handleHeetchPdfUpload = async (file: File, weekDate: Date, userId?: string) => {
   try {
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
@@ -32,26 +31,28 @@ export const handleHeetchPdfUpload = async (file: File, weekDate: Date) => {
     
     const extractedData = extractTableData(fullText);
     const formattedData = extractedData.map(row => ({
-
-      firstName: row['chauffeur'].split(' ')[0],
-      lastName: row['chauffeur'].split(' ')[1] + ' ' + (
-        row['chauffeur'].split(' ')[2] || ''
+      firstName: row.chauffeur.split(' ')[0],
+      lastName: row.chauffeur.split(' ')[1] + ' ' + (
+        row.chauffeur.split(' ')[2] || ''
       ),
       phoneNumber: '',
-      fullName: row['chauffeur'],
+      fullName: row.chauffeur,
       email: '',
-      totalRevenue: (row['montant'].split(' ')[0]).replace(',', '.'),
+      totalRevenue: (row.montant.split(' ')[0]).replace(',', '.'),
       platform: 'heetch',
-      weekDate
+      weekDate,
+      user: userId
     }))
-      try {
-        await api.post('/api/reports/platforms/import/heetch', {
-          weekDate,
-          data: formattedData
-        })
-      } catch (error) {
-        console.error('Error processing Heetch data')
-      }
+
+    try {
+      await api.post('/api/reports/platforms/import/heetch', {
+        weekDate,
+        data: formattedData
+      })
+    } catch (error) {
+      console.error('Error processing Heetch data')
+      throw error
+    }
     return extractedData;
   } catch (error) {
     console.error('Error processing PDF:', error);

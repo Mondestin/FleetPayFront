@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import Papa from 'papaparse'
 import { useQueryClient } from '@tanstack/react-query'
-import { toast } from '@/hooks/use-toast'
 import { api } from '@/lib/api'
 import { Button } from '@/components/ui/button'
 import {
@@ -27,11 +26,14 @@ import {
 import { WeekPicker } from '@/components/ui/week-picker'
 import { IconUpload, IconCheck } from '@tabler/icons-react'
 import { handleHeetchPdfUpload, type HeetchData } from '../lib/pdf-utils'
-import { CsvDataTable } from './csv-data-table'
-import { PdfDataTable } from './pdf-data-table'
-import { BoltCsvDataTable } from './bolt-csv-data-table'
+import { useUser } from '@/features/auth/hooks/use-user'
+import { DataTablesView } from '../components/data-tables-view'
+import { Spinner } from '@/components/ui/spinner'
+import { useToast } from '@/hooks/use-toast'
+
 
 interface DriverData {
+  'UUID du chauffeur': string
   'Prénom du chauffeur': string
   'Nom du chauffeur': string
   'Revenus totaux : Prix net de la course': string
@@ -88,8 +90,12 @@ export function ImportForm({ uploadStatus }: { uploadStatus: UploadStatus[] }) {
   const [pdfFile, setPdfFile] = useState<File | null>(null)
   const [pdfData, setPdfData] = useState<HeetchData[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const queryClient = useQueryClient()
+  const { user } = useUser()
+  const { toast } = useToast()
 
+  
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -118,7 +124,7 @@ export function ImportForm({ uploadStatus }: { uploadStatus: UploadStatus[] }) {
     setPdfFile(null)
     toast({
       title: 'Données validées avec succès',
-      variant: 'default',
+      variant: 'success'
     })
   }
 
@@ -131,7 +137,8 @@ export function ImportForm({ uploadStatus }: { uploadStatus: UploadStatus[] }) {
       fullName: row['Driver'],
       totalRevenue: row['Projected payout|€'],
       platform: 'bolt',
-      weekDate
+      weekDate,
+      user: user?.id
     }))
     
     try {
@@ -147,6 +154,7 @@ export function ImportForm({ uploadStatus }: { uploadStatus: UploadStatus[] }) {
 
   const handleUberData = async (weekDate: Date, data: DriverData[]) => {
     const formattedData = data.map(row => ({
+      uberId: row['UUID du chauffeur'],
       firstName: row['Prénom du chauffeur'],
       lastName: row['Nom du chauffeur'],
       totalRevenue: row['Revenus totaux : Prix net de la course'],
@@ -154,7 +162,8 @@ export function ImportForm({ uploadStatus }: { uploadStatus: UploadStatus[] }) {
       email: '',
       fullName: row['Prénom du chauffeur'] + ' ' + row['Nom du chauffeur'],
       platform: 'uber',
-      weekDate
+      weekDate,
+      user: user?.id
     }))
     try {
       await api.post('/api/reports/platforms/import/uber', {
@@ -167,6 +176,7 @@ export function ImportForm({ uploadStatus }: { uploadStatus: UploadStatus[] }) {
   }
 
   const handlePlatformData = async (platform: string, weekDate: Date, data: DriverData[] | BoltDriverData[]) => {
+    setIsSubmitting(true)
     try {
       switch (platform) {
         case 'bolt':
@@ -176,7 +186,7 @@ export function ImportForm({ uploadStatus }: { uploadStatus: UploadStatus[] }) {
           await handleUberData(weekDate, data as DriverData[])
           break
         case 'heetch':
-           await handleHeetchPdfUpload(pdfFile!, weekDate)
+          await handleHeetchPdfUpload(pdfFile!, weekDate, user?.id)
           break
         default:
           throw new Error('Platform not supported')
@@ -184,6 +194,12 @@ export function ImportForm({ uploadStatus }: { uploadStatus: UploadStatus[] }) {
       handleValidateData()
     } catch (error) {
       console.error('Error processing data:', error)
+      toast({
+        title: 'Erreur lors de l\'envoi des données',
+        variant: 'error'
+      })
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -194,20 +210,20 @@ export function ImportForm({ uploadStatus }: { uploadStatus: UploadStatus[] }) {
       setIsLoading(true)
       setPdfFile(file)
       
-      handleHeetchPdfUpload(file, data.weekDate)
+      handleHeetchPdfUpload(file, data.weekDate, user?.id)
         .then((extractedData) => {
           setPdfData(extractedData)
           toast({
             title: 'PDF importé avec succès',
             description: `${extractedData.length} chauffeurs trouvés`,
-            variant: 'default',
+            variant: 'success'
           })
         })
         .catch((error) => {
           console.error('Error processing PDF:', error)
           toast({
             title: 'Erreur lors de la lecture du PDF',
-            variant: 'error',
+            variant: 'error'
           })
         })
         .finally(() => {
@@ -235,160 +251,155 @@ export function ImportForm({ uploadStatus }: { uploadStatus: UploadStatus[] }) {
         toast({
           title: 'Import réussi',
           description: `${results.data.length} lignes chargées de ${file.name}`,
-          variant: 'default',
+          variant: 'success'
         })
       },
       error: (error) => {
         toast({
           title: 'Erreur de lecture CSV',
           description: error.message,
-          variant: 'error',
+          variant: 'error'
         })
       },
     })
   }
 
   return (
-    <div className='rounded-lg border shadow-sm bg-background p-4'>
-      <h3 className='mb-4 text-lg font-semibold'>Importer un fichier</h3>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-            control={form.control}
-            name="weekDate"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Semaine</FormLabel>
-                <FormControl>
-                  <WeekPicker date={field.value} onDateChange={field.onChange} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+    <>
+      <div className='rounded-lg border shadow-sm bg-background p-4'>
+        <h3 className='mb-4 text-lg font-semibold'>Importer un fichier</h3>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
-            control={form.control}
-            name="platform"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Plateforme</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Sélectionnez une plateforme" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {availablePlatforms.map(platform => (
-                      <SelectItem key={platform.value} value={platform.value}>
-                        {platform.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {selectedPlatform && (
-            <FormField
               control={form.control}
-              name="file"
-              render={({ field: { onChange } }) => (
+              name="weekDate"
+              render={({ field }) => (
                 <FormItem>
-                  {selectedPlatform === 'heetch' ? (
-                    <>
-                      <FormLabel>Fichier PDF Heetch</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="file"
-                          accept=".pdf"
-                          onChange={(e) => {
-                            onChange(e.target.files)
-                            if (e.target.files?.[0]) {
-                              setIsLoading(true)
-                              setPdfFile(e.target.files[0])
-              
-                            }
-                          }}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Sélectionnez le fichier PDF de paiement Heetch
-                      </FormDescription>
-                    </>
-                  ) : (
-                    <>
-                      <FormLabel>Fichier CSV</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="file"
-                          accept=".csv"
-                          onChange={(e) => onChange(e.target.files)}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Sélectionnez un fichier CSV à importer
-                      </FormDescription>
-                    </>
-                  )}
+                  <FormLabel>Semaine</FormLabel>
+                  <FormControl>
+                    <WeekPicker date={field.value} onDateChange={field.onChange} />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-          )}
+            <FormField
+              control={form.control}
+              name="platform"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Plateforme</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sélectionnez une plateforme" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {availablePlatforms.map(platform => (
+                        <SelectItem key={platform.value} value={platform.value}>
+                          {platform.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <div className="flex justify-end gap-2">
-            <Button
-              type="submit"
-              disabled={!form.formState.isValid || csvData.length > 0 || (selectedPlatform === 'heetch' && pdfFile === null)}
-            >
-              <IconUpload className="mr-2 h-4 w-4" />
-              Importer
-            </Button>
-            {(csvData.length > 0 || boltCsvData.length > 0 || pdfFile) && (
-              <Button
-                type="button"
-                onClick={() => handlePlatformData(
-                  form.getValues('platform'),
-                  form.getValues('weekDate'),
-                  form.getValues('platform') === 'bolt' ? boltCsvData : csvData
+            {selectedPlatform && (
+              <FormField
+                control={form.control}
+                name="file"
+                render={({ field: { onChange } }) => (
+                  <FormItem>
+                    {selectedPlatform === 'heetch' ? (
+                      <>
+                        <FormLabel>Fichier PDF Heetch</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="file"
+                            accept=".pdf"
+                            onChange={(e) => {
+                              onChange(e.target.files)
+                              if (e.target.files?.[0]) {
+                                setIsLoading(true)
+                                setPdfFile(e.target.files[0])
+                
+                              }
+                            }}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Sélectionnez le fichier PDF de paiement Heetch
+                        </FormDescription>
+                      </>
+                    ) : (
+                      <>
+                        <FormLabel>Fichier CSV</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="file"
+                            accept=".csv"
+                            onChange={(e) => onChange(e.target.files)}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Sélectionnez un fichier CSV à importer
+                        </FormDescription>
+                      </>
+                    )}
+                    <FormMessage />
+                  </FormItem>
                 )}
-                className="bg-[#01631b] hover:bg-[#01631b]/90"
-              >
-                <IconCheck className="mr-2 h-4 w-4" />
-                Valider l'import
-              </Button>
+              />
             )}
-          </div>
-        </form>
-      </Form>
 
-      {csvData.length > 0 && (
-        <CsvDataTable 
-          data={csvData} 
-          headers={[
-            'Prénom du chauffeur',
-            'Nom du chauffeur',
-            'Revenus totaux : Prix net de la course'
-          ]} 
-        />
-      )}
-      {boltCsvData.length > 0 && (
-        <BoltCsvDataTable
-          data={boltCsvData}
-          headers={['Driver', 'Driver\'s Phone', 'Email', 'Projected payout|€']}
-        />
-      )}
+            <div className="flex justify-end gap-2">
+              <Button
+                type="submit"
+                disabled={!form.formState.isValid || csvData.length > 0 || (selectedPlatform === 'heetch' && pdfFile === null)}
+              >
+                <IconUpload className="mr-2 h-4 w-4" />
+                Importer
+              </Button>
+              {(csvData.length > 0 || boltCsvData.length > 0 || pdfFile) && (
+                <Button
+                  type="button"
+                  onClick={() => handlePlatformData(
+                    form.getValues('platform'),
+                    form.getValues('weekDate'),
+                    form.getValues('platform') === 'bolt' ? boltCsvData : csvData
+                  )}
+                  className="bg-[#01631b] hover:bg-[#01631b]/90"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Spinner className="mr-2 h-4 w-4" />
+                      Validation en cours...
+                    </>
+                  ) : (
+                    <>
+                      <IconCheck className="mr-2 h-4 w-4" />
+                      Valider l'import
+                    </>
+                  )}
+                </Button>
+              )}
+            </div>
+          </form>
+        </Form>
 
-      {(isLoading || pdfData.length > 0) && (
-        <PdfDataTable
-          data={pdfData}
-          isLoading={isLoading}
-          fileName={pdfFile?.name || ''}
-        />
-      )}
-    </div>
+      </div>
+      <DataTablesView
+        csvData={csvData}
+        boltCsvData={boltCsvData}
+        pdfData={pdfData}
+        isLoading={isLoading}
+        pdfFile={pdfFile}
+      />
+    </>
   )
 } 
