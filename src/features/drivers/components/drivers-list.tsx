@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { driverService } from '../data/driver-service'
 import { Input } from '@/components/ui/input'
-import { IconSearch } from '@tabler/icons-react'
+import { IconSearch, IconDownload } from '@tabler/icons-react'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { StatusBadge } from '@/components/ui/status-badge'
@@ -11,6 +11,9 @@ import { type Driver } from '../data/schema'
 import { type Column } from '@/features/shared/components/DataTable'
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Spinner } from "@/components/ui/spinner"
+import { Button } from "@/components/ui/button"
+import * as XLSX from 'xlsx'
+import { toast } from 'sonner'
 
 export function DriversList() {
   const [currentPage, setCurrentPage] = useState(1)
@@ -69,8 +72,49 @@ export function DriversList() {
     }
   ]
 
+  // Add export function
+  const exportToExcel = (drivers: any[]) => {
+    try {
+      const formattedData = drivers.map(driver => ({
+        'Prénom': driver.first_name,
+        'Nom': driver.last_name,
+        'Email': driver.email,
+        'Téléphone': driver.phone_number,
+        'Statut': driver.status,
+        'Date de création': new Date(driver.created_at).toLocaleDateString('fr-FR')
+      }))
+
+      const worksheet = XLSX.utils.json_to_sheet(formattedData)
+      const workbook = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Chauffeurs')
+      
+      // Generate file name with current date
+      const fileName = `chauffeurs_${new Date().toISOString().split('T')[0]}.xlsx`
+      XLSX.writeFile(workbook, fileName)
+
+      toast.success('Export réussi', {
+        description: 'Le fichier a été téléchargé avec succès'
+      })
+    } catch (error) {
+      toast.error('Erreur lors de l\'export', {
+        description: 'Une erreur est survenue lors de l\'export des données'
+      })
+    }
+  }
+
   return (
     <div className="space-y-4 p-4">
+      <div className="flex justify-between items-center mb-4">
+        <div className="space-y-1">
+          <h2 className="text-2xl font-semibold tracking-tight">
+            Liste des chauffeurs
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            {paginatedDrivers?.total || 0} chauffeurs enregistrés
+          </p>
+        </div>
+    
+      </div>
       {/* Search */}
       <div className="flex items-center gap-2">
         <div className="relative max-w-sm flex-1">
@@ -81,6 +125,16 @@ export function DriversList() {
             onChange={(e) => setSearch(e.target.value)}
             className="pl-8"
           />
+        </div>
+        <div className="flex gap-2 ml-auto">
+          <Button
+            onClick={() => exportToExcel(paginatedDrivers?.data || [])}
+            variant="outline"
+            className="flex items-center gap-2 bg-[#01631b] hover:bg-[#01631b]/90"
+        >
+            <IconDownload className="h-4 w-4 text-white" />
+            <span className="text-white">Exporter ce tableau</span>
+          </Button>
         </div>
       </div>
 
