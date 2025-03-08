@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import { keepPreviousData, useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { driverService } from '../data/driver-service'
 import { Input } from '@/components/ui/input'
-import { IconSearch, IconDownload } from '@tabler/icons-react'
+import { IconSearch, IconDownload, IconTrash } from '@tabler/icons-react'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { StatusBadge } from '@/components/ui/status-badge'
@@ -14,10 +14,15 @@ import { Spinner } from "@/components/ui/spinner"
 import { Button } from "@/components/ui/button"
 import * as XLSX from 'xlsx'
 import { toast } from 'sonner'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
 export function DriversList() {
   const [currentPage, setCurrentPage] = useState(1)
   const [search, setSearch] = useState('')
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null)
+  
+  const queryClient = useQueryClient()
   
   // Debounce search to avoid too many API calls
   useEffect(() => {
@@ -32,6 +37,23 @@ export function DriversList() {
     queryFn: () => driverService.getAll(currentPage, search),
     placeholderData: keepPreviousData
   })
+
+  // Add delete mutation
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => driverService.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['drivers'] })
+      toast.success('Chauffeur supprimé avec succès')
+    },
+    onError: () => {
+      toast.error('Erreur lors de la suppression')
+    }
+  })
+
+  const handleDelete = (driver: Driver) => {
+    setSelectedDriver(driver)
+    setDeleteDialogOpen(true)
+  }
 
   const columns: Column<Driver>[] = [
     {
@@ -69,6 +91,20 @@ export function DriversList() {
       header: "Date d'inscription",
       accessorKey: 'created_at' as keyof Driver,
       cell: (row: Driver) => format(new Date(row.created_at), 'dd MMM yyyy', { locale: fr })
+    },
+    {
+      header: 'Actions',
+      accessorKey: 'id' as keyof Driver,
+      cell: (row: Driver) => (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => handleDelete(row)}
+          className="hover:bg-destructive/10 hover:text-destructive"
+        >
+          <IconTrash className="h-4 w-4" />
+        </Button>
+      )
     }
   ]
 
@@ -103,57 +139,90 @@ export function DriversList() {
   }
 
   return (
-    <div className="space-y-4 p-4">
-      <div className="flex justify-between items-center mb-4">
-        <div className="space-y-1">
-          <h2 className="text-2xl font-semibold tracking-tight">
-            Liste des chauffeurs
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            {paginatedDrivers?.total || 0} chauffeurs enregistrés
-          </p>
+    <>
+      <div className="space-y-4 p-4">
+        <div className="flex justify-between items-center mb-4">
+          <div className="space-y-1">
+            <h2 className="text-2xl font-semibold tracking-tight">
+              Liste des chauffeurs
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              {paginatedDrivers?.total || 0} chauffeurs enregistrés
+            </p>
+          </div>
+      
         </div>
-    
-      </div>
-      {/* Search */}
-      <div className="flex items-center gap-2">
-        <div className="relative max-w-sm flex-1">
-          <IconSearch className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Rechercher un chauffeur..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-8"
+        {/* Search */}
+        <div className="flex items-center gap-2">
+          <div className="relative max-w-sm flex-1">
+            <IconSearch className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Rechercher un chauffeur..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-8"
+            />
+          </div>
+          <div className="flex gap-2 ml-auto">
+            <Button
+              onClick={() => exportToExcel(paginatedDrivers?.data || [])}
+              variant="outline"
+              className="flex items-center gap-2 bg-[#01631b] hover:bg-[#01631b]/90"
+          >
+              <IconDownload className="h-4 w-4 text-white" />
+              <span className="text-white">Exporter ce tableau</span>
+            </Button>
+          </div>
+        </div>
+
+        {isLoading ? (
+          <div className="flex justify-center items-center py-8">
+            <Spinner className="h-8 w-8 text-primary" />
+          </div>
+        ) : paginatedDrivers ? (
+          <PaginatedDataTable
+            data={paginatedDrivers.data}
+            columns={columns}
+            searchable={true}
+            searchKeys={['first_name', 'last_name', 'email']}
           />
-        </div>
-        <div className="flex gap-2 ml-auto">
-          <Button
-            onClick={() => exportToExcel(paginatedDrivers?.data || [])}
-            variant="outline"
-            className="flex items-center gap-2 bg-[#01631b] hover:bg-[#01631b]/90"
-        >
-            <IconDownload className="h-4 w-4 text-white" />
-            <span className="text-white">Exporter ce tableau</span>
-          </Button>
-        </div>
+        ) : (
+          <div className="text-center py-4 text-red-500">
+            Erreur lors du chargement des données
+          </div>
+        )}
       </div>
 
-      {isLoading ? (
-        <div className="flex justify-center items-center py-8">
-          <Spinner className="h-8 w-8 text-primary" />
-        </div>
-      ) : paginatedDrivers ? (
-        <PaginatedDataTable
-          data={paginatedDrivers.data}
-          columns={columns}
-          searchable={true}
-          searchKeys={['first_name', 'last_name', 'email']}
-        />
-      ) : (
-        <div className="text-center py-4 text-red-500">
-          Erreur lors du chargement des données
-        </div>
-      )}
-    </div>
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Supprimer le chauffeur</DialogTitle>
+            <DialogDescription>
+              Êtes-vous sûr de vouloir supprimer {selectedDriver?.first_name} {selectedDriver?.last_name} ?
+              Cette action est irréversible.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setDeleteDialogOpen(false)}
+            >
+              Annuler
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                if (selectedDriver) {
+                  deleteMutation.mutate(selectedDriver.id)
+                  setDeleteDialogOpen(false)
+                }
+              }}
+            >
+              Supprimer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 } 
