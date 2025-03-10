@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query'
 import { paymentReportService } from '../data/payment-report-service'
 import { Button } from '@/components/ui/button'
@@ -176,6 +176,17 @@ export function PaymentReportsList() {
     </DropdownMenu>
   )
 
+  // Sort the data by driver's name
+  const sortedData = useMemo(() => {
+    if (!paginatedReports?.data) return []
+    
+    return [...paginatedReports.data].sort((a, b) => {
+      const nameA = `${a.driver.first_name} ${a.driver.last_name}`.toLowerCase()
+      const nameB = `${b.driver.first_name} ${b.driver.last_name}`.toLowerCase()
+      return nameA.localeCompare(nameB)
+    })
+  }, [paginatedReports?.data])
+
   return (
     <div className="space-y-4 p-4">
       <div className='flex items-center justify-between gap-4'>
@@ -210,7 +221,7 @@ export function PaymentReportsList() {
         </div>
       ) : paginatedReports ? (
         <PaginatedDataTable
-          data={paginatedReports.data}
+          data={sortedData}
           columns={columns}
           actions={actions}
           searchable={true}
