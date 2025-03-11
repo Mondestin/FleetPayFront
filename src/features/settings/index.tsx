@@ -1,133 +1,129 @@
-import { useForm } from 'react-hook-form'
-import { useQuery } from '@tanstack/react-query'
-import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { Button } from '@/components/ui/button'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { toast } from '@/hooks/use-toast'
-import { api } from '@/lib/api'
-import React, { useState } from 'react'
-
-const formSchema = z.object({
-  commission: z.number().min(0, 'La commission doit être positive'),
-})
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { ProfileForm } from './components/profile-form'
+import { PasswordForm } from './components/password-form'
+import { SubscriptionDetails } from './components/subscription-details'
+import { CommissionSettings } from './components/commission-settings'
+import { IconUser, IconLock, IconCreditCard, IconPercentage, IconBuilding } from '@tabler/icons-react'
+import { CompanyProfileForm } from './components/company-profile-form'
 
 export default function Settings() {
-  const [isEditing, setIsEditing] = useState(false)
-  const { data: commissionData } = useQuery({
-    queryKey: ['commission'],
-    queryFn: async () => {
-      const response = await api.get('/api/settings/commission')
-      return response.data
-    }
-  })
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      commission: 0,
-    },
-  })
-
-  React.useEffect(() => {
-    if (commissionData) {
-      form.setValue('commission', Number(commissionData.value))
-    }
-  }, [commissionData, form])
-
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      await api.post('/api/settings/commission', values)
-      toast({
-        title: 'Commission mise à jour',
-        variant: 'default',
-      })
-      setIsEditing(false)
-    } catch (error) {
-      toast({
-        title: 'Erreur lors de la mise à jour',
-        variant: 'error',
-      })
-    }
-  }
-
   return (
     <>
       <Header fixed>
-        <div className="ml-auto flex items-center space-x-4">
+        <div className='ml-auto flex items-center space-x-4'>
           <ThemeSwitch />
           <ProfileDropdown />
         </div>
       </Header>
 
       <Main>
-        <div className="flex flex-col gap-6">
+        <div className="space-y-6">
           <div>
-            <h1 className="text-3xl font-bold">Paramètres</h1>
+            <h2 className="text-2xl font-bold tracking-tight">Paramètres</h2>
             <p className="text-muted-foreground">
-              Gérez les paramètres de votre application
+              Gérez vos paramètres de compte et préférences
             </p>
           </div>
 
-          <div className="grid gap-6 max-w-xl">
-            <div className="space-y-4 rounded-lg border p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold">Commission</h2>
-                
-              </div>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="commission"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Montant de la commission (€)</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            step="0.01"
-                            {...field}
-                            disabled={!isEditing}
-                            onChange={e => field.onChange(Number(e.target.value))}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setIsEditing(!isEditing)}
-                  >
-                    {isEditing ? 'Annuler' : 'Modifier'}
-                  </Button>
+          <Tabs defaultValue="profile" className="space-y-4">
+            <TabsList>
+              <TabsTrigger value="profile" className="flex items-center gap-2">
+                <IconUser className="h-4 w-4" />
+                Profil
+              </TabsTrigger>
+              <TabsTrigger value="security" className="flex items-center gap-2">
+                <IconLock className="h-4 w-4" />
+                Sécurité
+              </TabsTrigger>
+              <TabsTrigger value="subscription" className="flex items-center gap-2">
+                <IconCreditCard className="h-4 w-4" />
+                Abonnement
+              </TabsTrigger>
+              <TabsTrigger value="commission" className="flex items-center gap-2">
+                <IconPercentage className="h-4 w-4" />
+                Commission
+              </TabsTrigger>
+              <TabsTrigger value="company" className="flex items-center gap-2">
+                <IconBuilding className="h-4 w-4" />
+                Entreprise
+              </TabsTrigger>
+            </TabsList>
 
-                  {isEditing && (
-                    <Button 
-                      type="submit"
-                      className="bg-[#01631b] hover:bg-[#01631b]/90"
-                    >
-                      Enregistrer
-                    </Button>
-                  )}
-                </form>
-              </Form>
-            </div>
-          </div>
+            <TabsContent value="profile">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Profil</CardTitle>
+                  <CardDescription>
+                    Gérez vos informations personnelles
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ProfileForm />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="security">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Sécurité</CardTitle>
+                  <CardDescription>
+                    Mettez à jour votre mot de passe
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <PasswordForm />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="subscription">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Abonnement</CardTitle>
+                  <CardDescription>
+                    Gérez votre abonnement et facturation
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <SubscriptionDetails />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="commission">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Commission</CardTitle>
+                  <CardDescription>
+                    Configurez le taux de commission
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <CommissionSettings />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="company">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Profil entreprise</CardTitle>
+                  <CardDescription>
+                    Gérez les informations de votre entreprise
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <CompanyProfileForm />
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </div>
       </Main>
     </>
