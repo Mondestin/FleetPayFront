@@ -58,14 +58,16 @@ export default function FilesManager() {
             </p>
           </div>
           <div className='row mt-4'>
-          <Alert>
+          
+ 
+          <Alert className='border-l-4 border-[#01631b]'>
             <IconInfoCircle className="h-4 w-4" />
             <AlertDescription>
               Pour éviter les incohérences de données, veuillez importer les fichiers dans cet ordre :
-              <ol className="mt-2 list-decimal list-inside">
-                <li>Bolt (CSV)</li>
-                <li>Uber (CSV)</li>
-                <li>Heetch (PDF)</li>
+              <ol className="mt-2 list-decimal">
+                <li> Bolt (CSV) </li>
+                <li> Uber (CSV) </li>
+                <li> Heetch (PDF) </li>
               </ol>
             </AlertDescription>
           </Alert>

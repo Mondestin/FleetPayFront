@@ -60,7 +60,7 @@ export function PaginatedDataTable<T extends Record<string, any>>({
 
       
        <>
-        <div className="">
+        <div className="bg-white rounded-lg border-t-2 border-[#01631b]">
           <Table className='border rounded-lg border-separate border-spacing-0'>
             <TableHeader>
               <TableRow>

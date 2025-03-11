@@ -43,7 +43,7 @@ export const paymentReportSchema = z.object({
   created_at: z.string(),
   updated_at: z.string(),
   total_earnings: z.number(),
-  driver: driverSchema,
+  driver: driverSchema
 })
 
 // Pagination schema

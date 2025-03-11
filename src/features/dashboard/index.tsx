@@ -51,7 +51,7 @@ export default function Dashboard() {
             <Card>
               <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
                 <CardTitle className='text-sm font-medium'>Chauffeurs actifs</CardTitle>
-                <IconUsers className='h-4 w-4 text-muted-foreground' />
+                <IconUsers className='h-8 w-8 text-muted-foreground' />
               </CardHeader>
               <CardContent>
                 <div className='text-2xl font-bold'>{drivers?.total || 0}</div>
@@ -64,7 +64,7 @@ export default function Dashboard() {
             <Card>
               <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
                 <CardTitle className='text-sm font-medium'>Revenus hebdomadaires</CardTitle>
-                <IconCash className='h-4 w-4 text-muted-foreground' />
+                <IconCash className='h-8 w-8 text-muted-foreground' />
               </CardHeader>
               <CardContent>
                 <div className='text-2xl font-bold'>
@@ -80,7 +80,7 @@ export default function Dashboard() {
             <Card>
               <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
                 <CardTitle className='text-sm font-medium'>Commission totale</CardTitle>
-                <IconTrendingUp className='h-4 w-4 text-muted-foreground' />
+                <IconTrendingUp className='h-8 w-8 text-muted-foreground' />
               </CardHeader>
               <CardContent>
                 <div className='text-2xl font-bold'>
@@ -95,7 +95,7 @@ export default function Dashboard() {
             <Card>
               <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
                 <CardTitle className='text-sm font-medium'>Importations en attente</CardTitle>
-                <IconCalendar className='h-4 w-4 text-muted-foreground' />
+                <IconCalendar className='h-8 w-8 text-muted-foreground' />
               </CardHeader>
               <CardContent>
                 <div className='text-2xl font-bold'>{0 || 0}</div>
@@ -105,27 +105,7 @@ export default function Dashboard() {
               </CardContent>
             </Card>
           </div>
-          {/*
-          {alerts && alerts.length > 0 && (
-            <Card className='border-orange-200 bg-orange-50 dark:bg-orange-950'>
-              <CardHeader>
-                <CardTitle className='flex items-center gap-2'>
-                  <IconAlertTriangle className='h-5 w-5 text-orange-500' />
-                  Alertes
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className='space-y-2'>
-                  {alerts.map((alert: any, index: number) => (
-                    <li key={index} className='text-sm text-orange-700 dark:text-orange-300'>
-                      {alert.message}
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          )}
-          */}
+                 
         </div>
       </Main>
     </>
