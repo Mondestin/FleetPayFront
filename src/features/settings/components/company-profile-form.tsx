@@ -14,8 +14,10 @@ import { IconUpload } from '@tabler/icons-react'
 
 const companySchema = z.object({
   name: z.string().min(2),
-  logo: z.any().optional(),
+  logo: z.instanceof(FileList).optional(),
 })
+
+type CompanyFormValues = z.infer<typeof companySchema>
 
 export function CompanyProfileForm() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
@@ -25,7 +27,7 @@ export function CompanyProfileForm() {
     queryFn: () => api.get('/api/company').then(res => res.data)
   })
 
-  const form = useForm({
+  const form = useForm<CompanyFormValues>({
     resolver: zodResolver(companySchema),
     defaultValues: {
       name: company?.name || '',
@@ -47,7 +49,7 @@ export function CompanyProfileForm() {
     }
   })
 
-  const onSubmit = (data: z.infer<typeof companySchema>) => {
+  const onSubmit = (data: CompanyFormValues) => {
     const formData = new FormData()
     formData.append('name', data.name)
     if (data.logo?.[0]) {

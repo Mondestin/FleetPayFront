@@ -17,14 +17,15 @@ const passwordSchema = z.object({
   path: ["confirm_password"]
 })
 
+type PasswordFormValues = z.infer<typeof passwordSchema>
+
 export function PasswordForm() {
-  const form = useForm({
+  const form = useForm<PasswordFormValues>({
     resolver: zodResolver(passwordSchema)
   })
 
   const mutation = useMutation({
-    mutationFn: (data: z.infer<typeof passwordSchema>) =>
-      api.put('/api/users/password', data),
+    mutationFn: (data: PasswordFormValues) => api.put('/api/users/password', data),
     onSuccess: () => {
       toast.success('Mot de passe mis à jour avec succès')
       form.reset()
