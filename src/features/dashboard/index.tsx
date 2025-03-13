@@ -14,6 +14,8 @@ import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { IconUsers, IconCash, IconTrendingUp, IconCalendar } from '@tabler/icons-react'
+import { WeeklyComparisonChart } from './components/weekly-comparison-chart'
+import { MonthlyRevenueChart } from './components/monthly-revenue-chart'
 
 export default function Dashboard() {
   const today = new Date()
@@ -24,8 +26,6 @@ export default function Dashboard() {
     queryKey: ['drivers'],
     queryFn: () => driverService.getAll(),
   })
-
-
 
   return (
     <>
@@ -105,7 +105,11 @@ export default function Dashboard() {
               </CardContent>
             </Card>
           </div>
-                 
+
+          <div className='grid gap-6 md:grid-cols-2'>
+            <WeeklyComparisonChart />
+            <MonthlyRevenueChart />
+          </div>
         </div>
       </Main>
     </>
