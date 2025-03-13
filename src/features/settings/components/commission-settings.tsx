@@ -22,7 +22,7 @@ export function CommissionSettings() {
   const form = useForm({
     resolver: zodResolver(commissionSchema),
     defaultValues: {
-      value: commission?.value || '50'
+      value: commission?.value || '0'
     }
   })
 

@@ -42,19 +42,23 @@ export function ProfileForm() {
         <div className="space-y-2">
           <Label htmlFor="first_name">Prénom</Label>
           <Input {...form.register('first_name')} />
+          <p className="text-sm text-red-500">{form.formState.errors.first_name?.message}</p>
         </div>
         <div className="space-y-2">
           <Label htmlFor="last_name">Nom</Label>
           <Input {...form.register('last_name')} />
+          <p className="text-sm text-red-500">{form.formState.errors.last_name?.message}</p>
         </div>
       </div>
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
         <Input {...form.register('email')} type="email" />
+        <p className="text-sm text-red-500">{form.formState.errors.email?.message}</p>
       </div>
       <div className="space-y-2">
         <Label htmlFor="phone_number">Téléphone</Label>
         <Input {...form.register('phone_number')} />
+        <p className="text-sm text-red-500">{form.formState.errors.phone_number?.message}</p>
       </div>
       <Button type="submit" className="bg-[#01631b] hover:bg-[#01631b]/90">
         Mettre à jour
