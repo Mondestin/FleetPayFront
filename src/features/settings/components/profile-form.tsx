@@ -10,10 +10,10 @@ import { api } from '@/lib/api'
 import { toast } from 'sonner'
 
 const profileSchema = z.object({
-  first_name: z.string().min(2),
-  last_name: z.string().min(2),
-  email: z.string().email(),
-  phone_number: z.string().optional()
+  first_name: z.string().min(4, {message: "Le prénom doit contenir au moins 4 caractères"} ),
+  last_name: z.string().min(4, {message: "Le nom doit contenir au moins 4 caractères"}),
+  email: z.string().email({message: "L'email est invalide"}),
+  phone_number: z.string().min(10, {message: "Le numéro de téléphone doit contenir au moins 10 chiffres"})
 })
 
 export function ProfileForm() {
@@ -30,23 +30,22 @@ export function ProfileForm() {
 
   const mutation = useMutation({
     mutationFn: (data: z.infer<typeof profileSchema>) =>
-      api.put('/api/users/profile', data),
+      api.put(`/api/users/${user?.id}/profile`, data),
     onSuccess: () => {
       toast.success('Profil mis à jour avec succès')
     }
   })
-
   return (
-    <form onSubmit={form.handleSubmit((data) => mutation.mutate(data))} className="space-y-4">
+    <form onSubmit={form.handleSubmit((data) => mutation.mutate({...data, phone_number: String(data.phone_number)}))} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="first_name">Prénom</Label>
-          <Input {...form.register('first_name')} />
+          <Input {...form.register('first_name')}/>
           <p className="text-sm text-red-500">{form.formState.errors.first_name?.message}</p>
         </div>
         <div className="space-y-2">
           <Label htmlFor="last_name">Nom</Label>
-          <Input {...form.register('last_name')} />
+          <Input {...form.register('last_name')}  />
           <p className="text-sm text-red-500">{form.formState.errors.last_name?.message}</p>
         </div>
       </div>
@@ -57,7 +56,7 @@ export function ProfileForm() {
       </div>
       <div className="space-y-2">
         <Label htmlFor="phone_number">Téléphone</Label>
-        <Input {...form.register('phone_number')} />
+        <Input {...form.register('phone_number')} type="tel" />
         <p className="text-sm text-red-500">{form.formState.errors.phone_number?.message}</p>
       </div>
       <Button type="submit" className="bg-[#01631b] hover:bg-[#01631b]/90">

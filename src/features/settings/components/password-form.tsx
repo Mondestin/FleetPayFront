@@ -11,11 +11,11 @@ import { useUser } from '@/features/auth/hooks/use-user'
 import { AxiosError } from 'axios'
 
 const passwordSchema = z.object({
-  current_password: z.string().min(6),
-  new_password: z.string().min(6) .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, {
+  current_password: z.string().min(6, {message: "Le mot de passe doit contenir au moins 6 caractères"}),
+  new_password: z.string().min(6, {message: "Le mot de passe doit contenir au moins 6 caractères"}) .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, {
     message: "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial"
   }),
-  confirm_password: z.string().min(6)
+  confirm_password: z.string().min(6, {message: "Le mot de passe doit contenir au moins 6 caractères"})
 }).refine((data) => data.new_password === data.confirm_password, {
   message: "Les mots de passe ne correspondent pas",
   path: ["confirm_password"]
@@ -55,6 +55,7 @@ export function PasswordForm() {
       <div className="space-y-2">
         <Label htmlFor="current_password">Mot de passe actuel</Label>
         <Input type="password" {...form.register('current_password')} />
+        <p className="text-sm text-red-500">{form.formState.errors.current_password?.message}</p>
         {mutation.error && <p className="text-sm text-red-500">{(mutation.error as AxiosError<ApiErrorResponse>)?.response?.data?.errors?.current_password}</p>}
       </div>
       <div className="space-y-2"> 
