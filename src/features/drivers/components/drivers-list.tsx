@@ -33,8 +33,8 @@ export function DriversList() {
   }, [search])
 
   const { data: paginatedDrivers, isLoading } = useQuery({
-    queryKey: ['drivers', currentPage, search],
-    queryFn: () => driverService.getAll(currentPage, search),
+    queryKey: ['drivers', search],
+    queryFn: () => driverService.getAll(search),
     placeholderData: keepPreviousData
   })
 

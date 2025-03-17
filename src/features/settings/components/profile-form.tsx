@@ -10,10 +10,19 @@ import { api } from '@/lib/api'
 import { toast } from 'sonner'
 
 const profileSchema = z.object({
-  first_name: z.string().min(4, {message: "Le prénom doit contenir au moins 4 caractères"} ),
-  last_name: z.string().min(4, {message: "Le nom doit contenir au moins 4 caractères"}),
+  first_name: z.string()
+              .min(4, {message: "Le prénom doit contenir au moins 4 caractères"} )
+              .max(20, {message: "Le prénom doit contenir au plus 20 caractères"}),
+
+  last_name: z.string()
+              .min(4, {message: "Le nom doit contenir au moins 4 caractères"})
+              .max(20, {message: "Le nom doit contenir au plus 20 caractères"}),
+
   email: z.string().email({message: "L'email est invalide"}),
-  phone_number: z.string().min(10, {message: "Le numéro de téléphone doit contenir au moins 10 chiffres"})
+  phone_number: z.string()
+              .min(10, {message: "Le numéro de téléphone doit contenir au moins 10 chiffres"})
+              .max(10, {message: "Le numéro de téléphone doit contenir au plus 10 chiffres"})
+              .regex(/^\d+$/, {message: "Le numéro de téléphone ne doit contenir que des chiffres"})
 })
 
 export function ProfileForm() {

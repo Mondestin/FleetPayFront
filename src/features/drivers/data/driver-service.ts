@@ -2,9 +2,8 @@ import { type Driver, type PaginatedDrivers } from './schema'
 import { api } from '@/lib/api'
 
 export const driverService = {
-  getAll: async (page: number = 1, search?: string): Promise<PaginatedDrivers> => {
+  getAll: async (search?: string): Promise<PaginatedDrivers> => {
     const params = new URLSearchParams()
-    params.append('page', page.toString())
     if (search) params.append('search', search)
     
     const response = await api.get<PaginatedDrivers>(`/api/drivers?${params.toString()}`)

@@ -32,9 +32,6 @@ const AuthenticatedReportsLazyImport = createFileRoute(
 const AuthenticatedPaymentReportsLazyImport = createFileRoute(
   '/_authenticated/payment-reports',
 )()
-const AuthenticatedInvoicesLazyImport = createFileRoute(
-  '/_authenticated/invoices',
-)()
 const AuthenticatedDriversLazyImport = createFileRoute(
   '/_authenticated/drivers',
 )()
@@ -91,14 +88,6 @@ const AuthenticatedPaymentReportsLazyRoute =
   } as any).lazy(() =>
     import('./routes/_authenticated/payment-reports.lazy').then((d) => d.Route),
   )
-
-const AuthenticatedInvoicesLazyRoute = AuthenticatedInvoicesLazyImport.update({
-  id: '/invoices',
-  path: '/invoices',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any).lazy(() =>
-  import('./routes/_authenticated/invoices.lazy').then((d) => d.Route),
-)
 
 const AuthenticatedDriversLazyRoute = AuthenticatedDriversLazyImport.update({
   id: '/drivers',
@@ -303,13 +292,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDriversLazyImport
       parentRoute: typeof AuthenticatedRouteImport
     }
-    '/_authenticated/invoices': {
-      id: '/_authenticated/invoices'
-      path: '/invoices'
-      fullPath: '/invoices'
-      preLoaderRoute: typeof AuthenticatedInvoicesLazyImport
-      parentRoute: typeof AuthenticatedRouteImport
-    }
     '/_authenticated/payment-reports': {
       id: '/_authenticated/payment-reports'
       path: '/payment-reports'
@@ -361,7 +343,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedDriversLazyRoute: typeof AuthenticatedDriversLazyRoute
-  AuthenticatedInvoicesLazyRoute: typeof AuthenticatedInvoicesLazyRoute
   AuthenticatedPaymentReportsLazyRoute: typeof AuthenticatedPaymentReportsLazyRoute
   AuthenticatedReportsLazyRoute: typeof AuthenticatedReportsLazyRoute
   AuthenticatedSubscriptionsLazyRoute: typeof AuthenticatedSubscriptionsLazyRoute
@@ -373,7 +354,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedDriversLazyRoute: AuthenticatedDriversLazyRoute,
-  AuthenticatedInvoicesLazyRoute: AuthenticatedInvoicesLazyRoute,
   AuthenticatedPaymentReportsLazyRoute: AuthenticatedPaymentReportsLazyRoute,
   AuthenticatedReportsLazyRoute: AuthenticatedReportsLazyRoute,
   AuthenticatedSubscriptionsLazyRoute: AuthenticatedSubscriptionsLazyRoute,
@@ -397,7 +377,6 @@ export interface FileRoutesByFullPath {
   '/404': typeof errors404LazyRoute
   '/503': typeof errors503LazyRoute
   '/drivers': typeof AuthenticatedDriversLazyRoute
-  '/invoices': typeof AuthenticatedInvoicesLazyRoute
   '/payment-reports': typeof AuthenticatedPaymentReportsLazyRoute
   '/reports': typeof AuthenticatedReportsLazyRoute
   '/subscriptions': typeof AuthenticatedSubscriptionsLazyRoute
@@ -419,7 +398,6 @@ export interface FileRoutesByTo {
   '/404': typeof errors404LazyRoute
   '/503': typeof errors503LazyRoute
   '/drivers': typeof AuthenticatedDriversLazyRoute
-  '/invoices': typeof AuthenticatedInvoicesLazyRoute
   '/payment-reports': typeof AuthenticatedPaymentReportsLazyRoute
   '/reports': typeof AuthenticatedReportsLazyRoute
   '/subscriptions': typeof AuthenticatedSubscriptionsLazyRoute
@@ -443,7 +421,6 @@ export interface FileRoutesById {
   '/(errors)/500': typeof errors500LazyRoute
   '/(errors)/503': typeof errors503LazyRoute
   '/_authenticated/drivers': typeof AuthenticatedDriversLazyRoute
-  '/_authenticated/invoices': typeof AuthenticatedInvoicesLazyRoute
   '/_authenticated/payment-reports': typeof AuthenticatedPaymentReportsLazyRoute
   '/_authenticated/reports': typeof AuthenticatedReportsLazyRoute
   '/_authenticated/subscriptions': typeof AuthenticatedSubscriptionsLazyRoute
@@ -467,7 +444,6 @@ export interface FileRouteTypes {
     | '/404'
     | '/503'
     | '/drivers'
-    | '/invoices'
     | '/payment-reports'
     | '/reports'
     | '/subscriptions'
@@ -488,7 +464,6 @@ export interface FileRouteTypes {
     | '/404'
     | '/503'
     | '/drivers'
-    | '/invoices'
     | '/payment-reports'
     | '/reports'
     | '/subscriptions'
@@ -510,7 +485,6 @@ export interface FileRouteTypes {
     | '/(errors)/500'
     | '/(errors)/503'
     | '/_authenticated/drivers'
-    | '/_authenticated/invoices'
     | '/_authenticated/payment-reports'
     | '/_authenticated/reports'
     | '/_authenticated/subscriptions'
@@ -577,7 +551,6 @@ export const routeTree = rootRoute
         "/_authenticated/dashboard",
         "/_authenticated/settings",
         "/_authenticated/drivers",
-        "/_authenticated/invoices",
         "/_authenticated/payment-reports",
         "/_authenticated/reports",
         "/_authenticated/subscriptions",
@@ -622,10 +595,6 @@ export const routeTree = rootRoute
     },
     "/_authenticated/drivers": {
       "filePath": "_authenticated/drivers.lazy.tsx",
-      "parent": "/_authenticated"
-    },
-    "/_authenticated/invoices": {
-      "filePath": "_authenticated/invoices.lazy.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/payment-reports": {
