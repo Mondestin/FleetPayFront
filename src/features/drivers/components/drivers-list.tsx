@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { keepPreviousData, useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { driverService } from '../data/driver-service'
 import { Input } from '@/components/ui/input'
@@ -17,20 +17,10 @@ import { toast } from 'sonner'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
 export function DriversList() {
-  const [currentPage, setCurrentPage] = useState(1)
   const [search, setSearch] = useState('')
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null)
-  
   const queryClient = useQueryClient()
-  
-  // Debounce search to avoid too many API calls
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setCurrentPage(1) // Reset to first page on search
-    }, 300)
-    return () => clearTimeout(timer)
-  }, [search])
 
   const { data: paginatedDrivers, isLoading } = useQuery({
     queryKey: ['drivers', search],
