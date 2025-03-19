@@ -37,7 +37,8 @@ interface DriverData {
   'Prénom du chauffeur': string
   'Nom du chauffeur': string
   'Revenus totaux': string,
-  'Versements': string
+  'Versements': string,
+  'Remboursements et notes de frais': string
 }
 
 interface BoltDriverData {
@@ -158,7 +159,7 @@ export function ImportForm({ uploadStatus }: { uploadStatus: UploadStatus[] }) {
       uberId: row['UUID du chauffeur'],
       firstName: row['Prénom du chauffeur'],
       lastName: row['Nom du chauffeur'],
-      totalRevenue: (Number(row['Revenus totaux']) || 0) - ( - Number(row['Versements'] ) || 0),
+      totalRevenue: ((Number(row['Revenus totaux']) || 0) + (Number(row['Remboursements et notes de frais']) || 0)) - ( - Number(row['Versements'] ) || 0),
       phoneNumber: '',
       email: '',
       fullName: row['Prénom du chauffeur'] + ' ' + row['Nom du chauffeur'],
