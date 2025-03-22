@@ -14,6 +14,8 @@ import { IconUpload } from '@tabler/icons-react'
 
 const companySchema = z.object({
   name: z.string().min(2),
+  address: z.string().min(2),
+  phone: z.string().min(2),
   logo: z.instanceof(FileList).optional(),
 })
 
@@ -24,13 +26,15 @@ export function CompanyProfileForm() {
   const { user } = useUser()
   const { data: company } = useQuery({
     queryKey: ['company'],
-    queryFn: () => api.get('/api/company').then(res => res.data)
+    queryFn: () => api.get(`/api/companies/${user?.id}`).then(res => res.data)
   })
 
   const form = useForm<CompanyFormValues>({
     resolver: zodResolver(companySchema),
     defaultValues: {
       name: company?.name || '',
+      address: company?.address || '',
+      phone: company?.phone || '',
     }
   })
 
@@ -43,7 +47,7 @@ export function CompanyProfileForm() {
   }
 
   const mutation = useMutation({
-    mutationFn: (data: FormData) => api.put('/api/company', data),
+    mutationFn: (data: FormData) => api.put(`/api/companies/${user?.id}`, data),
     onSuccess: () => {
       toast.success('Profil entreprise mis à jour avec succès')
     }
@@ -65,29 +69,15 @@ export function CompanyProfileForm() {
           <Label htmlFor="name">Nom de l'entreprise</Label>
           <Input {...form.register('name')} />
         </div>
-        
+
         <div className="space-y-2">
-          <Label htmlFor="logo">Logo</Label>
-          <div className="flex items-center gap-4">
-            <Input 
-              type="file" 
-              accept="image/*" 
-              {...form.register('logo', {
-                onChange: handleLogoChange
-              })} 
-              className="hidden" 
-              id="logo"
-            />
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={() => document.getElementById('logo')?.click()}
-              className="w-full"
-            >
-              <IconUpload className="mr-2 h-4 w-4" />
-              Choisir un fichier
-            </Button>
-          </div>
+          <Label htmlFor="address">Adresse</Label>
+          <Input {...form.register('address')} />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="phone">Téléphone</Label>
+          <Input {...form.register('phone')} />
         </div>
 
         <div className="space-y-2">
@@ -112,6 +102,7 @@ export function CompanyProfileForm() {
       </form>
 
       <div className="flex flex-col items-center gap-4">
+        <Label htmlFor="logo">Logo</Label>
         <div className="rounded-lg border bg-card text-card-foreground shadow-sm w-full aspect-square flex items-center justify-center overflow-hidden">
           {(previewUrl || company?.logo) ? (
             <img 
@@ -124,6 +115,29 @@ export function CompanyProfileForm() {
               Aucun logo
             </div>
           )}
+        </div>
+        
+        <div className="space-y-2">
+          <div className="flex items-center gap-4">
+            <Input 
+              type="file" 
+              accept="image/*" 
+              {...form.register('logo', {
+                onChange: handleLogoChange
+              })} 
+              className="hidden" 
+              id="logo"
+            />
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => document.getElementById('logo')?.click()}
+              className="w-full"
+            >
+              <IconUpload className="mr-2 h-4 w-4" />
+              Choisir un fichier
+            </Button>
+          </div>
         </div>
         <p className="text-sm text-muted-foreground text-center">
           Format recommandé: PNG, JPG
