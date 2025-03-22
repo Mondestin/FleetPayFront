@@ -8,28 +8,16 @@ import { ThemeSwitch } from '@/components/theme-switch'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { IconPlus, IconSearch, IconEdit, IconTrash } from '@tabler/icons-react'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination"
 import { toast } from 'sonner'
 import { UserDialog } from './components/user-dialog'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { type User } from './types'
 import { StatusBadge } from '@/components/ui/status-badge'
-
+import { PaginatedDataTable } from '@/features/shared/components/PaginatedDataTable'
+import { type Column } from '@/features/shared/components/DataTable'
+import { Spinner } from '@/components/ui/spinner'
+import { format } from 'date-fns'
+import { fr } from 'date-fns/locale'
 
 export default function Users() {
   const queryClient = useQueryClient()
@@ -75,6 +63,58 @@ export default function Users() {
     setDeleteDialogOpen(true)
   }
 
+  const columns: Column<User>[] = [
+    {
+      header: 'Nom',
+      accessorKey: 'first_name',
+      cell: (row: User) => `${row.first_name} ${row.last_name}`
+    },
+    {
+      header: 'Email',
+      accessorKey: 'email'
+    },
+    {
+      header: 'Téléphone',
+      accessorKey: 'phone_number',
+      cell: (row: User) => row.phone_number ? row.phone_number : '-'
+    },
+    {
+      header: 'Rôle',
+      accessorKey: 'role',
+      cell: (row: User) => <StatusBadge status={row.role} />
+    },
+    {
+      header: 'Statut',
+      accessorKey: 'status',
+      cell: (row: User) => <StatusBadge status={row.status} />
+    },
+    {
+      header: "Date d'inscription",
+      accessorKey: 'created_at',
+      cell: (row: User) => format(new Date(row.created_at), 'dd MMM yyyy', { locale: fr })
+    }
+  ]
+
+  const actions = (row: User) => (
+    <div className="flex items-center gap-2">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => handleEdit(row)}
+      >
+        <IconEdit className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        className="text-red-500 hover:text-red-600 hover:bg-red-50"
+        onClick={() => handleDelete(row)}
+      >
+        <IconTrash className="h-4 w-4" />
+      </Button>
+    </div>
+  )
+
   return (
     <>
       <Header fixed>
@@ -92,123 +132,42 @@ export default function Users() {
           </p>
         </div>
 
-        <div className='mb-4 flex items-center justify-between gap-4'>
-          <div className='relative max-w-sm flex-1'>
-            <IconSearch className='absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground' />
-            <Input
-              placeholder='Rechercher un utilisateur...'
-              className='pl-8'
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+        <div className='space-y-4 p-4 rounded-lg border shadow-sm'>
+          <div className='flex items-center gap-4'>
+            <div className='relative max-w-sm flex-1'>
+              <IconSearch className='absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground' />
+              <Input
+                placeholder='Rechercher un utilisateur...'
+                className='pl-8'
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+             <div className='flex justify-end ml-auto'> 
+              <Button 
+                className="bg-[#01631b] hover:bg-[#01631b]/90"
+                onClick={() => {
+                  setSelectedUser(undefined)
+                  setDialogOpen(true)
+                }}>
+                <IconPlus className="mr-2 h-4 w-4" />
+                Ajouter un utilisateur
+                </Button>
+            </div>
           </div>
-          <Button 
-            className="bg-[#01631b] hover:bg-[#01631b]/90"
-            onClick={() => {
-              setSelectedUser(undefined)
-              setDialogOpen(true)
-            }}>
-            <IconPlus className="mr-2 h-4 w-4" />
-            Ajouter un utilisateur
-          </Button>
-        </div>
 
-        <div className='rounded-lg border shadow-sm'>
           {isLoading ? (
-            <div className="text-center py-8">Chargement...</div>
+            <div className="flex justify-center items-center py-8">
+              <Spinner className="h-8 w-8 text-primary" />
+            </div>
           ) : paginatedUsers ? (
-            <>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Nom</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Rôle</TableHead>
-                    <TableHead>Statut</TableHead>
-                    <TableHead className="w-[100px]">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {paginatedUsers.data.map((user) => (
-                    <TableRow key={user.id}>
-                      <TableCell className="font-medium">
-                        {user.first_name} {user.last_name}
-                      </TableCell>
-                      <TableCell>{user.email}</TableCell>
-                      <TableCell>
-                        <StatusBadge status={user.role} />
-                      </TableCell>
-                      <TableCell>
-                        <StatusBadge status={user.status} />
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleEdit(user)}
-                          >
-                            <IconEdit size={16} />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-red-500 hover:text-red-600 hover:bg-red-50"
-                            onClick={() => handleDelete(user)}
-                          >
-                            <IconTrash size={16} />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-
-              {paginatedUsers.total > 0 ? (
-                <div className="p-4 border-t">
-                  <Pagination>
-                    <PaginationContent>
-                      <PaginationItem>
-                        <PaginationPrevious 
-                          onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                          disabled={!paginatedUsers.prev_page_url}
-                        />
-                      </PaginationItem>
-                      
-                      {paginatedUsers.links.map((link, i) => (
-                        <PaginationItem key={i}>
-                          {link.url && (
-                            <PaginationLink
-                              onClick={() => {
-                                if (link.url) {
-                                  const page = new URL(link.url).searchParams.get('page') || '1'
-                                  setCurrentPage(Number(page))
-                                }
-                              }}
-                              isActive={link.active}
-                            >
-                              {link.label.replace('&laquo; ', '').replace(' &raquo;', '')}
-                            </PaginationLink>
-                          )}
-                        </PaginationItem>
-                      ))}
-
-                      <PaginationItem>
-                        <PaginationNext
-                          onClick={() => setCurrentPage(prev => prev + 1)}
-                          disabled={!paginatedUsers.next_page_url}
-                        />
-                      </PaginationItem>
-                    </PaginationContent>
-                  </Pagination>
-                </div>
-              ) : (
-                <div className="text-center py-4 text-muted-foreground">
-                  Aucun utilisateur trouvé
-                </div>
-              )}
-            </>
+            <PaginatedDataTable
+              data={paginatedUsers.data}
+              columns={columns}
+              actions={actions}
+              searchable={true}
+              searchKeys={['first_name', 'last_name', 'email']}
+            />
           ) : (
             <div className="text-center py-4 text-red-500">
               Erreur lors du chargement des données

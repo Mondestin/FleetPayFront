@@ -11,9 +11,12 @@ import { ImportForm } from './components/import-form'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { IconInfoCircle, IconAlertCircle } from '@tabler/icons-react'
 import { importStatusService } from './data/import-status-service'
+import { useState } from 'react'
+
 export default function FilesManager() {
   const queryClient = useQueryClient()
-  const weekStart = startOfWeek(new Date(), { locale: fr })
+  const [selectedWeek, setSelectedWeek] = useState(new Date())
+  const weekStart = startOfWeek(selectedWeek, { locale: fr })
   
   const { data: importStatus } = useQuery({
     queryKey: ['import-status', format(weekStart, 'yyyy-MM-dd')],
@@ -29,6 +32,10 @@ export default function FilesManager() {
   const handleDeleteUpload = async (platform: string) => {
     await api.delete(`/api/reports/platforms/import/${platform}/${format(weekStart, 'yyyy-MM-dd')}`)
     queryClient.invalidateQueries({ queryKey: ['import-status'] })
+  }
+
+  const handleWeekChange = (date: Date) => {
+    setSelectedWeek(date)
   }
 
   return (
@@ -80,13 +87,16 @@ export default function FilesManager() {
         </div>
         <div className='space-y-8'>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
-          <UploadStatusTable 
+            <UploadStatusTable 
               uploadStatus={uploadStatus} 
               onDeleteUpload={handleDeleteUpload}
-              weekStart={new Date()}
+              weekStart={selectedWeek}
             />
-            <ImportForm uploadStatus={uploadStatus} />
-           
+            <ImportForm 
+              uploadStatus={uploadStatus} 
+              selectedWeek={selectedWeek}
+              onWeekChange={handleWeekChange}
+            />
           </div>
         </div>
       </Main>

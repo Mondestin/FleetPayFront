@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -86,7 +86,13 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>
 
-export function ImportForm({ uploadStatus }: { uploadStatus: UploadStatus[] }) {
+interface Props {
+  uploadStatus: UploadStatus[]
+  selectedWeek: Date
+  onWeekChange: (date: Date) => void
+}
+
+export function ImportForm({ uploadStatus, selectedWeek, onWeekChange }: Props) {
   const [csvData, setCsvData] = useState<DriverData[]>([])
   const [boltCsvData, setBoltCsvData] = useState<BoltDriverData[]>([])
   const [pdfFile, setPdfFile] = useState<File | null>(null)
@@ -102,9 +108,14 @@ export function ImportForm({ uploadStatus }: { uploadStatus: UploadStatus[] }) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       platform: '',
-      weekDate: new Date(),
+      weekDate: selectedWeek,
     },
   })
+
+  // Update form when selectedWeek changes
+  useEffect(() => {
+    form.setValue('weekDate', selectedWeek)
+  }, [selectedWeek, form])
 
   const selectedPlatform = form.watch('platform')
 
@@ -281,7 +292,13 @@ export function ImportForm({ uploadStatus }: { uploadStatus: UploadStatus[] }) {
                 <FormItem>
                   <FormLabel>Semaine</FormLabel>
                   <FormControl>
-                    <WeekPicker date={field.value} onDateChange={field.onChange} />
+                    <WeekPicker 
+                      date={field.value} 
+                      onDateChange={(date) => {
+                        field.onChange(date)
+                        onWeekChange(date)
+                      }} 
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

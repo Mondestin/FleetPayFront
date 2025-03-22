@@ -1,5 +1,3 @@
-import * as React from 'react'
-import { ChevronsUpDown } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -8,20 +6,17 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-
 } from '@/components/ui/sidebar'
+import { useUser } from '@/features/auth/hooks/use-user'
+import { useQuery } from '@tanstack/react-query'
+import { api } from '@/lib/api'
 
-interface TeamSwitcherProps {
-  teams: {
-    name: string
-    logo: React.ElementType | string
-    plan: string
-  }[]
-}
-
-export function TeamSwitcher({ teams }: TeamSwitcherProps) {
-
-  const [activeTeam] = React.useState(teams[0])
+export function TeamSwitcher() {
+  const { user } = useUser()
+  const { data: company } = useQuery({
+    queryKey: ['company', user?.id],
+    queryFn: () => api.get(`/api/companies/${user?.id}`).then(res => res.data)
+  })
 
   return (
     <SidebarMenu>
@@ -33,22 +28,22 @@ export function TeamSwitcher({ teams }: TeamSwitcherProps) {
               className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
             >
               <div className='flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground'>
-                {typeof activeTeam.logo === 'string' ? (
-                  <img src={activeTeam.logo} alt={activeTeam.name} className='size-8' />
+                {company?.logo ? (
+                  <img src={company.logo} alt={company.name} className='size-8 object-contain' />
                 ) : (
-                  <activeTeam.logo className='size-8' />
+                  <div className='size-8 flex items-center justify-center bg-primary text-primary-foreground rounded-lg'>
+                    {company?.name?.[0] || 'C'}
+                  </div>
                 )}
               </div>
               <div className='grid flex-1 text-left text-sm leading-tight'>
                 <span className='truncate font-semibold'>
-                  {activeTeam.name}
+                  {company?.name || 'Chargement...'}
                 </span>
-                <span className='truncate text-xs'>{activeTeam.plan}</span>
+                <span className='truncate text-xs'>{user?.email}</span>
               </div>
-              <ChevronsUpDown className='ml-auto' />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
-         
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
