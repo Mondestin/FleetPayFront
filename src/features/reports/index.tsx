@@ -9,7 +9,7 @@ import { startOfWeek, format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { ImportForm } from './components/import-form'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { IconInfoCircle } from '@tabler/icons-react'
+import { IconInfoCircle, IconAlertCircle } from '@tabler/icons-react'
 
 interface ImportStatus {
   platform: 'uber' | 'bolt' | 'heetch'
@@ -57,20 +57,34 @@ export default function FilesManager() {
               Consultez les rapports de paiement
             </p>
           </div>
-          <div className='row mt-4'>
-          
- 
-          <Alert className='border-l-4 border-[#01631b]'>
-            <IconInfoCircle className="h-4 w-4" />
-            <AlertDescription>
-              Pour éviter les incohérences de données, veuillez importer les fichiers dans cet ordre :
-              <ol className="mt-2 list-decimal">
-                <li> Bolt (CSV) </li>
-                <li> Uber (CSV) </li>
-                <li> Heetch (PDF) </li>
-              </ol>
-            </AlertDescription>
-          </Alert>
+          <div className='flex mt-4'>
+            <div className='w-1/2 mr-4'>
+                <Alert className='border-l-4 border-[#01631b]'>
+                  <IconInfoCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    Pour éviter les incohérences de données, veuillez importer les fichiers dans cet ordre :
+                    <ol className="mt-2 list-decimal">
+                      <li> Bolt (CSV) </li>
+                      <li> Uber (CSV) </li>
+                      <li> Heetch (PDF) </li>
+                    </ol>
+                  </AlertDescription>
+                </Alert>
+            </div>
+              <div className='w-1/2 ml-4'>
+                <Alert className='border-l-4 border-[#ffa500]'>
+                  <IconAlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                     <span className='font-bold'>Attention :</span>
+                     <br />   
+                     La semaine commence le <span className='font-bold'>lundi</span> et se termine le <span className='font-bold'>dimanche</span>.
+                     <br />
+                     <br />
+                     <span className='font-bold'>Afin d'éviter les erreurs de comptabilité, veuillez exporter les données pour Uber conformément à cette consigne.</span>
+                  </AlertDescription>
+                </Alert>
+            
+            </div>
           </div>
         </div>
         <div className='space-y-8'>
