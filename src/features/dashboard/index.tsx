@@ -53,8 +53,20 @@ export default function Dashboard() {
   })
 
   // Calculate weekly revenue and commission
-  const weeklyRevenue = currentWeekPayments?.data.reduce((acc: number, payment: PaymentReport) => acc + Number(payment.total_earnings), 0) || 0
-  const lastWeekRevenue = lastWeekPayments?.data.reduce((acc: number, payment: PaymentReport) => acc + Number(payment.total_earnings), 0) || 0
+  const weeklyRevenue = currentWeekPayments?.data.reduce((acc, p) => {
+    const boltEarnings = Number(p.bolt_earnings)
+    const uberEarnings = Number(p.uber_earnings)
+    const heetchEarnings = Number(p.heetch_earnings)
+    return acc + boltEarnings + (uberEarnings >= 0 ? uberEarnings : 0) + heetchEarnings
+  }, 0) || 0
+
+  const lastWeekRevenue = lastWeekPayments?.data.reduce((acc, p) => {
+    const boltEarnings = Number(p.bolt_earnings)
+    const uberEarnings = Number(p.uber_earnings)
+    const heetchEarnings = Number(p.heetch_earnings)
+    return acc + boltEarnings + (uberEarnings >= 0 ? uberEarnings : 0) + heetchEarnings
+  }, 0) || 0
+
   const weeklyRevenueChange = lastWeekRevenue ? ((weeklyRevenue - lastWeekRevenue) / lastWeekRevenue) * 100 : 0
 
   // Calculate total commission and number of payments
