@@ -1,7 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
 import { driverService } from '@/features/drivers/data/driver-service'
-import { startOfWeek, endOfWeek, format } from 'date-fns'
+import { startOfWeek, endOfWeek, format, subWeeks } from 'date-fns'
 import { fr } from 'date-fns/locale'
+import { importStatusService } from '@/features/reports/data/import-status-service'
+import { paymentReportService } from '@/features/payment-reports/data/payment-report-service'
 import {
   Card,
   CardContent,
@@ -16,17 +18,54 @@ import { ThemeSwitch } from '@/components/theme-switch'
 import { IconUsers, IconCash, IconTrendingUp, IconCalendar } from '@tabler/icons-react'
 import { WeeklyComparisonChart } from './components/weekly-comparison-chart'
 import { MonthlyRevenueChart } from './components/monthly-revenue-chart'
+import type { PaymentReport } from '@/features/payment-reports/data/schema'
+
 
 export default function Dashboard() {
   const today = new Date()
-  const weekStart = startOfWeek(today, { locale: fr })
+  const weekStart = format(startOfWeek(today, { locale: fr }), 'yyyy-MM-dd')
   const weekEnd = endOfWeek(today, { locale: fr })
+  const lastWeekStart = startOfWeek(subWeeks(today, 1), { locale: fr })
+ 
 
+  // Get drivers
   const { data: drivers } = useQuery({
     queryKey: ['drivers'],
     queryFn: () => driverService.getAll(),
   })
 
+  // Get current week payments
+  const { data: currentWeekPayments } = useQuery({
+    queryKey: ['payment-report', format(weekStart, 'yyyy-MM-dd')],
+    queryFn: () => paymentReportService.getAll(1, weekStart, '') // Get payments for current week
+  })
+
+ 
+  const { data: lastWeekPayments } = useQuery({
+    queryKey: ['payment-report', format(lastWeekStart, 'yyyy-MM-dd')],
+    queryFn: () => paymentReportService.getAll(1, format(lastWeekStart, 'yyyy-MM-dd'), '')
+  })
+
+  // Get import status
+  const { data: importStatus } = useQuery({
+    queryKey: ['import-status', format(weekStart, 'yyyy-MM-dd')],
+    queryFn: () => importStatusService.getStatus(new Date(weekStart))
+  })
+
+  // Calculate weekly revenue and commission
+  const weeklyRevenue = currentWeekPayments?.data.reduce((acc: number, payment: PaymentReport) => acc + Number(payment.total_earnings), 0) || 0
+  const lastWeekRevenue = lastWeekPayments?.data.reduce((acc: number, payment: PaymentReport) => acc + Number(payment.total_earnings), 0) || 0
+  const weeklyRevenueChange = lastWeekRevenue ? ((weeklyRevenue - lastWeekRevenue) / lastWeekRevenue) * 100 : 0
+
+  // Calculate total commission and number of payments
+  const totalCommission = currentWeekPayments?.data.reduce((acc: number, payment: PaymentReport) => acc + Number(payment.commission_amount), 0) || 0
+  const totalPayments = currentWeekPayments?.data.length || 0
+
+  // Calculate pending and successful imports
+  const pendingImports = importStatus?.filter(status => status.uploaded === false).length || 0
+  const successImports = importStatus?.filter(status => status.uploaded === true).length || 0
+
+ 
   return (
     <>
       {/* ===== Top Heading ===== */}
@@ -68,11 +107,10 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <div className='text-2xl font-bold'>
-                  €{0 || '0.00'}
+                  €{weeklyRevenue.toFixed(2)}
                 </div>
                 <p className='text-xs text-muted-foreground'>
-                  {0 || 0}
-                  {0}% vs semaine précédente
+                  {weeklyRevenueChange.toFixed(1)}% vs semaine précédente
                 </p>
               </CardContent>
             </Card>
@@ -84,10 +122,10 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <div className='text-2xl font-bold'>
-                  €{0 || '0.00'}
+                  €{totalCommission.toFixed(2)}
                 </div>
                 <p className='text-xs text-muted-foreground'>
-                  {0 || 0} paiements traités
+                  {totalPayments} paiements traités
                 </p>
               </CardContent>
             </Card>
@@ -98,9 +136,9 @@ export default function Dashboard() {
                 <IconCalendar className='h-8 w-8 text-muted-foreground' />
               </CardHeader>
               <CardContent>
-                <div className='text-2xl font-bold'>{0 || 0}</div>
+                <div className='text-2xl font-bold'>{pendingImports}</div>
                 <p className='text-xs text-muted-foreground'>
-                  {0} importations cette semaine
+                  {successImports} importations validées
                 </p>
               </CardContent>
             </Card>

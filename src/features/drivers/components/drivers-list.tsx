@@ -131,17 +131,6 @@ export function DriversList() {
   return (
     <>
       <div className="space-y-4 p-4">
-        <div className="flex justify-between items-center mb-4">
-          <div className="space-y-1">
-            <h2 className="text-2xl font-semibold tracking-tight">
-              Liste des chauffeurs
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              {paginatedDrivers?.total || 0} chauffeurs enregistrés
-            </p>
-          </div>
-      
-        </div>
         {/* Search */}
         <div className="flex items-center gap-2">
           <div className="relative max-w-sm flex-1">

@@ -10,23 +10,14 @@ import { fr } from 'date-fns/locale'
 import { ImportForm } from './components/import-form'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { IconInfoCircle, IconAlertCircle } from '@tabler/icons-react'
-
-interface ImportStatus {
-  platform: 'uber' | 'bolt' | 'heetch'
-  uploaded: boolean
-  weekStartDate: string
-}
-
+import { importStatusService } from './data/import-status-service'
 export default function FilesManager() {
   const queryClient = useQueryClient()
   const weekStart = startOfWeek(new Date(), { locale: fr })
   
   const { data: importStatus } = useQuery({
     queryKey: ['import-status', format(weekStart, 'yyyy-MM-dd')],
-    queryFn: async () => {
-      const response = await api.get(`/api/reports/platforms/import/status/${format(weekStart, 'yyyy-MM-dd')}`)
-      return response.data.data as ImportStatus[]
-    }
+    queryFn: () => importStatusService.getStatus(weekStart)
   })
 
   const uploadStatus = importStatus?.map(status => ({

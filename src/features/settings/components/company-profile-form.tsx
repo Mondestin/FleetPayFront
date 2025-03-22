@@ -16,8 +16,12 @@ import { Spinner } from '@/components/ui/spinner'
 
 
 const companySchema = z.object({
-  name: z.string().min(5).max(20),
-  address: z.string().min(10).max(20),
+  name: z.string()
+    .min(5, {message: "Le nom de l'entreprise doit contenir au moins 5 caractères"})
+    .max(20, {message: "Le nom de l'entreprise doit contenir au plus 50 caractères"}),
+  address: z.string()
+    .min(10, {message: "L'adresse doit contenir au moins 10 caractères"})
+    .max(50, {message: "L'adresse doit contenir au plus 50 caractères"}),
   phone: z.string()
     .min(10, {message: "Le numéro de téléphone doit contenir au moins 10 chiffres"})
     .max(10, {message: "Le numéro de téléphone doit contenir au plus 10 chiffres"})

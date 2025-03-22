@@ -15,7 +15,7 @@ import { StatusBadge } from '@/components/ui/status-badge'
 import { utils, writeFile } from 'xlsx'
 import { format, startOfWeek } from 'date-fns'
 import { fr } from 'date-fns/locale'
-import { api } from '@/lib/api'
+
 import { PaginatedDataTable } from '@/features/shared/components/PaginatedDataTable'
 import { type PaymentReport } from '../data/schema'
 import { Badge } from '@/components/ui/badge'
@@ -28,7 +28,7 @@ export function PaymentReportsList() {
   const [search, setSearch] = useState('')
   const [selectedDate, setSelectedDate] = useState<Date>(new Date())
   const weekStart = format(startOfWeek(selectedDate, { locale: fr }), 'yyyy-MM-dd')
-  const [commission, setCommission] = useState(50)
+
 
   const { data: paginatedReports, isLoading } = useQuery({
     queryKey: ['payment-reports', currentPage, search, weekStart],
@@ -49,11 +49,6 @@ export function PaymentReportsList() {
     return () => clearTimeout(timer)
   }, [search])
 
-  useEffect(() => {
-    api.get('/api/settings/commission').then(response => {
-      setCommission(Number(response.data.value))
-    })
-  }, [])
 
   const handleStatusChange = async (id: string, newStatus: 'paid' | 'pending') => {
     try {
@@ -73,8 +68,8 @@ export function PaymentReportsList() {
       'Uber': Number(report.uber_earnings).toFixed(2),
       'Heetch': Number(report.heetch_earnings).toFixed(2),
       'Total revenus': report.total_earnings.toFixed(2),
-      'Commission': commission.toFixed(2),
-      'Montant dû': (report.total_earnings - commission).toFixed(2),
+      'Commission': Number(report.commission_amount).toFixed(2),
+      'Montant dû': (Number(report.total_earnings) - Number(report.commission_amount)).toFixed(2),
       'Statut': report.status === 'paid' ? 'Payé' : 'En attente'
     }))
     
@@ -125,10 +120,10 @@ export function PaymentReportsList() {
     {
       header: 'Commission',
       accessorKey: 'commission',
-      cell: () => 
+      cell: (row: PaymentReport) => 
         <div className="flex items-center gap-2">
           <Badge variant="destructive" className="gap-1">
-            <span>-€{commission.toFixed(2)}</span>
+            <span>-€{Number(row.commission_amount).toFixed(2)}</span>
           </Badge>
         </div>
     },
@@ -136,7 +131,7 @@ export function PaymentReportsList() {
       header: 'Montant dû',
       accessorKey: 'total_due',
       cell: (row: PaymentReport) => {
-        const amount = row.total_earnings - commission;
+        const amount = Number(row.total_earnings) - Number(row.commission_amount);
         const isNegative = amount < 0;
         
         return (
