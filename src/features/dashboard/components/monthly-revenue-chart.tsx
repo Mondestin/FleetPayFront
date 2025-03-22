@@ -1,58 +1,73 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useQuery } from '@tanstack/react-query'
+import { paymentReportService } from '@/features/payment-reports/data/payment-report-service'
+import { startOfWeek, format } from 'date-fns'
+import { fr } from 'date-fns/locale'
 
-const dummyData = [
-  { month: 'Jan', total: 7500.50, bolt: 2500.25, uber: 3200.75, heetch: 1800.50 },
-  { month: 'Fév', total: 8200.75, bolt: 2800.50, uber: 3500.25, heetch: 1900.00 },
-  { month: 'Mar', total: 9100.25, bolt: 3100.75, uber: 3800.50, heetch: 2200.00 },
-  { month: 'Avr', total: 8800.50, bolt: 2900.25, uber: 3700.75, heetch: 2200.50 },
-  { month: 'Mai', total: 9500.75, bolt: 3200.50, uber: 4000.25, heetch: 2300.00 },
-  { month: 'Juin', total: 10200.25, bolt: 3500.75, uber: 4300.50, heetch: 2400.00 },
-]
+interface ChartData {
+  name: string
+  value: number
+}
+
+const COLORS = ['#008000', '#000000', '#FF385C']
 
 export function MonthlyRevenueChart() {
+  const today = new Date()
+  const weekStart = format(startOfWeek(today, { locale: fr }), 'yyyy-MM-dd')
+
+  const { data: currentMonthData } = useQuery({
+    queryKey: ['payment-report', weekStart],
+    queryFn: () => paymentReportService.getAll(1, weekStart, '')
+  })
+
+
+  const chartData: ChartData[] = [
+    {
+      name: 'Bolt',
+        value: currentMonthData?.data.reduce((acc, p) => acc + Number(p.bolt_earnings), 0) || 0
+    },
+    {
+      name: 'Uber',
+      value: currentMonthData?.data.reduce((acc, p) => {
+        const earnings = Number(p.uber_earnings)
+        return earnings >= 0 ? acc + earnings : acc
+      }, 0) || 0
+    },
+    {
+      name: 'Heetch',
+      value: currentMonthData?.data.reduce((acc, p) => acc + Number(p.heetch_earnings), 0) || 0
+    }
+  ]
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Revenus mensuels</CardTitle>
+        <CardTitle>Distribution des revenus</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={dummyData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
+            <PieChart>
+              <Pie
+                data={chartData}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                outerRadius={80}
+                fill="#8884d8"
+                dataKey="value"
+              >
+                {chartData.map((_entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
               <Tooltip 
                 formatter={(value) => `€${Number(value).toFixed(2)}`}
               />
               <Legend />
-              <Line 
-                type="monotone" 
-                name="Total" 
-                dataKey="total" 
-                stroke="#01631b" 
-                strokeWidth={2} 
-              />
-              <Line 
-                type="monotone" 
-                name="Bolt" 
-                dataKey="bolt" 
-                stroke="#00c3f7" 
-              />
-              <Line 
-                type="monotone" 
-                name="Uber" 
-                dataKey="uber" 
-                stroke="#000000" 
-              />
-              <Line 
-                type="monotone" 
-                name="Heetch" 
-                dataKey="heetch" 
-                stroke="#e502a4" 
-              />
-            </LineChart>
+            </PieChart>
           </ResponsiveContainer>
         </div>
       </CardContent>

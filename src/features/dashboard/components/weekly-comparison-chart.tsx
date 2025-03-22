@@ -27,6 +27,8 @@ export function WeeklyComparisonChart() {
     queryFn: () => paymentReportService.getAll(1, lastWeekStart, '')
   })
 
+  console.log(currentWeekData)
+
   const chartData: ChartData[] = [
     {
       name: 'Semaine courante',
