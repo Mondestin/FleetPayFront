@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -18,8 +18,8 @@ interface Props {
 }
 
 const PLANS = [
-  { id: '1', name: 'Basic', price: '99.99' },
-  { id: '2', name: 'Premium', price: '199.99' }
+  { id: '1', name: 'Basic', price: '199.99' },
+  { id: '2', name: 'Premium', price: '299.99' }
 ]
 
 export function SubscriptionDialog({ open, onOpenChange, subscription }: Props) {
@@ -48,7 +48,7 @@ export function SubscriptionDialog({ open, onOpenChange, subscription }: Props) 
 
   const { data: usersResponse } = useQuery({
     queryKey: ['users'],
-    queryFn: () => userService.getAll(1, ''),
+    queryFn: () => userService.getAll(''),
     select: (data) => data.data
   })
 
@@ -59,9 +59,9 @@ export function SubscriptionDialog({ open, onOpenChange, subscription }: Props) 
       toast.success('Abonnement créé avec succès')
       onOpenChange(false)
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast.error('Erreur lors de la création de l\'abonnement', {
-        description: error instanceof Error ? error.message : 'Une erreur est survenue'
+        description: error.response?.data?.error || 'Une erreur est survenue'
       })
     }
   })
@@ -123,6 +123,9 @@ export function SubscriptionDialog({ open, onOpenChange, subscription }: Props) 
           <DialogTitle>
             {subscription ? 'Modifier l\'abonnement' : 'Nouvel abonnement'}
           </DialogTitle>
+          <DialogDescription>
+            {subscription ? 'Modifiez les informations de l\'abonnement' : 'Remplissez les informations pour créer un nouvel abonnement'}
+          </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">

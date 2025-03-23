@@ -12,6 +12,11 @@ export const subscriptionService = {
     return response.data
   },
 
+  getById: async (id: string): Promise<Subscription> => {
+    const response = await api.get<Subscription>(`/api/subscriptions/${id}`)
+    return response.data
+  },
+
   create: async (data: Omit<Subscription, 'id' | 'created_at' | 'updated_at' | 'user'>) => {
     const response = await api.post<Subscription>('/api/subscriptions', data)
     return response.data
@@ -24,5 +29,10 @@ export const subscriptionService = {
 
   delete: async (id: string) => {
     await api.delete(`/api/subscriptions/${id}`)
+  },
+
+  getSubscriptionWithInvoices: async (id: string) => {
+    const response = await api.get<Subscription>(`/api/subscriptions/${id}/invoices`)
+    return response.data
   }
 } 

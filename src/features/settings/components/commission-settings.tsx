@@ -69,8 +69,12 @@ export function CommissionSettings() {
         <Label htmlFor="commission">Montant de la commission (€)</Label>
         <Input {...form.register('commission')} type="number" step="0.01" />
       </div>
-      <Button type="submit" className="bg-[#01631b] hover:bg-[#01631b]/90">
-        Mettre à jour
+      <Button 
+        type="submit" 
+        className="bg-[#01631b] hover:bg-[#01631b]/90"
+        disabled={mutation.isPending}
+      >
+        {mutation.isPending ? 'Mise à jour...' : 'Mettre à jour'}
       </Button>
     </form>
   )

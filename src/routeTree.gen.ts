@@ -32,6 +32,9 @@ const AuthenticatedReportsLazyImport = createFileRoute(
 const AuthenticatedPaymentReportsLazyImport = createFileRoute(
   '/_authenticated/payment-reports',
 )()
+const AuthenticatedInvoicesLazyImport = createFileRoute(
+  '/_authenticated/invoices',
+)()
 const AuthenticatedDriversLazyImport = createFileRoute(
   '/_authenticated/drivers',
 )()
@@ -46,8 +49,14 @@ const authForgotPasswordLazyImport = createFileRoute(
 const AuthenticatedUsersIndexLazyImport = createFileRoute(
   '/_authenticated/users/',
 )()
+const AuthenticatedInvoicesIndexLazyImport = createFileRoute(
+  '/_authenticated/invoices/',
+)()
 const AuthenticatedHelpCenterIndexLazyImport = createFileRoute(
   '/_authenticated/help-center/',
+)()
+const AuthenticatedSubscriptionIdLazyImport = createFileRoute(
+  '/_authenticated/subscription/$id',
 )()
 
 // Create/Update Routes
@@ -88,6 +97,14 @@ const AuthenticatedPaymentReportsLazyRoute =
   } as any).lazy(() =>
     import('./routes/_authenticated/payment-reports.lazy').then((d) => d.Route),
   )
+
+const AuthenticatedInvoicesLazyRoute = AuthenticatedInvoicesLazyImport.update({
+  id: '/invoices',
+  path: '/invoices',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any).lazy(() =>
+  import('./routes/_authenticated/invoices.lazy').then((d) => d.Route),
+)
 
 const AuthenticatedDriversLazyRoute = AuthenticatedDriversLazyImport.update({
   id: '/drivers',
@@ -186,6 +203,15 @@ const AuthenticatedUsersIndexLazyRoute =
     import('./routes/_authenticated/users/index.lazy').then((d) => d.Route),
   )
 
+const AuthenticatedInvoicesIndexLazyRoute =
+  AuthenticatedInvoicesIndexLazyImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedInvoicesLazyRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/invoices/index.lazy').then((d) => d.Route),
+  )
+
 const AuthenticatedHelpCenterIndexLazyRoute =
   AuthenticatedHelpCenterIndexLazyImport.update({
     id: '/help-center/',
@@ -193,6 +219,17 @@ const AuthenticatedHelpCenterIndexLazyRoute =
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any).lazy(() =>
     import('./routes/_authenticated/help-center/index.lazy').then(
+      (d) => d.Route,
+    ),
+  )
+
+const AuthenticatedSubscriptionIdLazyRoute =
+  AuthenticatedSubscriptionIdLazyImport.update({
+    id: '/subscription/$id',
+    path: '/subscription/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/subscription/$id.lazy').then(
       (d) => d.Route,
     ),
   )
@@ -292,6 +329,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDriversLazyImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/invoices': {
+      id: '/_authenticated/invoices'
+      path: '/invoices'
+      fullPath: '/invoices'
+      preLoaderRoute: typeof AuthenticatedInvoicesLazyImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/payment-reports': {
       id: '/_authenticated/payment-reports'
       path: '/payment-reports'
@@ -320,12 +364,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authIndexImport
       parentRoute: typeof rootRoute
     }
+    '/_authenticated/subscription/$id': {
+      id: '/_authenticated/subscription/$id'
+      path: '/subscription/$id'
+      fullPath: '/subscription/$id'
+      preLoaderRoute: typeof AuthenticatedSubscriptionIdLazyImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/help-center/': {
       id: '/_authenticated/help-center/'
       path: '/help-center'
       fullPath: '/help-center'
       preLoaderRoute: typeof AuthenticatedHelpCenterIndexLazyImport
       parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/invoices/': {
+      id: '/_authenticated/invoices/'
+      path: '/'
+      fullPath: '/invoices/'
+      preLoaderRoute: typeof AuthenticatedInvoicesIndexLazyImport
+      parentRoute: typeof AuthenticatedInvoicesLazyImport
     }
     '/_authenticated/users/': {
       id: '/_authenticated/users/'
@@ -339,13 +397,29 @@ declare module '@tanstack/react-router' {
 
 // Create and export the route tree
 
+interface AuthenticatedInvoicesLazyRouteChildren {
+  AuthenticatedInvoicesIndexLazyRoute: typeof AuthenticatedInvoicesIndexLazyRoute
+}
+
+const AuthenticatedInvoicesLazyRouteChildren: AuthenticatedInvoicesLazyRouteChildren =
+  {
+    AuthenticatedInvoicesIndexLazyRoute: AuthenticatedInvoicesIndexLazyRoute,
+  }
+
+const AuthenticatedInvoicesLazyRouteWithChildren =
+  AuthenticatedInvoicesLazyRoute._addFileChildren(
+    AuthenticatedInvoicesLazyRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedDriversLazyRoute: typeof AuthenticatedDriversLazyRoute
+  AuthenticatedInvoicesLazyRoute: typeof AuthenticatedInvoicesLazyRouteWithChildren
   AuthenticatedPaymentReportsLazyRoute: typeof AuthenticatedPaymentReportsLazyRoute
   AuthenticatedReportsLazyRoute: typeof AuthenticatedReportsLazyRoute
   AuthenticatedSubscriptionsLazyRoute: typeof AuthenticatedSubscriptionsLazyRoute
+  AuthenticatedSubscriptionIdLazyRoute: typeof AuthenticatedSubscriptionIdLazyRoute
   AuthenticatedHelpCenterIndexLazyRoute: typeof AuthenticatedHelpCenterIndexLazyRoute
   AuthenticatedUsersIndexLazyRoute: typeof AuthenticatedUsersIndexLazyRoute
 }
@@ -354,9 +428,11 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedDriversLazyRoute: AuthenticatedDriversLazyRoute,
+  AuthenticatedInvoicesLazyRoute: AuthenticatedInvoicesLazyRouteWithChildren,
   AuthenticatedPaymentReportsLazyRoute: AuthenticatedPaymentReportsLazyRoute,
   AuthenticatedReportsLazyRoute: AuthenticatedReportsLazyRoute,
   AuthenticatedSubscriptionsLazyRoute: AuthenticatedSubscriptionsLazyRoute,
+  AuthenticatedSubscriptionIdLazyRoute: AuthenticatedSubscriptionIdLazyRoute,
   AuthenticatedHelpCenterIndexLazyRoute: AuthenticatedHelpCenterIndexLazyRoute,
   AuthenticatedUsersIndexLazyRoute: AuthenticatedUsersIndexLazyRoute,
 }
@@ -377,11 +453,14 @@ export interface FileRoutesByFullPath {
   '/404': typeof errors404LazyRoute
   '/503': typeof errors503LazyRoute
   '/drivers': typeof AuthenticatedDriversLazyRoute
+  '/invoices': typeof AuthenticatedInvoicesLazyRouteWithChildren
   '/payment-reports': typeof AuthenticatedPaymentReportsLazyRoute
   '/reports': typeof AuthenticatedReportsLazyRoute
   '/subscriptions': typeof AuthenticatedSubscriptionsLazyRoute
   '/': typeof authIndexRoute
+  '/subscription/$id': typeof AuthenticatedSubscriptionIdLazyRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexLazyRoute
+  '/invoices/': typeof AuthenticatedInvoicesIndexLazyRoute
   '/users': typeof AuthenticatedUsersIndexLazyRoute
 }
 
@@ -402,7 +481,9 @@ export interface FileRoutesByTo {
   '/reports': typeof AuthenticatedReportsLazyRoute
   '/subscriptions': typeof AuthenticatedSubscriptionsLazyRoute
   '/': typeof authIndexRoute
+  '/subscription/$id': typeof AuthenticatedSubscriptionIdLazyRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexLazyRoute
+  '/invoices': typeof AuthenticatedInvoicesIndexLazyRoute
   '/users': typeof AuthenticatedUsersIndexLazyRoute
 }
 
@@ -421,11 +502,14 @@ export interface FileRoutesById {
   '/(errors)/500': typeof errors500LazyRoute
   '/(errors)/503': typeof errors503LazyRoute
   '/_authenticated/drivers': typeof AuthenticatedDriversLazyRoute
+  '/_authenticated/invoices': typeof AuthenticatedInvoicesLazyRouteWithChildren
   '/_authenticated/payment-reports': typeof AuthenticatedPaymentReportsLazyRoute
   '/_authenticated/reports': typeof AuthenticatedReportsLazyRoute
   '/_authenticated/subscriptions': typeof AuthenticatedSubscriptionsLazyRoute
   '/(auth)/': typeof authIndexRoute
+  '/_authenticated/subscription/$id': typeof AuthenticatedSubscriptionIdLazyRoute
   '/_authenticated/help-center/': typeof AuthenticatedHelpCenterIndexLazyRoute
+  '/_authenticated/invoices/': typeof AuthenticatedInvoicesIndexLazyRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexLazyRoute
 }
 
@@ -444,11 +528,14 @@ export interface FileRouteTypes {
     | '/404'
     | '/503'
     | '/drivers'
+    | '/invoices'
     | '/payment-reports'
     | '/reports'
     | '/subscriptions'
     | '/'
+    | '/subscription/$id'
     | '/help-center'
+    | '/invoices/'
     | '/users'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -468,7 +555,9 @@ export interface FileRouteTypes {
     | '/reports'
     | '/subscriptions'
     | '/'
+    | '/subscription/$id'
     | '/help-center'
+    | '/invoices'
     | '/users'
   id:
     | '__root__'
@@ -485,11 +574,14 @@ export interface FileRouteTypes {
     | '/(errors)/500'
     | '/(errors)/503'
     | '/_authenticated/drivers'
+    | '/_authenticated/invoices'
     | '/_authenticated/payment-reports'
     | '/_authenticated/reports'
     | '/_authenticated/subscriptions'
     | '/(auth)/'
+    | '/_authenticated/subscription/$id'
     | '/_authenticated/help-center/'
+    | '/_authenticated/invoices/'
     | '/_authenticated/users/'
   fileRoutesById: FileRoutesById
 }
@@ -551,9 +643,11 @@ export const routeTree = rootRoute
         "/_authenticated/dashboard",
         "/_authenticated/settings",
         "/_authenticated/drivers",
+        "/_authenticated/invoices",
         "/_authenticated/payment-reports",
         "/_authenticated/reports",
         "/_authenticated/subscriptions",
+        "/_authenticated/subscription/$id",
         "/_authenticated/help-center/",
         "/_authenticated/users/"
       ]
@@ -597,6 +691,13 @@ export const routeTree = rootRoute
       "filePath": "_authenticated/drivers.lazy.tsx",
       "parent": "/_authenticated"
     },
+    "/_authenticated/invoices": {
+      "filePath": "_authenticated/invoices.lazy.tsx",
+      "parent": "/_authenticated",
+      "children": [
+        "/_authenticated/invoices/"
+      ]
+    },
     "/_authenticated/payment-reports": {
       "filePath": "_authenticated/payment-reports.lazy.tsx",
       "parent": "/_authenticated"
@@ -612,9 +713,17 @@ export const routeTree = rootRoute
     "/(auth)/": {
       "filePath": "(auth)/index.tsx"
     },
+    "/_authenticated/subscription/$id": {
+      "filePath": "_authenticated/subscription/$id.lazy.tsx",
+      "parent": "/_authenticated"
+    },
     "/_authenticated/help-center/": {
       "filePath": "_authenticated/help-center/index.lazy.tsx",
       "parent": "/_authenticated"
+    },
+    "/_authenticated/invoices/": {
+      "filePath": "_authenticated/invoices/index.lazy.tsx",
+      "parent": "/_authenticated/invoices"
     },
     "/_authenticated/users/": {
       "filePath": "_authenticated/users/index.lazy.tsx",

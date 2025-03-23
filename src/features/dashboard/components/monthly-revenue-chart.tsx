@@ -16,27 +16,28 @@ export function MonthlyRevenueChart() {
   const today = new Date()
   const weekStart = format(startOfWeek(today, { locale: fr }), 'yyyy-MM-dd')
 
-  const { data: currentMonthData } = useQuery({
+  //get the current week start date
+  const { data: currentWeekData } = useQuery({
     queryKey: ['payment-report', weekStart],
     queryFn: () => paymentReportService.getAll(1, weekStart, '')
   })
 
-
+  //filter the data to get only the data for the current week
   const chartData: ChartData[] = [
     {
       name: 'Bolt',
-        value: currentMonthData?.data.reduce((acc, p) => acc + Number(p.bolt_earnings), 0) || 0
+        value: currentWeekData?.data.reduce((acc, p) => acc + Number(p.bolt_earnings), 0) || 0
     },
     {
       name: 'Uber',
-      value: currentMonthData?.data.reduce((acc, p) => {
+      value: currentWeekData?.data.reduce((acc, p) => {
         const earnings = Number(p.uber_earnings)
         return earnings >= 0 ? acc + earnings : acc
       }, 0) || 0
     },
     {
       name: 'Heetch',
-      value: currentMonthData?.data.reduce((acc, p) => acc + Number(p.heetch_earnings), 0) || 0
+      value: currentWeekData?.data.reduce((acc, p) => acc + Number(p.heetch_earnings), 0) || 0
     }
   ]
 

@@ -5,6 +5,7 @@ import {
   IconReportMoney,
   IconCreditCard,
   IconSettings,
+  IconReceipt2
 } from '@tabler/icons-react'
 import { type SidebarData } from '../types'
 
@@ -59,6 +60,11 @@ export const sidebarData: SidebarData = {
           title: 'Abonnements',
           url: '/subscriptions' as const,
           icon: IconCreditCard,
+        },
+        {
+          title: 'Factures',
+          url: '/invoices' as const,
+          icon: IconReceipt2,
         },
         {
           title: 'Utilisateurs',

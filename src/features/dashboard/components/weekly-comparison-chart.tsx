@@ -2,7 +2,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useQuery } from '@tanstack/react-query'
 import { paymentReportService } from '@/features/payment-reports/data/payment-report-service'
-import { startOfWeek,format, subWeeks } from 'date-fns'
+import { startOfWeek, format, subWeeks } from 'date-fns'
 import { fr } from 'date-fns/locale'
 
 interface ChartData {
@@ -12,40 +12,63 @@ interface ChartData {
   heetch: number
 }
 
-export function WeeklyComparisonChart() {
-  const today = new Date()
-  const weekStart = format(startOfWeek(today, { locale: fr }), 'yyyy-MM-dd')
-  const lastWeekStart = format(startOfWeek(subWeeks(today, 1), { locale: fr }), 'yyyy-MM-dd')
+interface Props {
+  selectedWeek: Date
+}
 
-  const { data: currentWeekData } = useQuery({
+export function WeeklyComparisonChart({ selectedWeek }: Props) {
+  const weekStart = format(startOfWeek(selectedWeek, { locale: fr }), 'yyyy-MM-dd')
+  const lastWeekStart = format(startOfWeek(subWeeks(selectedWeek, 1), { locale: fr }), 'yyyy-MM-dd')
+  const twoWeeksAgoStart = format(startOfWeek(subWeeks(selectedWeek, 2), { locale: fr }), 'yyyy-MM-dd')
+
+  const { data: currentWeekPayments } = useQuery({
     queryKey: ['payment-report', weekStart],
     queryFn: () => paymentReportService.getAll(1, weekStart, '')
   })
 
-  const { data: lastWeekData } = useQuery({
+  const { data: lastWeekPayments } = useQuery({
     queryKey: ['payment-report', lastWeekStart],
     queryFn: () => paymentReportService.getAll(1, lastWeekStart, '')
   })
 
+  const { data: twoWeeksAgoPayments } = useQuery({
+    queryKey: ['payment-report', twoWeeksAgoStart],
+    queryFn: () => paymentReportService.getAll(1, twoWeeksAgoStart, '')
+  })
+
+  const calculateWeeklyData = (payments: any) => {
+    if (!payments?.data) return { bolt: 0, uber: 0, heetch: 0 }
+    
+    return payments.data.reduce(
+      (acc: { bolt: number; uber: number; heetch: number }, payment: any) => {
+        acc.bolt += Number(payment.bolt_earnings)
+        // Only include non-negative Uber earnings
+        if (Number(payment.uber_earnings) >= 0) {
+          acc.uber += Number(payment.uber_earnings)
+        }
+        acc.heetch += Number(payment.heetch_earnings)
+        return acc
+      },
+      { bolt: 0, uber: 0, heetch: 0 }
+    )
+  }
+
+  const currentWeekData = calculateWeeklyData(currentWeekPayments)
+  const lastWeekData = calculateWeeklyData(lastWeekPayments)
+  const twoWeeksAgoData = calculateWeeklyData(twoWeeksAgoPayments)
 
   const chartData: ChartData[] = [
     {
-      name: 'Semaine courante',
-      bolt: currentWeekData?.data.reduce((acc, p) => acc + Number(p.bolt_earnings), 0) || 0,
-      uber: currentWeekData?.data.reduce((acc, p) => {
-        const earnings = Number(p.uber_earnings)
-        return earnings >= 0 ? acc + earnings : acc
-      }, 0) || 0,
-      heetch: currentWeekData?.data.reduce((acc, p) => acc + Number(p.heetch_earnings), 0) || 0
+      name: 'Il y a 2 semaines',
+      ...twoWeeksAgoData
     },
     {
-      name: 'Semaine précédente',
-      bolt: lastWeekData?.data.reduce((acc, p) => acc + Number(p.bolt_earnings), 0) || 0,
-      uber: lastWeekData?.data.reduce((acc, p) => {
-        const earnings = Number(p.uber_earnings)
-        return earnings >= 0 ? acc + earnings : acc
-      }, 0) || 0,
-      heetch: lastWeekData?.data.reduce((acc, p) => acc + Number(p.heetch_earnings), 0) || 0
+      name: 'Semaine dernière',
+      ...lastWeekData
+    },
+    {
+      name: 'Cette semaine',
+      ...currentWeekData
     }
   ]
 
@@ -55,19 +78,19 @@ export function WeeklyComparisonChart() {
         <CardTitle>Comparaison hebdomadaire</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-[300px]">
+        <div className="h-[350px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip 
-                formatter={(value) => `€${Number(value).toFixed(2)}`}
+                formatter={(value: number) => `€${value.toFixed(2)}`}
               />
               <Legend />
-              <Bar name="Bolt" dataKey="bolt" fill="#008000" />
-              <Bar name="Uber" dataKey="uber" fill="#000000" />
-              <Bar name="Heetch" dataKey="heetch" fill="#FF385C" />
+              <Bar dataKey="bolt" name="Bolt" fill="#008000" />
+              <Bar dataKey="uber" name="Uber" fill="#000000" />
+              <Bar dataKey="heetch" name="Heetch" fill="#FF385C" />
             </BarChart>
           </ResponsiveContainer>
         </div>

@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 import { StatusBadge } from '@/components/ui/status-badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { IconSearch, IconEdit, IconTrash, IconPlus } from '@tabler/icons-react'
+import { IconSearch, IconEdit, IconTrash, IconPlus, IconEye } from '@tabler/icons-react'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { SubscriptionDialog } from './subscription-dialog'
@@ -14,6 +14,10 @@ import { ConfirmDialog } from '@/components/confirm-dialog'
 import { PaginatedDataTable } from '@/features/shared/components/PaginatedDataTable'
 import { type Column } from '@/features/shared/components/DataTable'
 import { Spinner } from '@/components/ui/spinner'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { useNavigate } from '@tanstack/react-router'
+
+
 
 export function SubscriptionsList() {
   const queryClient = useQueryClient()
@@ -22,6 +26,8 @@ export function SubscriptionsList() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [selectedSubscription, setSelectedSubscription] = useState<Subscription | undefined>()
+  const navigate = useNavigate()
+ 
 
   // Debounce search to avoid too many API calls
   useEffect(() => {
@@ -59,9 +65,25 @@ export function SubscriptionsList() {
     setDeleteDialogOpen(true)
   }
 
+  const handleShow = (subscription: Subscription) => {
+    navigate({ to: `/subscription/${subscription.id}` })
+    
+  }
+
   const columns: Column<Subscription>[] = [
     {
-      header: 'Chauffeur',
+      header: '#',
+      accessorKey: 'user.last_name' as keyof Subscription,
+      cell: (row: Subscription) => (
+        <Avatar className="h-8 w-8">
+          <AvatarFallback>
+            {row.user.last_name[0]}{row.user.first_name[0]}
+          </AvatarFallback>
+        </Avatar>
+      )
+    },
+    {
+      header: 'Client',
       accessorKey: 'user',
       cell: (row: Subscription) => `${row.user.first_name} ${row.user.last_name}`
     },
@@ -92,15 +114,26 @@ export function SubscriptionsList() {
     }
   ]
 
+ 
   const actions = (row: Subscription) => (
     <div className="flex items-center gap-2">
+      <Button 
+        size="sm"
+        variant="ghost"
+        onClick={() => handleShow(row)}
+        className="text-gray-500 hover:text-gray-600 hover:bg-gray-50"
+      >
+        <IconEye className="h-4 w-4" />
+      </Button>
       <Button
         variant="ghost"
         size="sm"
+        className="text-gray-500 hover:text-gray-600 hover:bg-gray-50"
         onClick={() => handleEdit(row)}
       >
         <IconEdit className="h-4 w-4" />
       </Button>
+
       <Button
         variant="ghost"
         size="sm"

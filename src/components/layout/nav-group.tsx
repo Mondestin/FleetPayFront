@@ -183,6 +183,7 @@ function checkIsActive(href: string, item: NavItem, mainNav = false) {
     ('items' in item && item.items?.some(i => i.url === href)) || // if child nav is active
     (mainNav &&
       href.split('/')[1] !== '' &&
-      href.split('/')[1] === item?.url?.split('/')[1])
+      href.split('/')[1] === item?.url?.split('/')[1]) || // main nav active
+    (item.url === '/subscriptions' && href.startsWith('/subscription/')) // subscription details route
   )
 }

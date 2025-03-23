@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { keepPreviousData, useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { userService } from './data/user-service'
 import { Header } from '@/components/layout/header'
@@ -7,7 +7,7 @@ import { ProfileDropdown } from '@/components/profile-dropdown'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { IconPlus, IconSearch, IconEdit, IconTrash } from '@tabler/icons-react'
+import { IconPlus, IconSearch, IconEdit, IconTrash, IconCircleFilled } from '@tabler/icons-react'
 import { toast } from 'sonner'
 import { UserDialog } from './components/user-dialog'
 import { ConfirmDialog } from '@/components/confirm-dialog'
@@ -16,30 +16,24 @@ import { StatusBadge } from '@/components/ui/status-badge'
 import { PaginatedDataTable } from '@/features/shared/components/PaginatedDataTable'
 import { type Column } from '@/features/shared/components/DataTable'
 import { Spinner } from '@/components/ui/spinner'
-import { format } from 'date-fns'
+import { format, formatDistanceToNow, differenceInMinutes } from 'date-fns'
 import { fr } from 'date-fns/locale'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 
 export default function Users() {
   const queryClient = useQueryClient()
-  const [currentPage, setCurrentPage] = useState(1)
+
   const [search, setSearch] = useState('')
   const [dialogOpen, setDialogOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [selectedUser, setSelectedUser] = useState<User | undefined>()
 
-  // Debounce search to avoid too many API calls
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setCurrentPage(1) // Reset to first page on search
-    }, 300)
-    return () => clearTimeout(timer)
-  }, [search])
-
   const { data: paginatedUsers, isLoading } = useQuery({
-    queryKey: ['users', currentPage, search],
-    queryFn: () => userService.getAll(currentPage, search),
+    queryKey: ['users', search],
+    queryFn: () => userService.getAll(search),
     placeholderData: keepPreviousData
   })
+console.log(paginatedUsers)
 
   const deleteMutation = useMutation({
     mutationFn: userService.delete,
@@ -65,6 +59,18 @@ export default function Users() {
 
   const columns: Column<User>[] = [
     {
+      header: '#',
+      accessorKey: 'last_name' as keyof User,
+      cell: (row: User) => (
+        <Avatar className="h-8 w-8">
+          
+          <AvatarFallback>
+            {row.last_name[0]}{row.first_name[0]}
+          </AvatarFallback>
+        </Avatar>
+      )
+    },
+    {
       header: 'Nom',
       accessorKey: 'first_name',
       cell: (row: User) => `${row.first_name} ${row.last_name}`
@@ -77,6 +83,51 @@ export default function Users() {
       header: 'Téléphone',
       accessorKey: 'phone_number',
       cell: (row: User) => row.phone_number ? row.phone_number : '-'
+    },
+   
+    {
+      header: 'Dernière connexion',
+      accessorKey: 'last_used_at',
+      cell: (row: User) => {
+        if (!row.last_used_at) return (
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <IconCircleFilled className="h-3 w-3 text-red-500" />
+              <span>Hors ligne</span>
+            </div>
+            <span className="text-xs text-muted-foreground">Jamais</span>
+          </div>
+        );
+        
+        const gmtDate = new Date(row.last_used_at + 'Z');
+        const minutesDiff = differenceInMinutes(new Date(), gmtDate);
+        
+        if (minutesDiff <= 5) {
+          return (
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-2">
+                <IconCircleFilled className="h-3 w-3 text-green-500" />
+                <span>En ligne</span>
+              </div>
+              <span className="text-xs text-muted-foreground">
+                {formatDistanceToNow(gmtDate, { locale: fr, addSuffix: true , includeSeconds: true})}
+              </span>
+            </div>
+          );
+        }
+        
+        return (
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <IconCircleFilled className="h-3 w-3 text-red-500" />
+              <span>Hors ligne</span>
+            </div>
+            <span className="text-xs text-muted-foreground">
+             {formatDistanceToNow(gmtDate, { locale: fr, addSuffix: true })}
+            </span>
+          </div>
+        );
+      }
     },
     {
       header: 'Rôle',

@@ -1,4 +1,5 @@
 export interface User {
+  [x: string]: any;
   id: number;
   first_name: string;
   last_name: string;
@@ -17,6 +18,7 @@ export interface PaginatedUsers {
   first_page_url: string;
   from: number;
   last_page: number;
+  last_used_at: string;
   last_page_url: string;
   links: {
     url: string | null;

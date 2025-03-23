@@ -19,15 +19,16 @@ import { IconUsers, IconCash, IconTrendingUp, IconCalendar } from '@tabler/icons
 import { WeeklyComparisonChart } from './components/weekly-comparison-chart'
 import { MonthlyRevenueChart } from './components/monthly-revenue-chart'
 import type { PaymentReport } from '@/features/payment-reports/data/schema'
+import { WeekPicker } from '@/components/ui/week-picker'
+import { useState } from 'react'
 
 
 export default function Dashboard() {
-  const today = new Date()
-  const weekStart = format(startOfWeek(today, { locale: fr }), 'yyyy-MM-dd')
-  const weekEnd = endOfWeek(today, { locale: fr })
-  const lastWeekStart = startOfWeek(subWeeks(today, 1), { locale: fr })
+  const [selectedWeek, setSelectedWeek] = useState(new Date())
+  const weekStart = format(startOfWeek(selectedWeek, { locale: fr }), 'yyyy-MM-dd')
+  const weekEnd = endOfWeek(selectedWeek, { locale: fr })
+  const lastWeekStart = format(startOfWeek(subWeeks(selectedWeek, 1), { locale: fr }), 'yyyy-MM-dd')
  
-
   // Get drivers
   const { data: drivers } = useQuery({
     queryKey: ['drivers'],
@@ -36,19 +37,19 @@ export default function Dashboard() {
 
   // Get current week payments
   const { data: currentWeekPayments } = useQuery({
-    queryKey: ['payment-report', format(weekStart, 'yyyy-MM-dd')],
+    queryKey: ['payment-report', weekStart],
     queryFn: () => paymentReportService.getAll(1, weekStart, '') // Get payments for current week
   })
 
- 
+  // Get last week payments
   const { data: lastWeekPayments } = useQuery({
-    queryKey: ['payment-report', format(lastWeekStart, 'yyyy-MM-dd')],
-    queryFn: () => paymentReportService.getAll(1, format(lastWeekStart, 'yyyy-MM-dd'), '')
+    queryKey: ['payment-report', lastWeekStart],
+    queryFn: () => paymentReportService.getAll(1, lastWeekStart, '')
   })
 
   // Get import status
   const { data: importStatus } = useQuery({
-    queryKey: ['import-status', format(weekStart, 'yyyy-MM-dd')],
+    queryKey: ['import-status', weekStart],
     queryFn: () => importStatusService.getStatus(new Date(weekStart))
   })
 
@@ -77,7 +78,6 @@ export default function Dashboard() {
   const pendingImports = importStatus?.filter(status => status.uploaded === false).length || 0
   const successImports = importStatus?.filter(status => status.uploaded === true).length || 0
 
- 
   return (
     <>
       {/* ===== Top Heading ===== */}
@@ -91,11 +91,17 @@ export default function Dashboard() {
       {/* ===== Main ===== */}
       <Main>
         <div className='flex flex-col gap-6'>
-          <div>
-            <h1 className='text-3xl font-bold'>Tableau de bord</h1>
-            <p className='text-muted-foreground'>
-              Semaine du {format(weekStart, 'dd/MM/yyyy')} au {format(weekEnd, 'dd/MM/yyyy')}
-            </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className='text-3xl font-bold'>Tableau de bord</h1>
+              <p className='text-muted-foreground'>
+                Semaine du {format(new Date(weekStart), 'dd/MM/yyyy')} au {format(weekEnd, 'dd/MM/yyyy')}
+              </p>
+            </div>
+            <WeekPicker 
+              date={selectedWeek}
+              onDateChange={setSelectedWeek}
+            />
           </div>
 
           <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
@@ -157,7 +163,7 @@ export default function Dashboard() {
           </div>
 
           <div className='grid gap-6 md:grid-cols-2'>
-            <WeeklyComparisonChart />
+            <WeeklyComparisonChart selectedWeek={selectedWeek} />
             <MonthlyRevenueChart />
           </div>
         </div>

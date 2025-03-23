@@ -68,8 +68,12 @@ export function PasswordForm() {
         <Input type="password" {...form.register('confirm_password')} />
         <p className="text-sm text-red-500">{form.formState.errors.confirm_password?.message}</p>
       </div>
-      <Button type="submit" className="bg-[#01631b] hover:bg-[#01631b]/90">
-        Mettre à jour
+      <Button 
+        type="submit" 
+        className="bg-[#01631b] hover:bg-[#01631b]/90"
+        disabled={mutation.isPending}
+      >
+        {mutation.isPending ? 'Mise à jour...' : 'Mettre à jour'}
       </Button>
     </form>
   )

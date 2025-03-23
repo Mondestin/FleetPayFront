@@ -2,11 +2,9 @@ import { type User, type PaginatedUsers } from '../types'
 import { api } from '@/lib/api'
 
 export const userService = {
-  getAll: async (page: number = 1, search?: string): Promise<PaginatedUsers> => {
+  getAll: async (search?: string): Promise<PaginatedUsers> => {
     const params = new URLSearchParams()
-    params.append('page', page.toString())
     if (search) params.append('search', search)
-    
     const response = await api.get<PaginatedUsers>(`/api/users?${params.toString()}`)
     return response.data
   },

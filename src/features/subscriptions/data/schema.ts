@@ -1,6 +1,15 @@
 import { date, z } from 'zod'
 import { userSchema, paginationSchema } from '@/features/payment-reports/data/schema'
 
+export const invoiceSchema = z.object({
+  id: z.string(),
+  invoice_number: z.string(),
+  amount: z.string(),
+  status: z.enum(['paid', 'pending', 'failed']),
+  created_at: z.string(),
+  updated_at: z.string()
+})
+
 export const subscriptionSchema = z.object({
   id: z.string(),
   user_id: z.string(),
@@ -11,7 +20,8 @@ export const subscriptionSchema = z.object({
   payment_status: z.enum(['paid', 'pending', 'failed']),
   created_at: z.string(),
   updated_at: z.string(),
-  user: userSchema
+  user: userSchema,
+  invoices: z.array(invoiceSchema).optional()
 })
 
 export const paginatedSubscriptionsSchema = z.object({
