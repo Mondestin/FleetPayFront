@@ -32,9 +32,6 @@ export default function SubscriptionDetails() {
     )
   }
 
-  if (!subscription) {
-    return <div>Abonnement non trouvé</div>
-  }
 
   return (
     <>
@@ -52,13 +49,12 @@ export default function SubscriptionDetails() {
             Informations détaillées de l'abonnement
           </p>
         </div>
-
-        <div className="grid gap-6">
-          {/* Combined User and Subscription Details Card */}
-          <Card>
+        {subscription && (
+          <div className="grid gap-6">
+            {/* Combined User and Subscription Details Card */}
+            <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Détails de l'abonnement</CardTitle>
-            
             </CardHeader>
             <CardContent>
               <div className="grid md:grid-cols-2 gap-6">
@@ -157,6 +153,8 @@ export default function SubscriptionDetails() {
             </CardContent>
           </Card>
         </div>
+        )}
+       
       </Main>
     </>
   )
