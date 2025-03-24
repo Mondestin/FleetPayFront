@@ -44,7 +44,7 @@ export function MonthlyRevenueChart() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Distribution des revenus</CardTitle>
+        <CardTitle>Distribution des revenus du mois</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="h-[300px]">
