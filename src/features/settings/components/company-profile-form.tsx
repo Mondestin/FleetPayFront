@@ -14,14 +14,13 @@ import { IconUpload } from '@tabler/icons-react'
 import { queryClient } from '@/lib/query-client'
 import { Spinner } from '@/components/ui/spinner'
 
-
 const companySchema = z.object({
   name: z.string()
-    .min(5, {message: "Le nom de l'entreprise doit contenir au moins 5 caractères"})
-    .max(20, {message: "Le nom de l'entreprise doit contenir au plus 50 caractères"}),
+    .min(2, {message: "Le nom de l'entreprise doit contenir au moins 2 caractères"})
+    .max(50, {message: "Le nom de l'entreprise doit contenir au plus 50 caractères"}),
   address: z.string()
-    .min(10, {message: "L'adresse doit contenir au moins 10 caractères"})
-    .max(50, {message: "L'adresse doit contenir au plus 50 caractères"}),
+    .min(5, {message: "L'adresse doit contenir au moins 5 caractères"})
+    .max(100, {message: "L'adresse doit contenir au plus 100 caractères"}),
   phone: z.string()
     .min(10, {message: "Le numéro de téléphone doit contenir au moins 10 chiffres"})
     .max(10, {message: "Le numéro de téléphone doit contenir au plus 10 chiffres"})
@@ -57,22 +56,22 @@ export function CompanyProfileForm() {
   const form = useForm<CompanyFormValues>({
     resolver: zodResolver(companySchema),
     defaultValues: {
-      name: '',
-      address: '',
-      phone: '',
+      name: company?.name || '',
+      address: company?.address || '',
+      phone: company?.phone || '',
       logo: undefined
     }
   })
 
+  // Only update form values when company data first loads
   useEffect(() => {
-    if (company) {
+    if (company && !form.getValues('name')) {
       form.reset({
         name: company.name,
         address: company.address,
         phone: company.phone,
-        logo: undefined // Don't try to set the logo from company data
+        logo: undefined
       })
-      // Set the preview URL from company logo if it exists
       if (company.logo) {
         setPreviewUrl(company.logo)
       }
@@ -83,19 +82,16 @@ export function CompanyProfileForm() {
     const files = event.target.files
     if (files && files.length > 0) {
       const file = files[0]
-      // Validate file size
       if (file.size > 2 * 1024 * 1024) {
         toast.error('Le fichier ne doit pas dépasser 2MB')
-        event.target.value = '' // Reset input
+        event.target.value = ''
         return
       }
       
-      // Convert to base64
       const reader = new FileReader()
       reader.onloadend = () => {
         const base64String = reader.result as string
         setPreviewUrl(base64String)
-        // Update form with base64 string
         form.setValue('logo', base64String)
       }
       reader.readAsDataURL(file)
@@ -109,7 +105,6 @@ export function CompanyProfileForm() {
       formData.append('address', data.address)
       formData.append('phone', data.phone)
       
-      // If logo is a base64 string, send it directly
       if (typeof data.logo === 'string') {
         formData.append('logo', data.logo)
       }
@@ -126,7 +121,6 @@ export function CompanyProfileForm() {
       toast.error(errorMessage)
     }
   })
-  
 
   if (isLoading) {
     return (
@@ -144,6 +138,7 @@ export function CompanyProfileForm() {
           <Input 
             {...form.register('name')} 
             placeholder="Nom de l'entreprise"
+            onChange={(e) => form.setValue('name', e.target.value)}
           />
           {form.formState.errors.name && (
             <p className="text-sm text-destructive">
@@ -157,6 +152,7 @@ export function CompanyProfileForm() {
           <Input 
             {...form.register('address')} 
             placeholder="Adresse de l'entreprise"
+            onChange={(e) => form.setValue('address', e.target.value)}
           />
           {form.formState.errors.address && (
             <p className="text-sm text-destructive">
@@ -170,6 +166,7 @@ export function CompanyProfileForm() {
           <Input 
             {...form.register('phone')} 
             placeholder="Numéro de téléphone"
+            onChange={(e) => form.setValue('phone', e.target.value)}
           />
           {form.formState.errors.phone && (
             <p className="text-sm text-destructive">
