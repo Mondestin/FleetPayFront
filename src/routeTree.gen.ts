@@ -437,10 +437,10 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPaymentReportsLazyRoute: typeof AuthenticatedPaymentReportsLazyRoute
   AuthenticatedReportsLazyRoute: typeof AuthenticatedReportsLazyRoute
   AuthenticatedSubscriptionsLazyRoute: typeof AuthenticatedSubscriptionsLazyRoute
+  AuthenticatedSupportLazyRoute: typeof AuthenticatedSupportLazyRoute
   AuthenticatedSubscriptionIdLazyRoute: typeof AuthenticatedSubscriptionIdLazyRoute
   AuthenticatedHelpCenterIndexLazyRoute: typeof AuthenticatedHelpCenterIndexLazyRoute
   AuthenticatedUsersIndexLazyRoute: typeof AuthenticatedUsersIndexLazyRoute
-  AuthenticatedSupportLazyRoute: typeof AuthenticatedSupportLazyRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -451,10 +451,10 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPaymentReportsLazyRoute: AuthenticatedPaymentReportsLazyRoute,
   AuthenticatedReportsLazyRoute: AuthenticatedReportsLazyRoute,
   AuthenticatedSubscriptionsLazyRoute: AuthenticatedSubscriptionsLazyRoute,
+  AuthenticatedSupportLazyRoute: AuthenticatedSupportLazyRoute,
   AuthenticatedSubscriptionIdLazyRoute: AuthenticatedSubscriptionIdLazyRoute,
   AuthenticatedHelpCenterIndexLazyRoute: AuthenticatedHelpCenterIndexLazyRoute,
   AuthenticatedUsersIndexLazyRoute: AuthenticatedUsersIndexLazyRoute,
-  AuthenticatedSupportLazyRoute: AuthenticatedSupportLazyRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

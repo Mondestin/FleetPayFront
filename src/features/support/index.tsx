@@ -24,8 +24,6 @@ export default function Support() {
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
-     
-
             {/* FAQ Section */}
             <Card>
               <CardHeader>
@@ -53,9 +51,13 @@ export default function Support() {
                     </p>
                   </div>
                   <Separator />
-               
+                  <div>
+                    <h3 className="font-semibold">Comment exporter les fichiers de paiements Uber et Bolt ?</h3>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Pour <b>Uber</b> et <b>Bolt</b>, assurez-vous d'exporter les fichiers de paiements en anglais car les en-têtes sont considérés uniquement dans cette langue. Dans les paramètres de votre compte Uber/Bolt, changez la langue en anglais avant d'exporter les rapports si besoin.
+                    </p>
+                  </div>
                 </div>
-            
               </CardContent>
             </Card>
 
@@ -91,8 +93,6 @@ export default function Support() {
                 </Button>
               </CardContent>
             </Card>
-
-
           </div>
         </div>
       </Main>
