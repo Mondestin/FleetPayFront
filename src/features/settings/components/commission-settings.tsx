@@ -11,7 +11,7 @@ import { Spinner } from '@/components/ui/spinner'
 import { useEffect } from 'react'
 
 const commissionSchema = z.object({
-  commission: z.string().regex(/^\d+(\.\d{1,2})?$/, 'Montant invalide')
+  commission: z.string().min(1, 'Le montant est requis')
 })
 
 type CommissionFormValues = z.infer<typeof commissionSchema>
@@ -27,16 +27,14 @@ export function CommissionSettings() {
   const form = useForm<CommissionFormValues>({
     resolver: zodResolver(commissionSchema),
     defaultValues: {
-      commission: '0'
+      commission: commission?.commission || '0'
     }
   })
 
-  // Update form values when commission data loads
+  // Update form when commission data changes
   useEffect(() => {
-    if (commission) {
-      form.reset({
-        commission: commission.commission || '0'
-      })
+    if (commission?.commission) {
+      form.setValue('commission', commission.commission)
     }
   }, [commission, form])
 
@@ -67,7 +65,12 @@ export function CommissionSettings() {
     <form onSubmit={form.handleSubmit((data) => mutation.mutate(data))} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="commission">Montant de la commission (€)</Label>
-        <Input {...form.register('commission')} type="number" step="0.01" />
+        <Input 
+          {...form.register('commission')} 
+          type="number" 
+          step="0.01"
+          min="0"
+        />
       </div>
       <Button 
         type="submit" 
