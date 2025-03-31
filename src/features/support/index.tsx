@@ -76,11 +76,11 @@ export default function Support() {
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
                     <IconMail className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">support@fleetpay.com</span>
+                    <span className="text-sm">support@phoenone.com</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <IconPhone className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">+33 1 23 45 67 89</span>
+                    <span className="text-sm">+33 7 53 75 49 60</span>
                   </div>
                   <div className="text-sm text-muted-foreground">
                     <p>Horaires d'ouverture :</p>
@@ -88,7 +88,7 @@ export default function Support() {
                     <p>Samedi : 9h00 - 13h00</p>
                   </div>
                 </div>
-                <Button className="w-full bg-primary text-white hover:bg-primary/90" onClick={() => window.location.href = 'mailto:support@fleet-pay.fr'}>
+                <Button className="w-full bg-primary text-white hover:bg-primary/90" onClick={() => window.location.href = 'mailto:support@phoenone.com'}>
                   Envoyer un message
                 </Button>
               </CardContent>
