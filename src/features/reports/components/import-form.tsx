@@ -30,7 +30,7 @@ import { useUser } from '@/features/auth/hooks/use-user'
 import { DataTablesView } from '../components/data-tables-view'
 import { Spinner } from '@/components/ui/spinner'
 import { useToast } from '@/hooks/use-toast'
-import { DriverData, BoltDriverData, HeetchData } from '../types'
+import { UberDriverData, BoltDriverData, HeetchData } from '../types'
 
 
 interface UploadStatus {
@@ -78,7 +78,7 @@ interface Props {
 }
 
 export function ImportForm({ uploadStatus, selectedWeek, onWeekChange }: Props) {
-  const [csvData, setCsvData] = useState<DriverData[]>([])
+  const [csvData, setCsvData] = useState<UberDriverData[]>([])
   const [boltCsvData, setBoltCsvData] = useState<BoltDriverData[]>([])
   const [pdfFile, setPdfFile] = useState<File | null>(null)
   const [pdfData, setPdfData] = useState<HeetchData[]>([])
@@ -150,12 +150,12 @@ export function ImportForm({ uploadStatus, selectedWeek, onWeekChange }: Props) 
     }
   }
 
-  const handleUberData = async (weekDate: Date, data: DriverData[]) => {
+  const handleUberData = async (weekDate: Date, data: UberDriverData[]) => {
     const formattedData = data.map(row => ({
       uberId: row['UUID du chauffeur'],
       firstName: row['Prénom du chauffeur'],
       lastName: row['Nom du chauffeur'],
-      totalRevenue: ((Number(row['Revenus totaux']) || 0) + (Number(row['Remboursements et notes de frais']) || 0)) - ( - Number(row['Versements'] ) || 0),
+      totalRevenue: ((Number(row['Revenus totaux']) || 0) + (Number(row['Remboursements et notes de frais']) || 0) + (Number(row['Revenus totaux:Bonus']) || 0) + (Number(row['Revenus totaux:Autres revenus:Ajustement des frais de service liés aux courses partagées']) || 0) + (Number(row['Revenus totaux:Autres revenus:Retour d\'un objet oublié']) || 0)) - ( (- Number(row['Versements'] ) || 0) + (- Number(row['Montant versé à des tiers']) || 0)),
       phoneNumber: '',
       email: '',
       fullName: row['Prénom du chauffeur'] + ' ' + row['Nom du chauffeur'],
@@ -175,7 +175,7 @@ export function ImportForm({ uploadStatus, selectedWeek, onWeekChange }: Props) 
     }
   }
 
-  const handlePlatformData = async (platform: string, weekDate: Date, data: DriverData[] | BoltDriverData[]) => {
+  const handlePlatformData = async (platform: string, weekDate: Date, data: UberDriverData[] | BoltDriverData[]) => {
     setIsSubmitting(true)
     try {
       switch (platform) {
@@ -183,7 +183,7 @@ export function ImportForm({ uploadStatus, selectedWeek, onWeekChange }: Props) 
           await handleBoltData(weekDate, data as BoltDriverData[])
           break
         case 'uber':
-          await handleUberData(weekDate, data as DriverData[])
+          await handleUberData(weekDate, data as UberDriverData[])
           break
         case 'heetch':
           await handleHeetchPdfUpload(pdfFile!, weekDate, user?.id)
@@ -243,7 +243,7 @@ export function ImportForm({ uploadStatus, selectedWeek, onWeekChange }: Props) 
           setBoltCsvData(parsedData)
           setCsvData([]) // Clear other data
         } else {
-          const parsedData = results.data as DriverData[]
+          const parsedData = results.data as UberDriverData[]
           setCsvData(parsedData)
           setBoltCsvData([]) // Clear other data
         }

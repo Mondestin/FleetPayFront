@@ -1,10 +1,10 @@
 import { CsvDataTable } from './csv-data-table'
 import { BoltCsvDataTable } from './bolt-csv-data-table'
 import { PdfDataTable } from './pdf-data-table'
-import { type DriverData, type BoltDriverData, type HeetchData } from '../types'
+import { type UberDriverData, type BoltDriverData, type HeetchData } from '../types'
 
 interface DataTablesViewProps {
-  csvData: DriverData[]
+  csvData: UberDriverData[]
   boltCsvData: BoltDriverData[]
   pdfData: HeetchData[]
   isLoading: boolean

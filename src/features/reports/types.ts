@@ -1,4 +1,4 @@
-export interface DriverData {
+export interface UberDriverData {
     'UUID du chauffeur': string
     'Prénom du chauffeur': string
     'Nom du chauffeur': string

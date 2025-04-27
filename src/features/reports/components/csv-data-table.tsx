@@ -6,10 +6,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { DriverData } from '../types'
+import { UberDriverData } from '../types'
 
 
-export function CsvDataTable({ data, headers }: { data: DriverData[], headers: string[] }) {
+export function CsvDataTable({ data, headers }: { data: UberDriverData[], headers: string[] }) {
   if (data.length === 0) return null
 
   return (
@@ -33,7 +33,7 @@ export function CsvDataTable({ data, headers }: { data: DriverData[], headers: s
             <TableRow key={index}>
               {headers.map((header) => (
                 <TableCell key={`${index}-${header}`}>
-                    {row[header as keyof DriverData]}
+                    {row[header as keyof UberDriverData]}
                 </TableCell>
               ))}
             </TableRow>
