@@ -1,4 +1,4 @@
-import { type HeetchData } from '../lib/pdf-utils'
+import { HeetchData } from '../types'
 
 export function PdfDataTable({ 
   data, 
