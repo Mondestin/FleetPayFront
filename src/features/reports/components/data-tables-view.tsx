@@ -21,7 +21,12 @@ export function DataTablesView({ csvData, boltCsvData, pdfData, isLoading, pdfFi
             'Prénom du chauffeur',
             'Nom du chauffeur',
             'Revenus totaux',
-            'Versements'
+            'Versements',
+            'Remboursements et notes de frais',
+            'Revenus totaux:Bonus',
+            'Revenus totaux:Autres revenus:Ajustement des frais de service liés aux courses partagées',
+            'Revenus totaux:Autres revenus:Retour d\'un objet oublié',
+            'Montant versé à des tiers'
           ]} 
         />
       )}
