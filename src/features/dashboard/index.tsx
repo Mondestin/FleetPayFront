@@ -38,13 +38,13 @@ export default function Dashboard() {
   // Get current week payments
   const { data: currentWeekPayments } = useQuery({
     queryKey: ['payment-report', weekStart],
-    queryFn: () => paymentReportService.getAll(1, weekStart, '') // Get payments for current week
+    queryFn: () => paymentReportService.getAll(weekStart, '') // Get payments for current week
   })
 
   // Get last week payments
   const { data: lastWeekPayments } = useQuery({
     queryKey: ['payment-report', lastWeekStart],
-    queryFn: () => paymentReportService.getAll(1, lastWeekStart, '')
+    queryFn: () => paymentReportService.getAll(lastWeekStart, '')
   })
 
   // Get import status

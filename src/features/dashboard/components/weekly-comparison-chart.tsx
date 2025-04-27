@@ -23,17 +23,17 @@ export function WeeklyComparisonChart({ selectedWeek }: Props) {
 
   const { data: currentWeekPayments } = useQuery({
     queryKey: ['payment-report', weekStart],
-    queryFn: () => paymentReportService.getAll(1, weekStart, '')
+    queryFn: () => paymentReportService.getAll(weekStart, '')
   })
 
   const { data: lastWeekPayments } = useQuery({
     queryKey: ['payment-report', lastWeekStart],
-    queryFn: () => paymentReportService.getAll(1, lastWeekStart, '')
+    queryFn: () => paymentReportService.getAll(lastWeekStart, '')
   })
 
   const { data: twoWeeksAgoPayments } = useQuery({
     queryKey: ['payment-report', twoWeeksAgoStart],
-    queryFn: () => paymentReportService.getAll(1, twoWeeksAgoStart, '')
+    queryFn: () => paymentReportService.getAll(twoWeeksAgoStart, '')
   })
 
   const calculateWeeklyData = (payments: any) => {

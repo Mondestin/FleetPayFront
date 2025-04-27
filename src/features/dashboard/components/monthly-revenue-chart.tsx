@@ -19,7 +19,7 @@ export function MonthlyRevenueChart() {
   //get the current week start date
   const { data: currentWeekData } = useQuery({
     queryKey: ['payment-report', weekStart],
-    queryFn: () => paymentReportService.getAll(1, weekStart, '')
+    queryFn: () => paymentReportService.getAll(weekStart, '')
   })
 
   //filter the data to get only the data for the current week
