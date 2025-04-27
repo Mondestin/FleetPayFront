@@ -28,3 +28,4 @@ export interface DriverData {
     uploaded: boolean
     weekStartDate: string
   }
+  

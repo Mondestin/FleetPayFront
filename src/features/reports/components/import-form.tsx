@@ -25,32 +25,13 @@ import {
 } from '@/components/ui/select'
 import { WeekPicker } from '@/components/ui/week-picker'
 import { IconUpload, IconCheck } from '@tabler/icons-react'
-import { handleHeetchPdfUpload, type HeetchData } from '../lib/pdf-utils'
+import { handleHeetchPdfUpload} from '../lib/pdf-utils'
 import { useUser } from '@/features/auth/hooks/use-user'
 import { DataTablesView } from '../components/data-tables-view'
 import { Spinner } from '@/components/ui/spinner'
 import { useToast } from '@/hooks/use-toast'
+import { DriverData, BoltDriverData, HeetchData } from '../types'
 
-
-interface DriverData {
-  'UUID du chauffeur': string
-  'Prénom du chauffeur': string
-  'Nom du chauffeur': string
-  'Revenus totaux': string,
-  'Versements': string,
-  'Remboursements et notes de frais': string,
-  'Revenus totaux:Bonus': string,
-  'Revenus totaux:Autres revenus:Ajustement des frais de service liés aux courses partagées': string,
-  'Revenus totaux:Autres revenus:Retour d\'un objet oublié': string,
-  'Montant versé à des tiers': string
-}
-
-interface BoltDriverData {
-  'Driver': string
-  'Driver\'s Phone': string
-  'Email': string
-  'Projected payout|€': string
-}
 
 interface UploadStatus {
   platform: 'bolt' | 'uber' | 'heetch'

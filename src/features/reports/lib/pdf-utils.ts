@@ -1,10 +1,7 @@
 import * as pdfjsLib from 'pdfjs-dist'
 import { api } from '@/lib/api'
+import { HeetchData } from '../types'
 
-export interface HeetchData {
-  chauffeur: string;
-  montant: string;
-}
 
 // Set up the worker using Vite's import.meta.url feature
 const workerUrl = new URL(
