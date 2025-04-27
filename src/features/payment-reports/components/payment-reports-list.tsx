@@ -24,27 +24,26 @@ import { Spinner } from "@/components/ui/spinner"
 
 
 export function PaymentReportsList() {
-  const [currentPage, setCurrentPage] = useState(1)
   const [search, setSearch] = useState('')
   const [selectedDate, setSelectedDate] = useState<Date>(new Date())
   const weekStart = format(startOfWeek(selectedDate, { locale: fr }), 'yyyy-MM-dd')
 
 
   const { data: paginatedReports, isLoading } = useQuery({
-    queryKey: ['payment-reports', currentPage, search, weekStart],
-    queryFn: () => paymentReportService.getAll(currentPage, weekStart, search),
+    queryKey: ['payment-reports', weekStart, search],
+    queryFn: () => paymentReportService.getAll(weekStart, search),
     placeholderData: keepPreviousData
   })
 
   const queryClient = useQueryClient()
 
   useEffect(() => {
-    setCurrentPage(1)
+    queryClient.invalidateQueries({ queryKey: ['payment-reports'] })
   }, [weekStart])
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setCurrentPage(1)
+      queryClient.invalidateQueries({ queryKey: ['payment-reports'] })
     }, 300)
     return () => clearTimeout(timer)
   }, [search])

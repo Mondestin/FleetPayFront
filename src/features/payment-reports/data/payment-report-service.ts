@@ -2,9 +2,8 @@ import { type PaymentReport, type PaginatedPaymentReports } from './schema'
 import { api } from '@/lib/api'
 
 export const paymentReportService = {
-  getAll: async (page: number = 1, weekStart: string, search?: string): Promise<PaginatedPaymentReports> => {
+  getAll: async (weekStart: string, search?: string): Promise<PaginatedPaymentReports> => {
     const params = new URLSearchParams()
-    params.append('page', page.toString())
     params.append('week_start', weekStart)
     if (search) params.append('search', search)
     
