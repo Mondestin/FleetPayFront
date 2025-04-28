@@ -2,7 +2,7 @@ import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { IconMail, IconPhone, IconMessageQuestion } from '@tabler/icons-react'
+import { IconMail, IconMessageQuestion } from '@tabler/icons-react'
 import { Separator } from '@/components/ui/separator'
 
 export default function Support() {
