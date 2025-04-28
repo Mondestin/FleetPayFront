@@ -155,7 +155,7 @@ export function ImportForm({ uploadStatus, selectedWeek, onWeekChange }: Props) 
       uberId: row['UUID du chauffeur'],
       firstName: row['Prénom du chauffeur'],
       lastName: row['Nom du chauffeur'],
-      totalRevenue: ((Number(row['Revenus totaux']) || 0) + (Number(row['Remboursements et notes de frais']) || 0) + (Number(row['Revenus totaux:Bonus']) || 0) + (Number(row['Revenus totaux:Autres revenus:Ajustement des frais de service liés aux courses partagées']) || 0) + (Number(row['Revenus totaux:Autres revenus:Retour d\'un objet oublié']) || 0)) - ( (- Number(row['Versements'] ) || 0) + (- Number(row['Montant versé à des tiers']) || 0)),
+      totalRevenue: ((Number(row['Revenus totaux']) || 0) + (Number(row['Remboursements et notes de frais']) || 0) - (- Number(row['Versements']) || 0)),
       phoneNumber: '',
       email: '',
       fullName: row['Prénom du chauffeur'] + ' ' + row['Nom du chauffeur'],
@@ -163,7 +163,6 @@ export function ImportForm({ uploadStatus, selectedWeek, onWeekChange }: Props) 
       weekDate,
       user: user?.id
     }))
-    console.log(formattedData)
     
     try {
       await api.post('/api/reports/platforms/import/uber', {

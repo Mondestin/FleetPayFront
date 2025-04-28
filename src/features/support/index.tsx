@@ -78,10 +78,6 @@ export default function Support() {
                     <IconMail className="h-4 w-4 text-muted-foreground" />
                     <span className="text-sm">support@phoenone.com</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <IconPhone className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">+33 7 53 75 49 60</span>
-                  </div>
                   <div className="text-sm text-muted-foreground">
                     <p>Horaires d'ouverture :</p>
                     <p>Lundi - Vendredi : 9h00 - 18h00</p>
