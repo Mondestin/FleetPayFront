@@ -6,7 +6,8 @@ import {
   IconCreditCard,
   IconSettings,
   IconReceipt2,
-  IconHelp
+  IconHelp,
+  IconBook
 } from '@tabler/icons-react'
 import { type SidebarData } from '../types'
 
@@ -53,7 +54,12 @@ export const sidebarData: SidebarData = {
           icon: IconSettings,
         },
         {
-          title: 'Instructions & Support',
+          title: 'Instructions',
+          url: '/instructions' as const,
+          icon: IconBook,
+        },
+        {
+          title: 'Support',
           url: '/support' as const,
           icon: IconHelp,
         }

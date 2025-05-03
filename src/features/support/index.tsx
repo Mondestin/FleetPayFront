@@ -1,97 +1,92 @@
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { IconHelp, IconMessage, IconClock } from '@tabler/icons-react'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { IconMail, IconMessageQuestion } from '@tabler/icons-react'
-import { Separator } from '@/components/ui/separator'
+import { ThemeSwitch } from '@/components/theme-switch'
+import { ProfileDropdown } from '@/components/profile-dropdown'
 
-export default function Support() {
+export function Support() {
   return (
     <>
-      <Header fixed>
-        <div className='ml-auto flex items-center space-x-4'>
-          {/* Add any header actions here */}
-        </div>
-      </Header>
+    <Header fixed>
+      <div className='ml-auto flex items-center space-x-4'>
+        <ThemeSwitch />
+        <ProfileDropdown />
+      </div>
+    </Header>
 
-      <Main>
-        <div className="space-y-6">
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight">Instructions & Support</h2>
-            <p className="text-muted-foreground">
-              Trouvez l'aide dont vous avez besoin pour utiliser FleetPay
-            </p>
-          </div>
+    <Main>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold">Support</h1>
+      </div>
 
-          <div className="grid gap-6 md:grid-cols-2">
-            {/* FAQ Section */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <IconMessageQuestion className="h-5 w-5" />
-                  FAQ
-                </CardTitle>
-                <CardDescription>
-                  Questions fréquemment posées
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="font-semibold">Comment importer mes rapports ?</h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Accédez à la section "Gestionnaire de fichiers" et suivez les instructions pour importer vos rapports au format CSV.
-                    </p>
-                  </div>
-                  <Separator />
-                  <div>
-                    <h3 className="font-semibold">Comment gérer les paiements ?</h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Utilisez la section "Rapports de paiement" pour voir et gérer tous les paiements de vos chauffeurs.
-                    </p>
-                  </div>
-                  <Separator />
-                  <div>
-                    <h3 className="font-semibold">Comment exporter les fichiers de paiements Uber et Bolt ?</h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Pour <b>Uber</b> et <b>Bolt</b>, assurez-vous d'exporter les fichiers de paiements en anglais car les en-têtes sont considérés uniquement dans cette langue. Dans les paramètres de votre compte Uber/Bolt, changez la langue en anglais avant d'exporter les rapports si besoin.
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* FAQ Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <IconHelp className="h-5 w-5" />
+              FAQ
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <h3 className="font-semibold">Questions fréquentes</h3>
+              <ul className="space-y-4">
+                <li>
+                  <h4 className="font-medium">Comment importer des rapports ?</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Accédez à la section "Rapports de paiement" et utilisez le bouton "Importer" pour télécharger vos fichiers.
+                  </p>
+                </li>
+                <li>
+                  <h4 className="font-medium">Comment gérer les paiements ?</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Les paiements peuvent être gérés depuis la section "Rapports de paiement" où vous pouvez voir et traiter tous les paiements.
+                  </p>
+                </li>
+                <li>
+                  <h4 className="font-medium">Comment exporter les fichiers de paiements Uber et Bolt ?</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Les fichiers doivent être exportés en anglais car les en-têtes ne sont reconnus qu'en anglais. Changez les paramètres de votre compte en anglais avant d'exporter les rapports.
+                  </p>
+                </li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
 
-            {/* Contact Support Section */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <IconMail className="h-5 w-5" />
-                  Contactez le support
-                </CardTitle>
-                <CardDescription>
-                  Notre équipe est là pour vous aider
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <IconMail className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">support@phoenone.com</span>
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    <p>Horaires d'ouverture :</p>
-                    <p>Lundi - Vendredi : 9h00 - 18h00</p>
-                    <p>Samedi : 9h00 - 13h00</p>
-                  </div>
-                </div>
-                <Button className="w-full bg-primary text-white hover:bg-primary/90" onClick={() => window.location.href = 'mailto:support@phoenone.com'}>
-                  Envoyer un message
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+        {/* Contact Support Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <IconMessage className="h-5 w-5" />
+              Contact Support
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <h3 className="font-semibold">Contactez-nous</h3>
+              <p className="text-sm text-muted-foreground">
+                Notre équipe de support est disponible pour vous aider.
+              </p>
+              <div className="space-y-2">
+                <p className="flex items-center gap-2">
+                  <IconClock className="h-4 w-4" />
+                  <span>Lundi - Vendredi: 9h - 18h</span>
+                </p>
+                <p className="flex items-center gap-2">
+                  <IconMessage className="h-4 w-4" />
+                  <span>support@fleetpay.com</span>
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+      </div>
       </Main>
-    </>
+      </>
   )
 } 
