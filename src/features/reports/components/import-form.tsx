@@ -152,12 +152,12 @@ export function ImportForm({ uploadStatus, selectedWeek, onWeekChange }: Props) 
 
   const handleUberData = async (weekDate: Date, data: UberDriverData[]) => {
     const formattedData = data.map(row => ({
-      uberId: row['UUID du chauffeur'],
+  
       firstName: row['Prénom du chauffeur'],
       lastName: row['Nom du chauffeur'],
-      totalRevenue: ((Number(row['Revenus totaux']) || 0) + (Number(row['Remboursements et notes de frais']) || 0) - (- Number(row['Versements']) || 0)),
-      phoneNumber: '',
-      email: '',
+      totalRevenue: ((Number(row['Revenus totaux']) || 0)  - (Number(row['Espèces collectées']) || 0)),
+      phoneNumber: row['Numéro de téléphone du chauffeur'],
+      email: row['Adresse e-mail du chauffeur'],
       fullName: row['Prénom du chauffeur'] + ' ' + row['Nom du chauffeur'],
       platform: 'uber',
       weekDate,
@@ -165,6 +165,7 @@ export function ImportForm({ uploadStatus, selectedWeek, onWeekChange }: Props) 
     }))
     
     try {
+      
       await api.post('/api/reports/platforms/import/uber', {
         weekDate,
         data: formattedData
@@ -211,6 +212,7 @@ export function ImportForm({ uploadStatus, selectedWeek, onWeekChange }: Props) 
       
       handleHeetchPdfUpload(file, data.weekDate, user?.id)
         .then((extractedData) => {
+          
           setPdfData(extractedData)
           toast({
             title: 'PDF importé avec succès',

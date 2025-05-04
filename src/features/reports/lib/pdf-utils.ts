@@ -42,6 +42,7 @@ export const handleHeetchPdfUpload = async (file: File, weekDate: Date, userId?:
     }))
 
     try {
+  
       await api.post('/api/reports/platforms/import/heetch', {
         weekDate,
         data: formattedData

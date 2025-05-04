@@ -1,10 +1,10 @@
 export interface UberDriverData {
-    'UUID du chauffeur': string
     'Prénom du chauffeur': string
     'Nom du chauffeur': string
+    'Adresse e-mail du chauffeur': string,
+    'Numéro de téléphone du chauffeur': string,
     'Revenus totaux': string
-    'Versements': string
-    'Remboursements et notes de frais': string
+    'Espèces collectées': string
   }
   
   export interface BoltDriverData {

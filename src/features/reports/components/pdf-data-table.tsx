@@ -8,6 +8,7 @@ export function PdfDataTable({
   isLoading: boolean, 
   fileName: string 
 }) {
+  console.log(data)
   if (data.length === 0 && fileName) {
     return (
       <div className="mt-8 text-center text-gray-600">

@@ -20,9 +20,10 @@ export function DataTablesView({ csvData, boltCsvData, pdfData, isLoading, pdfFi
           headers={[
             'Prénom du chauffeur',
             'Nom du chauffeur',
+            'Numéro de téléphone du chauffeur',
+            'Adresse e-mail du chauffeur',
             'Revenus totaux',
-            'Versements',
-            'Remboursements et notes de frais'
+            'Espèces collectées'
           ]} 
         />
       )}
