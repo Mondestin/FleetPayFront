@@ -119,47 +119,77 @@ export function SubscriptionDetails() {
               </div>
             </div>
 
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="w-full" variant="outline">
-                  <IconCreditCard className="mr-2 h-4 w-4" />
-                  Gérer l'abonnement
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Gérer l'abonnement</DialogTitle>
-                  <DialogDescription>
+            <div className="flex gap-4 items-start">
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button className="flex-1" variant="outline">
+                    <IconCreditCard className="mr-2 h-4 w-4" />
+                    Gérer l'abonnement
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Gérer l'abonnement</DialogTitle>
+                    <DialogDescription>
+                      {subscription.status === 'active' ? (
+                        'Vous pouvez annuler ou mettre à jour votre abonnement actuel.'
+                      ) : (
+                        'Vous pouvez reprendre votre abonnement.'
+                      )}
+                    </DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter className="flex gap-2">
                     {subscription.status === 'active' ? (
-                      'Vous pouvez annuler ou mettre à jour votre abonnement actuel.'
+                      <>
+                        <Button 
+                          variant="destructive" 
+                          onClick={() => handleSubscriptionAction('cancel')}
+                          disabled={updateSubscriptionMutation.isPending}
+                        >
+                          Annuler l'abonnement
+                        </Button>
+                      </>
                     ) : (
-                      'Vous pouvez reprendre votre abonnement.'
-                    )}
-                  </DialogDescription>
-                </DialogHeader>
-                <DialogFooter className="flex gap-2">
-                  {subscription.status === 'active' ? (
-                    <>
                       <Button 
-                        variant="destructive" 
-                        onClick={() => handleSubscriptionAction('cancel')}
+                        onClick={() => handleSubscriptionAction('resume')}
                         disabled={updateSubscriptionMutation.isPending}
+                        className="bg-[#01631b] hover:bg-[#01631b]/90"
                       >
-                        Annuler l'abonnement
+                        Reprendre l'abonnement
                       </Button>
-                    </>
-                  ) : (
-                    <Button 
-                      onClick={() => handleSubscriptionAction('resume')}
-                      disabled={updateSubscriptionMutation.isPending}
-                      className="bg-[#01631b] hover:bg-[#01631b]/90"
-                    >
-                      Reprendre l'abonnement
-                    </Button>
-                  )}
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+                    )}
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+
+              {/* PayPal Payment Button */}
+              <div className="flex-1">
+                <form action="https://www.paypal.com/ncp/payment/WVZFHTXEU68NW" method="post" target="_blank" style={{display: 'inline-grid', justifyContent: 'center', alignContent: 'start', gap: '0.5rem', width: '100%'}}>
+                  <input 
+                    className="pp-WVZFHTXEU68NW" 
+                    type="submit" 
+                    value="Payer" 
+                    style={{
+                      textAlign: 'center',
+                      border: 'none',
+                      borderRadius: '0.25rem',
+                      minWidth: '11.625rem',
+                      padding: '0 2rem',
+                      height: '2.625rem',
+                      fontWeight: 'bold',
+                      backgroundColor: '#FFD140',
+                      color: '#000000',
+                      fontFamily: '"Helvetica Neue",Arial,sans-serif',
+                      fontSize: '1rem',
+                      lineHeight: '1.25rem',
+                      cursor: 'pointer',
+                      width: '100%'
+                    }}
+                  />
+                  <img src="https://www.paypalobjects.com/images/Debit_Credit_APM.svg" alt="cards" />
+                </form>
+              </div>
+            </div>
 
             <div className="pt-4">
               <p className="font-medium mb-3">Historique des factures</p>
