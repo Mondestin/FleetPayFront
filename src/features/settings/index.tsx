@@ -6,9 +6,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ProfileForm } from './components/profile-form'
 import { PasswordForm } from './components/password-form'
-import { SubscriptionDetails } from './components/subscription-details'
 import { CommissionSettings } from './components/commission-settings'
-import { IconUser, IconLock, IconCreditCard, IconPercentage, IconBuilding } from '@tabler/icons-react'
+import { IconUser, IconLock, IconPercentage, IconBuilding } from '@tabler/icons-react'
 import { CompanyProfileForm } from './components/company-profile-form'
 
 export default function Settings() {
@@ -39,10 +38,6 @@ export default function Settings() {
               <TabsTrigger value="security" className="flex items-center gap-2">
                 <IconLock className="h-4 w-4" />
                 Sécurité
-              </TabsTrigger>
-              <TabsTrigger value="subscription" className="flex items-center gap-2">
-                <IconCreditCard className="h-4 w-4" />
-                Abonnement
               </TabsTrigger>
               <TabsTrigger value="commission" className="flex items-center gap-2">
                 <IconPercentage className="h-4 w-4" />
@@ -78,20 +73,6 @@ export default function Settings() {
                 </CardHeader>
                 <CardContent>
                   <PasswordForm />
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="subscription">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Abonnement</CardTitle>
-                  <CardDescription>
-                    Gérez votre abonnement et facturation
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <SubscriptionDetails />
                 </CardContent>
               </Card>
             </TabsContent>

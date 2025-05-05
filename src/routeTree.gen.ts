@@ -29,6 +29,9 @@ const AuthenticatedSupportLazyImport = createFileRoute(
 const AuthenticatedSubscriptionsLazyImport = createFileRoute(
   '/_authenticated/subscriptions',
 )()
+const AuthenticatedSubscriptionDetailsLazyImport = createFileRoute(
+  '/_authenticated/subscription-details',
+)()
 const AuthenticatedReportsLazyImport = createFileRoute(
   '/_authenticated/reports',
 )()
@@ -93,6 +96,17 @@ const AuthenticatedSubscriptionsLazyRoute =
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any).lazy(() =>
     import('./routes/_authenticated/subscriptions.lazy').then((d) => d.Route),
+  )
+
+const AuthenticatedSubscriptionDetailsLazyRoute =
+  AuthenticatedSubscriptionDetailsLazyImport.update({
+    id: '/subscription-details',
+    path: '/subscription-details',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/subscription-details.lazy').then(
+      (d) => d.Route,
+    ),
   )
 
 const AuthenticatedReportsLazyRoute = AuthenticatedReportsLazyImport.update({
@@ -380,6 +394,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedReportsLazyImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/subscription-details': {
+      id: '/_authenticated/subscription-details'
+      path: '/subscription-details'
+      fullPath: '/subscription-details'
+      preLoaderRoute: typeof AuthenticatedSubscriptionDetailsLazyImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/subscriptions': {
       id: '/_authenticated/subscriptions'
       path: '/subscriptions'
@@ -456,6 +477,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedInvoicesLazyRoute: typeof AuthenticatedInvoicesLazyRouteWithChildren
   AuthenticatedPaymentReportsLazyRoute: typeof AuthenticatedPaymentReportsLazyRoute
   AuthenticatedReportsLazyRoute: typeof AuthenticatedReportsLazyRoute
+  AuthenticatedSubscriptionDetailsLazyRoute: typeof AuthenticatedSubscriptionDetailsLazyRoute
   AuthenticatedSubscriptionsLazyRoute: typeof AuthenticatedSubscriptionsLazyRoute
   AuthenticatedSupportLazyRoute: typeof AuthenticatedSupportLazyRoute
   AuthenticatedSubscriptionIdLazyRoute: typeof AuthenticatedSubscriptionIdLazyRoute
@@ -471,6 +493,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedInvoicesLazyRoute: AuthenticatedInvoicesLazyRouteWithChildren,
   AuthenticatedPaymentReportsLazyRoute: AuthenticatedPaymentReportsLazyRoute,
   AuthenticatedReportsLazyRoute: AuthenticatedReportsLazyRoute,
+  AuthenticatedSubscriptionDetailsLazyRoute:
+    AuthenticatedSubscriptionDetailsLazyRoute,
   AuthenticatedSubscriptionsLazyRoute: AuthenticatedSubscriptionsLazyRoute,
   AuthenticatedSupportLazyRoute: AuthenticatedSupportLazyRoute,
   AuthenticatedSubscriptionIdLazyRoute: AuthenticatedSubscriptionIdLazyRoute,
@@ -498,6 +522,7 @@ export interface FileRoutesByFullPath {
   '/invoices': typeof AuthenticatedInvoicesLazyRouteWithChildren
   '/payment-reports': typeof AuthenticatedPaymentReportsLazyRoute
   '/reports': typeof AuthenticatedReportsLazyRoute
+  '/subscription-details': typeof AuthenticatedSubscriptionDetailsLazyRoute
   '/subscriptions': typeof AuthenticatedSubscriptionsLazyRoute
   '/support': typeof AuthenticatedSupportLazyRoute
   '/': typeof authIndexRoute
@@ -523,6 +548,7 @@ export interface FileRoutesByTo {
   '/instructions': typeof AuthenticatedInstructionsLazyRoute
   '/payment-reports': typeof AuthenticatedPaymentReportsLazyRoute
   '/reports': typeof AuthenticatedReportsLazyRoute
+  '/subscription-details': typeof AuthenticatedSubscriptionDetailsLazyRoute
   '/subscriptions': typeof AuthenticatedSubscriptionsLazyRoute
   '/support': typeof AuthenticatedSupportLazyRoute
   '/': typeof authIndexRoute
@@ -551,6 +577,7 @@ export interface FileRoutesById {
   '/_authenticated/invoices': typeof AuthenticatedInvoicesLazyRouteWithChildren
   '/_authenticated/payment-reports': typeof AuthenticatedPaymentReportsLazyRoute
   '/_authenticated/reports': typeof AuthenticatedReportsLazyRoute
+  '/_authenticated/subscription-details': typeof AuthenticatedSubscriptionDetailsLazyRoute
   '/_authenticated/subscriptions': typeof AuthenticatedSubscriptionsLazyRoute
   '/_authenticated/support': typeof AuthenticatedSupportLazyRoute
   '/(auth)/': typeof authIndexRoute
@@ -579,6 +606,7 @@ export interface FileRouteTypes {
     | '/invoices'
     | '/payment-reports'
     | '/reports'
+    | '/subscription-details'
     | '/subscriptions'
     | '/support'
     | '/'
@@ -603,6 +631,7 @@ export interface FileRouteTypes {
     | '/instructions'
     | '/payment-reports'
     | '/reports'
+    | '/subscription-details'
     | '/subscriptions'
     | '/support'
     | '/'
@@ -629,6 +658,7 @@ export interface FileRouteTypes {
     | '/_authenticated/invoices'
     | '/_authenticated/payment-reports'
     | '/_authenticated/reports'
+    | '/_authenticated/subscription-details'
     | '/_authenticated/subscriptions'
     | '/_authenticated/support'
     | '/(auth)/'
@@ -700,6 +730,7 @@ export const routeTree = rootRoute
         "/_authenticated/invoices",
         "/_authenticated/payment-reports",
         "/_authenticated/reports",
+        "/_authenticated/subscription-details",
         "/_authenticated/subscriptions",
         "/_authenticated/support",
         "/_authenticated/subscription/$id",
@@ -763,6 +794,10 @@ export const routeTree = rootRoute
     },
     "/_authenticated/reports": {
       "filePath": "_authenticated/reports.lazy.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/subscription-details": {
+      "filePath": "_authenticated/subscription-details.lazy.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/subscriptions": {

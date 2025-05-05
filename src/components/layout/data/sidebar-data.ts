@@ -49,6 +49,11 @@ export const sidebarData: SidebarData = {
           icon: IconReportMoney,
         },
         {
+          title: 'Mon abonnement',
+          url: '/subscription-details' as const,
+          icon: IconCreditCard,
+        },
+        {
           title: 'Paramètres',
           url: '/settings' as const,
           icon: IconSettings,

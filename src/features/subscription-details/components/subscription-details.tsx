@@ -25,6 +25,8 @@ import {
 } from "@/components/ui/dialog"
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { Main } from '@/components/layout/main'
+
 
 interface Invoice {
   id: string;
@@ -69,6 +71,8 @@ export function SubscriptionDetails() {
   }
 
   return (
+    <>
+    <Main>
     <div className="space-y-6">
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-4 pt-2">
@@ -198,5 +202,7 @@ export function SubscriptionDetails() {
         )}
       </div>
     </div>
+    </Main>
+    </>
   )
 } 
