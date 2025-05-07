@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { IconHelp, IconMessage, IconClock, IconPhone } from '@tabler/icons-react'
+import { IconHelp, IconMessage, IconClock } from '@tabler/icons-react'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ThemeSwitch } from '@/components/theme-switch'
