@@ -1,9 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { IconHelp, IconMessage, IconClock } from '@tabler/icons-react'
+import { IconHelp, IconMessage, IconClock, IconPhone } from '@tabler/icons-react'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { ProfileDropdown } from '@/components/profile-dropdown'
+import { Badge } from '@/components/ui/badge'
 
 export function Support() {
   return (
@@ -66,20 +67,39 @@ export function Support() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <h3 className="font-semibold">Contactez-nous</h3>
-              <p className="text-sm text-muted-foreground">
-                Notre équipe de support est disponible pour vous aider.
-              </p>
-              <div className="space-y-2">
-                <p className="flex items-center gap-2">
-                  <IconClock className="h-4 w-4" />
-                  <span>Lundi - Vendredi: 9h - 18h</span>
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <Badge variant="success" className="bg-[#01631b] hover:bg-[#01631b]/90 text-white">
+                  <IconClock className="h-4 w-4 mr-1" />
+                  24/7 Support
+                </Badge>
+              </div>
+              
+              <div className="space-y-4">
+                <h3 className="font-semibold">Contactez-nous</h3>
+                <p className="text-sm text-muted-foreground">
+                  Notre équipe de support est disponible 24/7 pour vous aider avec vos questions et problèmes.
                 </p>
-                <p className="flex items-center gap-2">
-                  <IconMessage className="h-4 w-4" />
-                  <span>support@fleet-pay.fr</span>
-                </p>
+                <div className="space-y-3">
+                  <p className="flex items-center gap-2">
+                    <IconMessage className="h-4 w-4" />
+                    <span>support@fleet-pay.fr</span>
+                  </p>
+                  <p className="flex items-center gap-2">
+                    <IconClock className="h-4 w-4" />
+                    <span>Support disponible 24/7</span>
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-4">
+                <h3 className="font-semibold mb-2">Temps de réponse</h3>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm">Tous les cas</span>
+                    <Badge variant="success" className="bg-[#01631b] hover:bg-[#01631b]/90 text-white">30 min à 1h</Badge>
+                  </div>
+                </div>
               </div>
             </div>
           </CardContent>
