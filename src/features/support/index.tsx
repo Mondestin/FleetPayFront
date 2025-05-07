@@ -78,7 +78,7 @@ export function Support() {
                 </p>
                 <p className="flex items-center gap-2">
                   <IconMessage className="h-4 w-4" />
-                  <span>support@fleetpay.com</span>
+                  <span>support@fleet-pay.fr</span>
                 </p>
               </div>
             </div>

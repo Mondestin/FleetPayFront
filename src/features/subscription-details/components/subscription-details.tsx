@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { IconCreditCard, IconReceipt } from '@tabler/icons-react'
+import { IconCreditCard, IconReceipt, IconPrinter } from '@tabler/icons-react'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { useUser } from '@/features/auth/hooks/use-user'
@@ -38,6 +38,8 @@ interface Invoice {
 export function SubscriptionDetails() {
   const { user } = useUser()
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isReceiptDialogOpen, setIsReceiptDialogOpen] = useState(false)
+  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null)
   const queryClient = useQueryClient()
 
   const calculateRemainingDays = (endDate: string) => {
@@ -68,6 +70,56 @@ export function SubscriptionDetails() {
 
   const handleSubscriptionAction = (action: 'cancel' | 'resume') => {
     updateSubscriptionMutation.mutate(action)
+  }
+
+  const handlePrintReceipt = (invoice: Invoice) => {
+    setSelectedInvoice(invoice)
+    setIsReceiptDialogOpen(true)
+  }
+
+  const printReceipt = () => {
+    const receiptWindow = window.open('', '_blank')
+    if (receiptWindow && selectedInvoice) {
+      receiptWindow.document.write(`
+        <html>
+          <head>
+            <title>Facture #${selectedInvoice.id}</title>
+            <style>
+              body { font-family: Arial, sans-serif; padding: 20px; }
+              .receipt { max-width: 400px; margin: 0 auto; }
+              .header { text-align: center; margin-bottom: 20px; }
+              .details { margin-bottom: 20px; }
+              .total { font-weight: bold; margin-top: 20px; }
+              @media print {
+                .no-print { display: none; }
+              }
+            </style>
+          </head>
+          <body>
+            <div class="receipt">
+              <div class="header">
+                <h2>FleetPay</h2>
+                <p>Facture</p>
+              </div>
+              <div class="details">
+                <p><strong>Numéro de facture:</strong> ${selectedInvoice.id}</p>
+                <p><strong>Date:</strong> ${format(new Date(selectedInvoice.issue_date), 'dd/MM/yyyy')}</p>
+                <p><strong>Client:</strong> ${user?.first_name} ${user?.last_name}</p>
+                <p><strong>Email:</strong> ${user?.email}</p>
+              </div>
+              <div class="total">
+                <p>Montant total: €${Number(selectedInvoice.amount).toFixed(2)}</p>
+                <p>Statut: ${selectedInvoice.status === 'paid' ? 'Payée' : 'En attente'}</p>
+              </div>
+              <div class="no-print" style="text-align: center; margin-top: 20px;">
+                <button onclick="window.print()">Imprimer</button>
+              </div>
+            </div>
+          </body>
+        </html>
+      `)
+      receiptWindow.document.close()
+    }
   }
 
   return (
@@ -119,10 +171,26 @@ export function SubscriptionDetails() {
               </div>
             </div>
 
-            <div className="flex gap-4 items-start">
+            <div className="flex gap-2 items-start justify-end">
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button className="flex-1" variant="outline">
+                  <Button 
+                    className="bg-[#01631b] hover:bg-[#01631b]/90 text-white" 
+                    variant="default"
+                    style={{
+                      textAlign: 'center',
+                      border: 'none',
+                      borderRadius: '0.25rem',
+                      width: '11.625rem',
+                      padding: '0 2rem',
+                      height: '2.625rem',
+                      fontWeight: 'bold',
+                      fontFamily: '"Helvetica Neue",Arial,sans-serif',
+                      fontSize: '1rem',
+                      lineHeight: '1.25rem',
+                      cursor: 'pointer'
+                    }}
+                  >
                     <IconCreditCard className="mr-2 h-4 w-4" />
                     Gérer l'abonnement
                   </Button>
@@ -163,8 +231,8 @@ export function SubscriptionDetails() {
               </Dialog>
 
               {/* PayPal Payment Button */}
-              <div className="flex-1">
-                <form action="https://www.paypal.com/ncp/payment/WVZFHTXEU68NW" method="post" target="_blank" style={{display: 'inline-grid', justifyContent: 'center', alignContent: 'start', gap: '0.5rem', width: '100%'}}>
+              <div>
+                <form action="https://www.paypal.com/ncp/payment/WVZFHTXEU68NW" method="post" target="_blank" style={{display: 'inline-grid', justifyContent: 'center', alignContent: 'start', gap: '0.5rem'}}>
                   <input 
                     className="pp-WVZFHTXEU68NW" 
                     type="submit" 
@@ -173,7 +241,7 @@ export function SubscriptionDetails() {
                       textAlign: 'center',
                       border: 'none',
                       borderRadius: '0.25rem',
-                      minWidth: '11.625rem',
+                      width: '11.625rem',
                       padding: '0 2rem',
                       height: '2.625rem',
                       fontWeight: 'bold',
@@ -182,8 +250,7 @@ export function SubscriptionDetails() {
                       fontFamily: '"Helvetica Neue",Arial,sans-serif',
                       fontSize: '1rem',
                       lineHeight: '1.25rem',
-                      cursor: 'pointer',
-                      width: '100%'
+                      cursor: 'pointer'
                     }}
                   />
                   <img src="https://www.paypalobjects.com/images/Debit_Credit_APM.svg" alt="cards" />
@@ -216,7 +283,11 @@ export function SubscriptionDetails() {
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <Button variant="ghost" size="icon">
+                          <Button 
+                            variant="ghost" 
+                            size="icon"
+                            onClick={() => handlePrintReceipt(invoice)}
+                          >
                             <IconReceipt className="h-4 w-4" />
                           </Button>
                         </TableCell>
@@ -228,6 +299,50 @@ export function SubscriptionDetails() {
                 <p className="text-sm text-muted-foreground">Aucune facture disponible</p>
               )}
             </div>
+
+            {/* Receipt Dialog */}
+            <Dialog open={isReceiptDialogOpen} onOpenChange={setIsReceiptDialogOpen}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Facture</DialogTitle>
+                  <DialogDescription>
+                    Aperçu de la facture
+                  </DialogDescription>
+                </DialogHeader>
+                {selectedInvoice && (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm text-muted-foreground">Numéro de facture</p>
+                        <p className="font-medium">{selectedInvoice.id}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground">Date</p>
+                        <p className="font-medium">
+                          {format(new Date(selectedInvoice.issue_date), 'dd/MM/yyyy')}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground">Montant</p>
+                        <p className="font-medium">€{Number(selectedInvoice.amount).toFixed(2)}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground">Statut</p>
+                        <Badge variant={selectedInvoice.status === 'paid' ? 'success' : 'destructive'}>
+                          {selectedInvoice.status === 'paid' ? 'Payée' : 'En attente'}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <DialogFooter>
+                  <Button onClick={printReceipt} className="bg-[#01631b] hover:bg-[#01631b]/90">
+                    <IconPrinter className="mr-2 h-4 w-4" />
+                    Imprimer
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </>
         )}
       </div>
