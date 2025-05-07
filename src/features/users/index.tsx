@@ -72,8 +72,13 @@ console.log(paginatedUsers)
     },
     {
       header: 'Nom',
+      accessorKey: 'last_name',
+      cell: (row: User) => row.last_name
+    },
+    {
+      header: 'Prénom',
       accessorKey: 'first_name',
-      cell: (row: User) => `${row.first_name} ${row.last_name}`
+      cell: (row: User) => row.first_name
     },
     {
       header: 'Email',
@@ -140,7 +145,7 @@ console.log(paginatedUsers)
       cell: (row: User) => <StatusBadge status={row.status} />
     },
     {
-      header: "Date d'inscription",
+      header: "Inscription",
       accessorKey: 'created_at',
       cell: (row: User) => format(new Date(row.created_at), 'dd MMM yyyy', { locale: fr })
     }
