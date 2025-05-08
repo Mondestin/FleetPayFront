@@ -21,7 +21,8 @@ export const subscriptionSchema = z.object({
   created_at: z.string(),
   updated_at: z.string(),
   user: userSchema,
-  invoices: z.array(invoiceSchema).optional()
+  invoices: z.array(invoiceSchema).optional(),
+  plan_name: z.enum(['Free', 'Pro'])
 })
 
 export const paginatedSubscriptionsSchema = z.object({

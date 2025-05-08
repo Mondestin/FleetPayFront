@@ -23,6 +23,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { StatusBadge } from '@/components/ui/status-badge'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { Main } from '@/components/layout/main'
@@ -131,7 +132,7 @@ export function SubscriptionDetails() {
           <div>
             <p className="font-medium">Plan actuel</p>
             <p className="text-sm text-muted-foreground">
-              {subscription?.plan_name || 'Pro'}
+              <StatusBadge status={subscription?.amount === '0.00' ? 'free' : 'pro'} />
             </p>
           </div>
           <div className="flex items-center justify-start">

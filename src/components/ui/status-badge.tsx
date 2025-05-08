@@ -2,7 +2,7 @@ import { Badge } from '@/components/ui/badge'
 import { CheckCircle2, XCircle, AlertCircle, Clock, Users, UserRoundCog, UserRoundCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-type Status = 'active' | 'inactive' | 'pending' | 'expired' | 'canceled' | 'paid' | 'admin' | 'superadmin' | 'user' | 'imported' | 'failed' | 'manager' | 'overdue'
+type Status = 'active' | 'inactive' | 'pending' | 'expired' | 'canceled' | 'paid' | 'admin' | 'superadmin' | 'user' | 'imported' | 'failed' | 'manager' | 'overdue' | 'free' | 'pro'
 
 interface StatusBadgeProps {
   status: Status
@@ -76,8 +76,17 @@ const statusConfig = {
     icon: AlertCircle,
     variant: 'destructive',
     label: 'En retard'
+  },
+  free: {
+    icon: CheckCircle2,
+    variant: 'success',
+    label: 'Gratuit'
+  },
+  pro: {
+    icon: CheckCircle2,
+    variant: 'default',
+    label: 'Pro'
   }
-
 } as const
 
 export function StatusBadge({ status, className }: StatusBadgeProps) {

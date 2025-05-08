@@ -18,8 +18,8 @@ interface Props {
 }
 
 const PLANS = [
-  { id: '1', name: 'Basic', price: '199.99' },
-  { id: '2', name: 'Premium', price: '299.99' }
+  { id: '1', name: 'Free', price: '0' },
+  { id: '2', name: 'Pro', price: '200' }
 ]
 
 export function SubscriptionDialog({ open, onOpenChange, subscription }: Props) {
@@ -31,6 +31,7 @@ export function SubscriptionDialog({ open, onOpenChange, subscription }: Props) 
     end_date: subscription?.end_date || new Date(),
     amount: subscription?.amount || '',
     status: subscription?.status || 'active',
+    plan_name: subscription?.plan_name || 'Free',
   })
 
   useEffect(() => {
@@ -42,6 +43,7 @@ export function SubscriptionDialog({ open, onOpenChange, subscription }: Props) 
         end_date: subscription?.end_date || new Date(),
         amount: subscription?.amount || '',
         status: subscription?.status || 'active',
+        plan_name: subscription?.plan_name || 'Free',
       })
     }
   }, [open, subscription])
@@ -101,7 +103,8 @@ export function SubscriptionDialog({ open, onOpenChange, subscription }: Props) 
           start_date: formData.start_date,
           end_date: formData.end_date,
           amount: formData.amount,
-          status: formData.status as "active" | "expired" | "canceled"
+          status: formData.status as "active" | "expired" | "canceled",
+          plan_name: formData.plan_name
         }
       })
     } else {
@@ -111,7 +114,8 @@ export function SubscriptionDialog({ open, onOpenChange, subscription }: Props) 
         end_date: formData.end_date,
         amount: formData.amount,
         status: 'active',
-        payment_status: 'pending'
+        payment_status: 'pending',
+        plan_name: formData.plan_name
       })
     }
   }

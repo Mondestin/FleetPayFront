@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
-import { useRouter } from '@tanstack/react-router'
+import { useRouter, Link } from '@tanstack/react-router'
 import { Spinner } from '@/components/ui/spinner'
 import { authService } from '../../data/auth-service'
 
@@ -108,6 +108,12 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               {isLoading && <Spinner className="h-4 w-4 mr-2" />}
               Se connecter
             </Button>
+            <p className="text-center text-sm text-muted-foreground mt-4">
+              Pas encore de compte ?{' '}
+              <Link to="/sign-up" className="text-[#01631b] hover:underline">
+                Créer un compte
+              </Link>
+            </p>
           </div>
         </form>
       </Form>

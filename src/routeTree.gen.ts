@@ -23,6 +23,10 @@ import { Route as auth500Import } from './routes/(auth)/500'
 
 // Create Virtual Routes
 
+const TermsLazyImport = createFileRoute('/terms')()
+const SignUpLazyImport = createFileRoute('/sign-up')()
+const PrivacyLazyImport = createFileRoute('/privacy')()
+const HomeLazyImport = createFileRoute('/home')()
 const AuthenticatedSupportLazyImport = createFileRoute(
   '/_authenticated/support',
 )()
@@ -69,6 +73,30 @@ const AuthenticatedSubscriptionIdLazyImport = createFileRoute(
 )()
 
 // Create/Update Routes
+
+const TermsLazyRoute = TermsLazyImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/terms.lazy').then((d) => d.Route))
+
+const SignUpLazyRoute = SignUpLazyImport.update({
+  id: '/sign-up',
+  path: '/sign-up',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/sign-up.lazy').then((d) => d.Route))
+
+const PrivacyLazyRoute = PrivacyLazyImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/privacy.lazy').then((d) => d.Route))
+
+const HomeLazyRoute = HomeLazyImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/home.lazy').then((d) => d.Route))
 
 const AuthenticatedRouteRoute = AuthenticatedRouteImport.update({
   id: '/_authenticated',
@@ -280,6 +308,34 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: ''
       preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRoute
+    }
+    '/home': {
+      id: '/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof HomeLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/sign-up': {
+      id: '/sign-up'
+      path: '/sign-up'
+      fullPath: '/sign-up'
+      preLoaderRoute: typeof SignUpLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsLazyImport
       parentRoute: typeof rootRoute
     }
     '/(auth)/500': {
@@ -507,6 +563,10 @@ const AuthenticatedRouteRouteWithChildren =
 
 export interface FileRoutesByFullPath {
   '': typeof AuthenticatedRouteRouteWithChildren
+  '/home': typeof HomeLazyRoute
+  '/privacy': typeof PrivacyLazyRoute
+  '/sign-up': typeof SignUpLazyRoute
+  '/terms': typeof TermsLazyRoute
   '/500': typeof errors500LazyRoute
   '/otp': typeof authOtpRoute
   '/sign-in': typeof authSignInRoute
@@ -534,6 +594,10 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '': typeof AuthenticatedRouteRouteWithChildren
+  '/home': typeof HomeLazyRoute
+  '/privacy': typeof PrivacyLazyRoute
+  '/sign-up': typeof SignUpLazyRoute
+  '/terms': typeof TermsLazyRoute
   '/500': typeof errors500LazyRoute
   '/otp': typeof authOtpRoute
   '/sign-in': typeof authSignInRoute
@@ -561,6 +625,10 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/home': typeof HomeLazyRoute
+  '/privacy': typeof PrivacyLazyRoute
+  '/sign-up': typeof SignUpLazyRoute
+  '/terms': typeof TermsLazyRoute
   '/(auth)/500': typeof auth500Route
   '/(auth)/otp': typeof authOtpRoute
   '/(auth)/sign-in': typeof authSignInRoute
@@ -591,6 +659,10 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | ''
+    | '/home'
+    | '/privacy'
+    | '/sign-up'
+    | '/terms'
     | '/500'
     | '/otp'
     | '/sign-in'
@@ -617,6 +689,10 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | ''
+    | '/home'
+    | '/privacy'
+    | '/sign-up'
+    | '/terms'
     | '/500'
     | '/otp'
     | '/sign-in'
@@ -642,6 +718,10 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_authenticated'
+    | '/home'
+    | '/privacy'
+    | '/sign-up'
+    | '/terms'
     | '/(auth)/500'
     | '/(auth)/otp'
     | '/(auth)/sign-in'
@@ -671,6 +751,10 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  HomeLazyRoute: typeof HomeLazyRoute
+  PrivacyLazyRoute: typeof PrivacyLazyRoute
+  SignUpLazyRoute: typeof SignUpLazyRoute
+  TermsLazyRoute: typeof TermsLazyRoute
   auth500Route: typeof auth500Route
   authOtpRoute: typeof authOtpRoute
   authSignInRoute: typeof authSignInRoute
@@ -685,6 +769,10 @@ export interface RootRouteChildren {
 
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  HomeLazyRoute: HomeLazyRoute,
+  PrivacyLazyRoute: PrivacyLazyRoute,
+  SignUpLazyRoute: SignUpLazyRoute,
+  TermsLazyRoute: TermsLazyRoute,
   auth500Route: auth500Route,
   authOtpRoute: authOtpRoute,
   authSignInRoute: authSignInRoute,
@@ -708,6 +796,10 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/_authenticated",
+        "/home",
+        "/privacy",
+        "/sign-up",
+        "/terms",
         "/(auth)/500",
         "/(auth)/otp",
         "/(auth)/sign-in",
@@ -737,6 +829,18 @@ export const routeTree = rootRoute
         "/_authenticated/help-center/",
         "/_authenticated/users/"
       ]
+    },
+    "/home": {
+      "filePath": "home.lazy.tsx"
+    },
+    "/privacy": {
+      "filePath": "privacy.lazy.tsx"
+    },
+    "/sign-up": {
+      "filePath": "sign-up.lazy.tsx"
+    },
+    "/terms": {
+      "filePath": "terms.lazy.tsx"
     },
     "/(auth)/500": {
       "filePath": "(auth)/500.tsx"

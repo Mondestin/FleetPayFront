@@ -103,6 +103,11 @@ export function SubscriptionsList() {
       cell: (row: Subscription) => format(new Date(row.start_date), 'dd MMM yyyy', { locale: fr })
     },
     {
+      header: 'Plan',
+      accessorKey: 'amount',
+      cell: (row: Subscription) => <StatusBadge status={row.amount === '0.00' ? 'free' : 'pro'} />
+    },
+    {
       header: 'Date de fin',
       accessorKey: 'end_date',
       cell: (row: Subscription) => format(new Date(row.end_date), 'dd MMM yyyy', { locale: fr })
