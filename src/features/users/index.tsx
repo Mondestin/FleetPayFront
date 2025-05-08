@@ -33,7 +33,6 @@ export default function Users() {
     queryFn: () => userService.getAll(search),
     placeholderData: keepPreviousData
   })
-console.log(paginatedUsers)
 
   const deleteMutation = useMutation({
     mutationFn: userService.delete,

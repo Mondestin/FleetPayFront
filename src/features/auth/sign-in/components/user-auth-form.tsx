@@ -56,7 +56,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       const response = await authService.login({
         email: values.email,
         password: values.password,
-        device_name: 'iphone' // Or detect device name
+        device_name: navigator.userAgent || 'unknown'
       })
       
       authService.setToken(response.token)

@@ -36,7 +36,7 @@ export function UserDialog({ open, onOpenChange, user }: Props) {
     username: '',
     email: '',
     phone_number: '',
-    role: 'user',
+    role: 'manager',
     status: 'active',
   })
 
@@ -58,7 +58,7 @@ export function UserDialog({ open, onOpenChange, user }: Props) {
         username: '',
         email: '',
         phone_number: '',
-        role: 'user',
+        role: 'manager',
         status: 'active',
       })
     }
@@ -95,13 +95,13 @@ export function UserDialog({ open, onOpenChange, user }: Props) {
       updateMutation.mutate({ id: user.id, data: {
         ...formData,
         status: formData.status as "active" | "inactive",
-        role: formData.role as "admin" | "superadmin" | "user"
+        role: formData.role as "manager"
       }})
     } else {
       createMutation.mutate({
         ...formData,
         status: formData.status as "active" | "inactive",
-        role: formData.role as "admin" | "superadmin" | "user"
+        role: formData.role as  "manager"
       })
     }
   }

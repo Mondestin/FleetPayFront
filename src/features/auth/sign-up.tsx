@@ -5,12 +5,16 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { useMutation } from '@tanstack/react-query'
+import { authService } from '@/features/auth/data/auth-service'
+import { toast } from 'sonner'
 
 interface FormErrors {
   firstName?: string
   lastName?: string
   email?: string
   password?: string
+  phone_number?: string
   confirmPassword?: string
   acceptTerms?: string
 }
@@ -24,6 +28,7 @@ export function SignUp() {
     lastName: '',
     email: '',
     password: '',
+    phone_number: '',
     confirmPassword: '',
     acceptTerms: false
   })
@@ -62,6 +67,14 @@ export function SignUp() {
       isValid = false
     }
 
+    if (!formData.phone_number) {
+      newErrors.phone_number = 'Le numéro de téléphone est requis'
+      isValid = false
+    } else if (!/^\+?[1-10]\d{1,14}$/.test(formData.phone_number)) {
+      newErrors.phone_number = 'Format de numéro de téléphone invalide'
+      isValid = false
+    }
+
     if (!formData.password) {
       newErrors.password = 'Le mot de passe est requis'
       isValid = false
@@ -87,6 +100,23 @@ export function SignUp() {
     return isValid
   }
 
+  const registerMutation = useMutation({
+    mutationFn: async (data: { first_name: string; last_name: string; email: string; password: string; phone_number: string }) => {
+      const response = await authService.register(data)
+      authService.setToken(response.token)
+      authService.setUser(response.user)
+      return response
+    },
+    onSuccess: () => {
+      toast.success('Compte créé avec succès')
+      navigate({ to: '/dashboard' })
+    },
+    onError: () => {
+      toast.error('Une erreur est survenue lors de l\'inscription')
+      setErrors({ email: 'Une erreur est survenue lors de l\'inscription' })
+    }
+  })
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -97,20 +127,15 @@ export function SignUp() {
     setIsLoading(true)
 
     try {
-      // TODO: Implement actual sign-up logic here
-      // const response = await signUp(formData)
-      // if (response.success) {
-      //   navigate({ to: '/dashboard' })
-      // } else {
-      //   setError(response.message)
-      // }
-      
-      // Temporary mock success
-      setTimeout(() => {
-        navigate({ to: '/dashboard' })
-      }, 1000)
+      await registerMutation.mutateAsync({
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        email: formData.email,
+        phone_number: formData.phone_number,
+        password: formData.password
+      })
     } catch (err) {
-      setErrors({ email: 'Une erreur est survenue lors de l\'inscription' })
+      console.error('Sign up error:', err)
     } finally {
       setIsLoading(false)
     }
@@ -184,6 +209,23 @@ export function SignUp() {
               />
               {errors.email && (
                 <p className="text-sm text-red-500">{errors.email}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="phone_number">Numéro de téléphone</Label>
+              <Input
+                id="phone_number"
+                name="phone_number"
+                type="tel"
+                placeholder="0700000000"
+                value={formData.phone_number}
+                onChange={handleChange}
+                disabled={isLoading}
+                className={errors.phone_number ? "border-red-500" : ""}
+              />
+              {errors.phone_number && (
+                <p className="text-sm text-red-500">{errors.phone_number}</p>
               )}
             </div>
 
