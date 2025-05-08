@@ -24,7 +24,7 @@ export function Home() {
       <HomeHeader />
       <Main>
         {/* Hero Section */}
-        <section id="hero" className="relative overflow-hidden py-20 sm:py-32">
+        <section id="hero" className="relative overflow-hidden py-70 sm:py-32 mt-16">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
@@ -49,8 +49,19 @@ export function Home() {
           </div>
         </section>
 
+        {/* Dashboard Preview Image */}
+        <div className="relative w-full -mt-20 mb-0 z-10 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-5xl mx-auto">
+            <img
+              src="/images/dashboard.png"
+              alt="Dashboard"
+              className="w-full h-auto rounded-lg"
+            />
+          </div>
+        </div>
+
         {/* Features Section */}
-        <section id="features" className="py-20 bg-muted/50">
+        <section id="features" className="py-20 bg-muted/50 relative">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
@@ -470,7 +481,7 @@ export function Home() {
         {/* CTA Section */}
         <section id="contact" className="py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="relative isolate overflow-hidden bg-[#01631b] px-6 py-24 text-center shadow-2xl sm:rounded-3xl sm:px-16">
+            <div className="relative isolate overflow-hidden bg-[#01631b] px-6 py-24 text-center sm:rounded-3xl sm:px-16">
               <h2 className="mx-auto max-w-2xl text-3xl font-bold tracking-tight text-white sm:text-4xl">
                 Prêt à simplifier vos paiements ?
               </h2>
