@@ -112,8 +112,8 @@ export function Terms() {
                   <p>
                     Pour toute question concernant ces conditions, veuillez nous contacter à :
                     <br />
-                    <a href="mailto:support@fleetpay.fr" className="text-[#01631b] hover:underline">
-                      support@fleetpay.fr
+                    <a href="mailto:support@fleet-pay.fr" className="text-[#01631b] hover:underline">
+                      support@fleet-pay.fr
                     </a>
                   </p>
                 </CardContent>

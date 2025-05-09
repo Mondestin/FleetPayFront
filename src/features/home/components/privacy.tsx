@@ -129,8 +129,8 @@ export function Privacy() {
                   <p>
                     Pour toute question concernant notre politique de confidentialité, contactez-nous à :
                     <br />
-                    <a href="mailto:support@fleetpay.fr" className="text-[#01631b] hover:underline">
-                      support@fleetpay.fr
+                    <a href="mailto:support@fleet-pay.fr" className="text-[#01631b] hover:underline">
+                      support@fleet-pay.fr
                     </a>
                   </p>
                 </CardContent>

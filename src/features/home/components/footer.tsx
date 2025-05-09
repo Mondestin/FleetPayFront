@@ -92,7 +92,7 @@ export function HomeFooter() {
                     className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
                   >
                     <IconMail className="h-4 w-4" />
-                    support@fleetpay.fr
+                    support@fleet-pay.fr
                   </a>
                 </li>
                 <li>

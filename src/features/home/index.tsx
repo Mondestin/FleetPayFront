@@ -483,7 +483,7 @@ export function Home() {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="relative isolate overflow-hidden bg-[#01631b] px-6 py-24 text-center sm:rounded-3xl sm:px-16">
               <h2 className="mx-auto max-w-2xl text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                Prêt à simplifier vos paiements ?
+                Essayez le plan Pro gratuitement pendant 2 semaines
               </h2>
               <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-white/90">
                 Rejoignez des centaines de gestionnaires de flotte qui font confiance à FleetPay
@@ -491,7 +491,7 @@ export function Home() {
               <div className="mt-10 flex items-center justify-center gap-x-6">
                 <Link to="/sign-up">
                   <Button size="lg" className="bg-white text-[#01631b] hover:bg-white/90">
-                    Commencer maintenant
+                    Commencer l'essai gratuit
                   </Button>
                 </Link>
               </div>
