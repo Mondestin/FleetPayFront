@@ -17,6 +17,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import { ContactForm } from './components/contact-form'
 
 export function Home() {
   return (
@@ -243,11 +244,11 @@ export function Home() {
                   <ul className="space-y-4">
                     <li className="flex items-center">
                       <IconCheck className="h-5 w-5 text-[#01631b] mr-2" />
-                      <span>Jusqu'à 5 chauffeurs</span>
+                      <span>Jusqu'à 50 chauffeurs</span>
                     </li>
                     <li className="flex items-center">
                       <IconCheck className="h-5 w-5 text-[#01631b] mr-2" />
-                      <span>Importation des fichiers Uber</span>
+                      <span>Importation Uber, Bolt et Heetch</span>
                     </li>
                     <li className="flex items-center">
                       <IconCheck className="h-5 w-5 text-[#01631b] mr-2" />
@@ -296,6 +297,10 @@ export function Home() {
                       <IconCheck className="h-5 w-5 text-[#01631b] mr-2" />
                       <span>Rapports détaillés</span>
                     </li>
+                    <li className="flex items-center">
+                      <IconCheck className="h-5 w-5 text-[#01631b] mr-2" />
+                      <span>Exportation des rapports en Excel</span>
+                    </li>
                   </ul>
                   <Button className="w-full mt-8 bg-[#01631b] hover:bg-[#01631b]/90">
                     Choisir le plan Pro
@@ -315,15 +320,11 @@ export function Home() {
                   <ul className="space-y-4">
                     <li className="flex items-center">
                       <IconCheck className="h-5 w-5 text-[#01631b] mr-2" />
+                      <span>Toutes les fonctionnalités du plan Pro</span>
+                    </li>
+                    <li className="flex items-center">
+                      <IconCheck className="h-5 w-5 text-[#01631b] mr-2" />
                       <span>Plus de 150 chauffeurs</span>
-                    </li>
-                    <li className="flex items-center">
-                      <IconCheck className="h-5 w-5 text-[#01631b] mr-2" />
-                      <span>Fonctionnalités personnalisées</span>
-                    </li>
-                    <li className="flex items-center">
-                      <IconCheck className="h-5 w-5 text-[#01631b] mr-2" />
-                      <span>Support dédié 24/7</span>
                     </li>
                     <li className="flex items-center">
                       <IconCheck className="h-5 w-5 text-[#01631b] mr-2" />
@@ -331,7 +332,7 @@ export function Home() {
                     </li>
                     <li className="flex items-center">
                       <IconCheck className="h-5 w-5 text-[#01631b] mr-2" />
-                      <span>Formation incluse</span>
+                      <span>Support dédié 24/7</span>
                     </li>
                   </ul>
                   <Button className="w-full mt-8 bg-[#01631b] hover:bg-[#01631b]/90">
@@ -343,6 +344,16 @@ export function Home() {
           </div>
         </section>
 
+        {/* Image Section */}
+        <div className="relative w-full px-4 sm:px-6 lg:px-8">
+          <div className="max-w-5xl mx-auto">
+            <img
+              src="/images/rapport.png"
+              alt="Rapports détaillés"
+              className="w-full h-auto rounded-lg"
+            />
+          </div>
+        </div>
         {/* FAQ Section */}
         <section id="faq" className="py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -479,13 +490,13 @@ export function Home() {
         </section>
 
         {/* CTA Section */}
-        <section id="contact" className="py-20">
+        <section id="trial" className="py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="relative isolate overflow-hidden bg-[#01631b] px-6 py-24 text-center sm:rounded-3xl sm:px-16">
-              <h2 className="mx-auto max-w-2xl text-3xl font-bold tracking-tight text-white sm:text-4xl">
+              <h2 className="mx-auto text-3xl font-bold tracking-tight text-white sm:text-4xl">
                 Essayez le plan Pro gratuitement pendant 2 semaines
               </h2>
-              <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-white/90">
+              <p className="mx-auto mt-6 text-lg leading-8 text-white/90">
                 Rejoignez des centaines de gestionnaires de flotte qui font confiance à FleetPay
               </p>
               <div className="mt-10 flex items-center justify-center gap-x-6">
@@ -495,6 +506,24 @@ export function Home() {
                   </Button>
                 </Link>
               </div>
+            </div>
+          </div>
+        </section>
+
+
+        {/* Contact Form Section */}
+        <section id="contact" className="py-20">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-2xl text-center">
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+                Contactez-nous
+              </h2>
+              <p className="mt-4 text-lg text-muted-foreground">
+                Une question ? Un projet ? N'hésitez pas à nous contacter.
+              </p>
+            </div>
+            <div className="mx-auto mt-16 max-w-xl">
+              <ContactForm />
             </div>
           </div>
         </section>
