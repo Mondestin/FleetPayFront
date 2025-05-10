@@ -4,22 +4,59 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
+import { api } from '@/lib/api'
 
 interface FormData {
   name: string
   email: string
   company: string
+  phone_number: string
   message: string
+}
+
+interface FormErrors {
+  email?: string
+  phone_number?: string
 }
 
 export function ContactForm() {
   const [isLoading, setIsLoading] = useState(false)
+  const [errors, setErrors] = useState<FormErrors>({})
   const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
     company: '',
+    phone_number: '',
     message: ''
   })
+
+  const validateForm = () => {
+    const newErrors: FormErrors = {}
+    let isValid = true
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!formData.email) {
+      newErrors.email = 'L\'email est requis'
+      isValid = false
+    } else if (!emailRegex.test(formData.email)) {
+      newErrors.email = 'Format d\'email invalide'
+      isValid = false
+    }
+
+    // Phone validation
+    const phoneRegex = /^(\+33|0)[1-9](\d{2}){4}$/
+    if (!formData.phone_number) {
+      newErrors.phone_number = 'Le numéro de téléphone est requis'
+      isValid = false
+    } else if (!phoneRegex.test(formData.phone_number.replace(/\s/g, ''))) {
+      newErrors.phone_number = 'Format de numéro de téléphone invalide'
+      isValid = false
+    }
+
+    setErrors(newErrors)
+    return isValid
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -27,19 +64,29 @@ export function ContactForm() {
       ...prev,
       [name]: value
     }))
+    // Clear error when user starts typing
+    if (errors[name as keyof FormErrors]) {
+      setErrors(prev => ({ ...prev, [name]: undefined }))
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (!validateForm()) {
+      return
+    }
+
     setIsLoading(true)
 
     try {
-      // TODO: Implement contact form submission
-      await new Promise(resolve => setTimeout(resolve, 1000)) // Simulated API call
+      await api.post('/api/contact', formData)
       toast.success('Message envoyé avec succès')
-      setFormData({ name: '', email: '', company: '', message: '' })
+      setFormData({ name: '', email: '', company: '', phone_number: '', message: '' })
+      setErrors({})
     } catch (error) {
-      toast.error('Une erreur est survenue')
+      console.error('Contact form error:', error)
+      toast.error('Une erreur est survenue lors de l\'envoi du message')
     } finally {
       setIsLoading(false)
     }
@@ -72,22 +119,45 @@ export function ContactForm() {
             onChange={handleChange}
             disabled={isLoading}
             placeholder="john@example.com"
+            className={errors.email ? "border-red-500" : ""}
           />
+          {errors.email && (
+            <p className="text-sm text-red-500">{errors.email}</p>
+          )}
         </div>
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="company">Entreprise</Label>
-        <Input
-          id="company"
-          name="company"
-          type="text"
-          required
-          value={formData.company}
-          onChange={handleChange}
-          disabled={isLoading}
-          placeholder="Nom de votre entreprise"
-        />
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+        <div className="space-y-2">
+          <Label htmlFor="company">Entreprise</Label>
+          <Input
+            id="company"
+            name="company"
+            type="text"
+            required
+            value={formData.company}
+            onChange={handleChange}
+            disabled={isLoading}
+            placeholder="Nom de votre entreprise"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="phone_number">Numéro de téléphone</Label>
+          <Input
+            id="phone_number"
+            name="phone_number"
+            type="tel"
+            required
+            value={formData.phone_number}
+            onChange={handleChange}
+            disabled={isLoading}
+            placeholder="+33 6 00 00 00 00"
+            className={errors.phone_number ? "border-red-500" : ""}
+          />
+          {errors.phone_number && (
+            <p className="text-sm text-red-500">{errors.phone_number}</p>
+          )}
+        </div>
       </div>
 
       <div className="space-y-2">
