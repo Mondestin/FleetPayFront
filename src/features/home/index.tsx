@@ -40,7 +40,7 @@ export function Home() {
                     Commencer gratuitement
                   </Button>
                 </Link>
-                <Link to="/sign-in">
+                <Link to="/sign-up">
                   <Button size="lg" variant="outline" className="w-full sm:w-auto">
                     Voir la démo
                   </Button>
@@ -51,7 +51,7 @@ export function Home() {
         </section>
 
         {/* Dashboard Preview Image */}
-        <div className="relative w-full -mt-20 mb-0 z-10 px-4 sm:px-6 lg:px-8">
+        <div className="relative w-full -mt-10 mb-0 z-10 px-4 sm:px-6 lg:px-8">
           <div className="max-w-5xl mx-auto">
             <img
               src="/images/dashboard.png"
