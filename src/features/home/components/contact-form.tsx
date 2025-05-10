@@ -10,13 +10,13 @@ interface FormData {
   name: string
   email: string
   company: string
-  phone_number: string
+  phone: string
   message: string
 }
 
 interface FormErrors {
   email?: string
-  phone_number?: string
+  phone?: string
 }
 
 export function ContactForm() {
@@ -26,7 +26,7 @@ export function ContactForm() {
     name: '',
     email: '',
     company: '',
-    phone_number: '',
+    phone: '',
     message: ''
   })
 
@@ -46,11 +46,11 @@ export function ContactForm() {
 
     // Phone validation
     const phoneRegex = /^(\+33|0)[1-9](\d{2}){4}$/
-    if (!formData.phone_number) {
-      newErrors.phone_number = 'Le numéro de téléphone est requis'
+    if (!formData.phone) {
+      newErrors.phone = 'Le numéro de téléphone est requis'
       isValid = false
-    } else if (!phoneRegex.test(formData.phone_number.replace(/\s/g, ''))) {
-      newErrors.phone_number = 'Format de numéro de téléphone invalide'
+    } else if (!phoneRegex.test(formData.phone.replace(/\s/g, ''))) {
+      newErrors.phone = 'Format de numéro de téléphone invalide'
       isValid = false
     }
 
@@ -82,7 +82,7 @@ export function ContactForm() {
     try {
       await api.post('/api/contact', formData)
       toast.success('Message envoyé avec succès')
-      setFormData({ name: '', email: '', company: '', phone_number: '', message: '' })
+      setFormData({ name: '', email: '', company: '', phone: '', message: '' })
       setErrors({})
     } catch (error) {
       console.error('Contact form error:', error)
@@ -144,18 +144,18 @@ export function ContactForm() {
         <div className="space-y-2">
           <Label htmlFor="phone_number">Numéro de téléphone</Label>
           <Input
-            id="phone_number"
-            name="phone_number"
+            id="phone"
+            name="phone"
             type="tel"
             required
-            value={formData.phone_number}
+            value={formData.phone}
             onChange={handleChange}
             disabled={isLoading}
             placeholder="+33 6 00 00 00 00"
-            className={errors.phone_number ? "border-red-500" : ""}
+            className={errors.phone ? "border-red-500" : ""}
           />
-          {errors.phone_number && (
-            <p className="text-sm text-red-500">{errors.phone_number}</p>
+          {errors.phone && (
+            <p className="text-sm text-red-500">{errors.phone}</p>
           )}
         </div>
       </div>
