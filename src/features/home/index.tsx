@@ -29,10 +29,10 @@ export function Home() {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
-                Simplifiez la gestion des paiements de vos chauffeurs
+                Bienvenue sur FleetPay, votre solution tout-en-un pour la gestion des paiements de chauffeurs VTC.
               </h1>
-              <p className="mt-6 text-lg leading-8 text-muted-foreground max-w-2xl mx-auto">
-                Importez facilement les fichiers de paiements Uber, Bolt et Heetch, gérez les versements et suivez vos transactions en temps réel.
+              <p className="mt-6 text-lg leading-8 text-muted-foreground max-w-3xl mx-auto">
+                Importez facilement vos fichiers de paiements depuis Uber, Bolt et Heetch. En quelques clics, vous centralisez toutes vos transactions sur une seule plateforme.
               </p>
               <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-x-6">
                 <Link to="/sign-up">
@@ -66,10 +66,10 @@ export function Home() {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                Fonctionnalités principales
+                Une solution complète pour votre activité
               </h2>
-              <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-                Tout ce dont vous avez besoin pour gérer efficacement vos paiements
+              <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
+                FleetPay simplifie votre quotidien, vous permettant de vous concentrer sur l'essentiel : votre activité.
               </p>
             </div>
 
@@ -79,11 +79,11 @@ export function Home() {
                   <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-[#01631b]/10">
                     <IconFileImport className="h-6 w-6 text-[#01631b]" />
                   </div>
-                  <CardTitle>Import de fichiers</CardTitle>
+                  <CardTitle>Import simplifié</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    Importez facilement les fichiers de paiements depuis Uber, Bolt et Heetch. Un processus simple et rapide pour gérer vos transactions.
+                    Importez facilement vos fichiers de paiements depuis Uber, Bolt et Heetch. En quelques clics, vous centralisez toutes vos transactions sur une seule plateforme.
                   </p>
                 </CardContent>
               </Card>
@@ -97,7 +97,7 @@ export function Home() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    Gérez facilement les versements à vos chauffeurs avec notre système de paiement intégré.
+                    Grâce à notre système intégré, gérez les versements à vos chauffeurs de manière fluide, rapide et sécurisée.
                   </p>
                 </CardContent>
               </Card>
@@ -111,7 +111,7 @@ export function Home() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    Accédez à des rapports détaillés et des analyses pour suivre vos transactions et optimiser vos opérations.
+                    Accédez à des rapports détaillés pour analyser vos performances, suivre vos revenus et optimiser vos opérations. Visualisez vos statistiques hebdomadaires et mensuelles grâce à un tableau de bord clair et intuitif.
                   </p>
                 </CardContent>
               </Card>
