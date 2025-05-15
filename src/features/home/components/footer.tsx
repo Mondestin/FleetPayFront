@@ -24,7 +24,7 @@ export function HomeFooter() {
                 />
               </Link>
               <p className="mt-4 text-sm text-muted-foreground">
-                Simplifiez la gestion des paiements de vos chauffeurs avec notre solution innovante.
+                Simplifiez la gestion des paiements de vos chauffeurs VTC avec notre solution innovante.
               </p>
             </div>
 
