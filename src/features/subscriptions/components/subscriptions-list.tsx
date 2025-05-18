@@ -90,7 +90,11 @@ export function SubscriptionsList() {
     {
       header: 'Statut',
       accessorKey: 'status',
-      cell: (row: Subscription) => <StatusBadge status={row.status} />
+      cell: (row: Subscription) => {
+        const isExpired = new Date(row.end_date) < new Date()
+        const effectiveStatus = row.status === 'active' && !isExpired ? 'active' : isExpired ? 'expired' : row.status
+        return <StatusBadge status={effectiveStatus} />
+      }
     },
     {
       header: 'Paiement',

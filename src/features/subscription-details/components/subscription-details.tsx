@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { IconCreditCard, IconReceipt, IconPrinter } from '@tabler/icons-react'
+import { IconCreditCard, IconReceipt, IconPrinter, IconAlertCircle } from '@tabler/icons-react'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { useUser } from '@/features/auth/hooks/use-user'
@@ -29,6 +29,7 @@ import { toast } from 'sonner'
 import { Main } from '@/components/layout/main'
 import { invoiceSchema } from '@/features/subscriptions/data/schema'
 import type { z } from 'zod'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 
 type Invoice = z.infer<typeof invoiceSchema>
 
@@ -123,6 +124,15 @@ export function SubscriptionDetails() {
     <>
     <Main>
     <div className="space-y-6">
+      {subscription && new Date(subscription.end_date) < new Date() && (
+        <Alert variant="destructive" className="mb-4">
+          <IconAlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            Votre abonnement a expiré le {format(new Date(subscription.end_date), 'dd MMMM yyyy', { locale: fr })}. 
+            Veuillez renouveler votre abonnement pour continuer à utiliser le service.
+          </AlertDescription>
+        </Alert>
+      )}
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-4 pt-2">
           <div>
@@ -132,8 +142,19 @@ export function SubscriptionDetails() {
          
           </div>
           <div className="flex items-center justify-start">
-            <Badge variant={subscription?.status === 'active' ? 'success' : subscription?.status === 'expired' ? 'destructive' : 'warning'}>
-              {subscription?.status === 'active' ? 'Actif' : subscription?.status === 'expired' ? 'Expiré' : 'Annulé'}
+            <Badge variant={
+              subscription?.status === 'active' && new Date(subscription.end_date) > new Date() 
+                ? 'success' 
+                : subscription?.status === 'expired' || new Date(subscription?.end_date || '') < new Date()
+                  ? 'destructive' 
+                  : 'warning'
+            }>
+              {subscription?.status === 'active' && new Date(subscription.end_date) > new Date()
+                ? 'Actif'
+                : subscription?.status === 'expired' || new Date(subscription?.end_date || '') < new Date()
+                  ? 'Expiré'
+                  : 'Annulé'
+              }
             </Badge>
             <span className="ml-2"></span>
             {subscription?.status === 'canceled' && (

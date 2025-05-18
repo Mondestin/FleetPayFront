@@ -12,12 +12,19 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { IconInfoCircle, IconAlertCircle } from '@tabler/icons-react'
 import { importStatusService } from './data/import-status-service'
 import { useState } from 'react'
+import { useUser } from '@/features/auth/hooks/use-user'
 
 export default function FilesManager() {
+  const { user } = useUser()
   const queryClient = useQueryClient()
   const [selectedWeek, setSelectedWeek] = useState(new Date())
   const weekStart = startOfWeek(selectedWeek, { locale: fr })
   
+  const { data: subscription } = useQuery({
+    queryKey: ['subscription'],
+    queryFn: () => api.get(`/api/subscriptions/${user?.id}/current`).then(res => res.data)
+  })
+
   const { data: importStatus } = useQuery({
     queryKey: ['import-status', format(weekStart, 'yyyy-MM-dd')],
     queryFn: () => importStatusService.getStatus(weekStart)
@@ -37,6 +44,9 @@ export default function FilesManager() {
   const handleWeekChange = (date: Date) => {
     setSelectedWeek(date)
   }
+
+  const isExpired = subscription ? new Date(subscription.end_date) < new Date() : false
+
 
   return (
     <>
@@ -92,11 +102,21 @@ export default function FilesManager() {
               onDeleteUpload={handleDeleteUpload}
               weekStart={selectedWeek}
             />
-            <ImportForm 
-              uploadStatus={uploadStatus} 
-              selectedWeek={selectedWeek}
-              onWeekChange={handleWeekChange}
-            />
+            {isExpired ? (
+              <Alert variant="destructive">
+                <IconAlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  Votre abonnement a expiré le {format(new Date(subscription?.end_date || ''), 'dd/MM/yyyy', { locale: fr })}. 
+                  Veuillez renouveler votre abonnement pour continuer à importer des rapports.
+                </AlertDescription>
+              </Alert>
+            ) : (
+              <ImportForm 
+                uploadStatus={uploadStatus} 
+                selectedWeek={selectedWeek}
+                onWeekChange={handleWeekChange}
+              />
+            )}
           </div>
         </div>
       </Main>

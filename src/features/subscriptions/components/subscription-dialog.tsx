@@ -10,6 +10,8 @@ import { type Subscription } from '../data/schema'
 import { userService } from '@/features/users/data/user-service'
 import { DatePicker } from '@/components/ui/date-picker'
 import { StatusBadge } from '@/components/ui/status-badge'
+import { format } from 'date-fns'
+import { fr } from 'date-fns/locale'
 
 interface Props {
   open: boolean
@@ -33,6 +35,8 @@ export function SubscriptionDialog({ open, onOpenChange, subscription }: Props) 
     status: subscription?.status || 'active',
     plan_name: subscription?.plan_name || 'Free',
   })
+
+  const isExpired = subscription ? new Date(subscription.end_date) < new Date() : false
 
   useEffect(() => {
     if (open) {
@@ -130,142 +134,167 @@ export function SubscriptionDialog({ open, onOpenChange, subscription }: Props) 
             {subscription ? 'Modifier l\'abonnement' : 'Nouvel abonnement'}
           </DialogTitle>
           <DialogDescription>
-            {subscription ? 'Modifiez les informations de l\'abonnement' : 'Remplissez les informations pour créer un nouvel abonnement'}
+            {isExpired ? (
+              <div className="text-red-500 font-medium">
+                Cet abonnement a expiré. Veuillez renouveler votre abonnement pour continuer à utiliser le service.
+              </div>
+            ) : subscription ? (
+              'Modifiez les informations de l\'abonnement'
+            ) : (
+              'Remplissez les informations pour créer un nouvel abonnement'
+            )}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-2">
-            <Label htmlFor="userId">Utilisateur</Label>
-            <Select
-              value={formData.user_id?.toString()}
-              onValueChange={(value) => {
-                const selectedUser = usersResponse?.find(user => user.id.toString() === value)
-                setFormData(prev => ({
-                  ...prev,
-                  user_id: value,
-                  userName: selectedUser ? `${selectedUser.first_name} ${selectedUser.last_name}` : ''
-                }))
-              }}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Sélectionner un utilisateur" />
-              </SelectTrigger>
-              <SelectContent>
-                {usersResponse?.map((user) => (
-                  <SelectItem key={user.id} value={user.id.toString()}>
-                    {user.first_name} {user.last_name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          {isExpired ? (
+            <div className="text-center py-4">
+              <p className="text-muted-foreground mb-4">
+                La date de fin de l'abonnement ({format(new Date(subscription?.end_date || ''), 'dd/MM/yyyy', { locale: fr })}) a été dépassée.
+              </p>
+              <Button 
+                type="button"
+                className="bg-[#01631b] hover:bg-[#01631b]/90"
+                onClick={() => onOpenChange(false)}
+              >
+                Fermer
+              </Button>
+            </div>
+          ) : (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="userId">Utilisateur</Label>
+                <Select
+                  value={formData.user_id?.toString()}
+                  onValueChange={(value) => {
+                    const selectedUser = usersResponse?.find(user => user.id.toString() === value)
+                    setFormData(prev => ({
+                      ...prev,
+                      user_id: value,
+                      userName: selectedUser ? `${selectedUser.first_name} ${selectedUser.last_name}` : ''
+                    }))
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sélectionner un utilisateur" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {usersResponse?.map((user) => (
+                      <SelectItem key={user.id} value={user.id.toString()}>
+                        {user.first_name} {user.last_name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="planId">Plan</Label>
-            <Select
-              value={formData.amount}
-              onValueChange={(value) => {
-                const plan = PLANS.find(p => p.price === value)
-                setFormData({ 
-                  ...formData, 
-                  amount: plan?.price || ''
-                })
-              }}
-              required
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Sélectionner un plan" />
-              </SelectTrigger>
-              <SelectContent>
-                {PLANS.map((plan) => (
-                  <SelectItem key={plan.price} value={plan.price}>
-                    {plan.name} - €{plan.price}/mois
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+              <div className="space-y-2">
+                <Label htmlFor="planId">Plan</Label>
+                <Select
+                  value={formData.amount}
+                  onValueChange={(value) => {
+                    const plan = PLANS.find(p => p.price === value)
+                    setFormData({ 
+                      ...formData, 
+                      amount: plan?.price || ''
+                    })
+                  }}
+                  required
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sélectionner un plan" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PLANS.map((plan) => (
+                      <SelectItem key={plan.price} value={plan.price}>
+                        {plan.name} - €{plan.price}/mois
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-          <div className="space-y-2">
-            <Label className="block mb-2">Date de début</Label>
-            <DatePicker
-              value={formData.start_date instanceof Date ? formData.start_date : new Date(formData.start_date)}
-              onChange={(date: Date | undefined) => setFormData({ ...formData, start_date: date || new Date() })}
-              
-            />
-          </div>
+              <div className="space-y-2">
+                <Label className="block mb-2">Date de début</Label>
+                <DatePicker
+                  value={formData.start_date instanceof Date ? formData.start_date : new Date(formData.start_date)}
+                  onChange={(date: Date | undefined) => setFormData({ ...formData, start_date: date || new Date() })}
+                  
+                />
+              </div>
 
-          <div className="space-y-2">
-            <Label className="block mb-2">Date de fin</Label>
-            <DatePicker
-              value={formData.end_date instanceof Date ? formData.end_date : new Date(formData.end_date)}
-              onChange={(date: Date | undefined) => setFormData({ ...formData, end_date: date || new Date() })}
-            />
-          </div>
+              <div className="space-y-2">
+                <Label className="block mb-2">Date de fin</Label>
+                <DatePicker
+                  value={formData.end_date instanceof Date ? formData.end_date : new Date(formData.end_date)}
+                  onChange={(date: Date | undefined) => setFormData({ ...formData, end_date: date || new Date() })}
+                />
+              </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="status">Statut de paiement</Label>
-            <Select
-              value={formData.payment_status}
-              onValueChange={(value: "paid" | "pending" | "failed") => 
-                setFormData({ ...formData, payment_status: value })}
-              required
-            >
-              <SelectTrigger>
-                <SelectValue>
-                  {formData.payment_status && (
-                    <StatusBadge status={formData.payment_status as any} />
-                  )}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="paid">
-                  <StatusBadge status="paid" />
-                </SelectItem>
-                <SelectItem value="pending">
-                  <StatusBadge status="pending" />
-                </SelectItem>
-                <SelectItem value="failed">
-                  <StatusBadge status="failed" />
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="status">Statut</Label>
-            <Select
-              value={formData.status}
-              onValueChange={(value: "active" | "expired" | "canceled") => 
-                setFormData({ ...formData, status: value })}
-              required
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="active">Actif</SelectItem>
-                <SelectItem value="canceled">Annulé</SelectItem>
-                <SelectItem value="expired">Expiré</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+              <div className="space-y-2">
+                <Label htmlFor="status">Statut de paiement</Label>
+                <Select
+                  value={formData.payment_status}
+                  onValueChange={(value: "paid" | "pending" | "failed") => 
+                    setFormData({ ...formData, payment_status: value })}
+                  required
+                >
+                  <SelectTrigger>
+                    <SelectValue>
+                      {formData.payment_status && (
+                        <StatusBadge status={formData.payment_status as any} />
+                      )}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="paid">
+                      <StatusBadge status="paid" />
+                    </SelectItem>
+                    <SelectItem value="pending">
+                      <StatusBadge status="pending" />
+                    </SelectItem>
+                    <SelectItem value="failed">
+                      <StatusBadge status="failed" />
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="status">Statut</Label>
+                <Select
+                  value={formData.status}
+                  onValueChange={(value: "active" | "expired" | "canceled") => 
+                    setFormData({ ...formData, status: value })}
+                  required
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Actif</SelectItem>
+                    <SelectItem value="canceled">Annulé</SelectItem>
+                    <SelectItem value="expired">Expiré</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-          <div className="flex justify-end gap-2">
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={() => onOpenChange(false)}
-            >
-              Annuler
-            </Button>
-            <Button 
-              type="submit"
-              className="bg-[#01631b] hover:bg-[#01631b]/90"
-              disabled={createMutation.isPending || updateMutation.isPending}
-            >
-              {subscription ? 'Mettre à jour' : 'Créer'}
-            </Button>
-          </div>
+              <div className="flex justify-end gap-2">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => onOpenChange(false)}
+                >
+                  Annuler
+                </Button>
+                <Button 
+                  type="submit"
+                  className="bg-[#01631b] hover:bg-[#01631b]/90"
+                  disabled={createMutation.isPending || updateMutation.isPending}
+                >
+                  {subscription ? 'Mettre à jour' : 'Créer'}
+                </Button>
+              </div>
+            </>
+          )}
         </form>
       </DialogContent>
     </Dialog>
