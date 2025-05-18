@@ -59,7 +59,7 @@ export default function Users() {
   const columns: Column<User>[] = [
     {
       header: '#',
-      accessorKey: 'last_name' as keyof User,
+      accessorKey: 'full_name' as keyof User,
       cell: (row: User) => (
         <Avatar className="h-8 w-8">
           

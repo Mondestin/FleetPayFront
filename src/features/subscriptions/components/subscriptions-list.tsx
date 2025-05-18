@@ -104,7 +104,7 @@ export function SubscriptionsList() {
     },
     {
       header: 'Plan',
-      accessorKey: 'amount',
+      accessorKey: 'plan_name',
       cell: (row: Subscription) => <StatusBadge status={row.amount === '0.00' ? 'free' : 'pro'} />
     },
     {

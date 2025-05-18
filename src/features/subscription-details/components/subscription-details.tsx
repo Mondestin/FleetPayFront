@@ -27,14 +27,10 @@ import { StatusBadge } from '@/components/ui/status-badge'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { Main } from '@/components/layout/main'
+import { invoiceSchema } from '@/features/subscriptions/data/schema'
+import type { z } from 'zod'
 
-
-interface Invoice {
-  id: string;
-  issue_date: string;
-  amount: string;
-  status: 'paid' | 'pending';
-}
+type Invoice = z.infer<typeof invoiceSchema>
 
 export function SubscriptionDetails() {
   const { user } = useUser()
@@ -99,11 +95,11 @@ export function SubscriptionDetails() {
           <body>
             <div class="receipt">
               <div class="header">
-                <h2>FleetPay</h2>
+               <img src="https://fleet-pay-front.vercel.app/images/fleetpay-bgt.png" alt="FleetPay" style="width: 100px; height: 30px;"/>
                 <p>Facture</p>
               </div>
               <div class="details">
-                <p><strong>Numéro de facture:</strong> ${selectedInvoice.id}</p>
+                <p><strong>Numéro de facture:</strong> ${selectedInvoice.invoice_number}</p>
                 <p><strong>Date:</strong> ${format(new Date(selectedInvoice.issue_date), 'dd/MM/yyyy')}</p>
                 <p><strong>Client:</strong> ${user?.first_name} ${user?.last_name}</p>
                 <p><strong>Email:</strong> ${user?.email}</p>
@@ -131,9 +127,9 @@ export function SubscriptionDetails() {
         <div className="grid grid-cols-2 gap-4 pt-2">
           <div>
             <p className="font-medium">Plan actuel</p>
-            <p className="text-sm text-muted-foreground">
+            
               <StatusBadge status={subscription?.amount === '0.00' ? 'free' : 'pro'} />
-            </p>
+         
           </div>
           <div className="flex items-center justify-start">
             <Badge variant={subscription?.status === 'active' ? 'success' : subscription?.status === 'expired' ? 'destructive' : 'warning'}>
@@ -279,7 +275,7 @@ export function SubscriptionDetails() {
                         </TableCell>
                         <TableCell>€{Number(invoice.amount).toFixed(2)}</TableCell>
                         <TableCell>
-                          <Badge variant={invoice.status === 'paid' ? 'success' : 'destructive'}>
+                          <Badge variant={invoice.status === 'paid' ? 'success' : 'warning'}>
                             {invoice.status === 'paid' ? 'Payée' : 'En attente'}
                           </Badge>
                         </TableCell>
@@ -315,7 +311,7 @@ export function SubscriptionDetails() {
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <p className="text-sm text-muted-foreground">Numéro de facture</p>
-                        <p className="font-medium">{selectedInvoice.id}</p>
+                        <p className="font-medium">{selectedInvoice.invoice_number}</p>
                       </div>
                       <div>
                         <p className="text-sm text-muted-foreground">Date</p>
@@ -329,7 +325,7 @@ export function SubscriptionDetails() {
                       </div>
                       <div>
                         <p className="text-sm text-muted-foreground">Statut</p>
-                        <Badge variant={selectedInvoice.status === 'paid' ? 'success' : 'destructive'}>
+                        <Badge variant={selectedInvoice.status === 'paid' ? 'success' : 'warning'}>
                           {selectedInvoice.status === 'paid' ? 'Payée' : 'En attente'}
                         </Badge>
                       </div>

@@ -4,8 +4,11 @@ import { userSchema, paginationSchema } from '@/features/payment-reports/data/sc
 export const invoiceSchema = z.object({
   id: z.string(),
   invoice_number: z.string(),
+  subscription_id: z.string(),
   amount: z.string(),
   status: z.enum(['paid', 'pending', 'failed']),
+  issue_date: z.string(),
+  due_date: z.string(),
   created_at: z.string(),
   updated_at: z.string()
 })
@@ -20,9 +23,11 @@ export const subscriptionSchema = z.object({
   payment_status: z.enum(['paid', 'pending', 'failed']),
   created_at: z.string(),
   updated_at: z.string(),
-  user: userSchema,
+  plan_name: z.enum(['Free', 'Pro']),
+  expires_at: z.string(),
+  payment_method: z.string(),
   invoices: z.array(invoiceSchema).optional(),
-  plan_name: z.enum(['Free', 'Pro'])
+  user: userSchema
 })
 
 export const paginatedSubscriptionsSchema = z.object({

@@ -31,6 +31,7 @@ interface Props {
 
 type InvoiceFormData = {
   subscription_id: string
+  invoice_number: string
   amount: number
   status: 'pending' | 'paid' | 'overdue'
   issue_date: string
@@ -41,6 +42,7 @@ export function InvoiceDialog({ open, onOpenChange, invoice }: Props) {
   const queryClient = useQueryClient()
   const [formData, setFormData] = useState<InvoiceFormData>({
     subscription_id: '',
+    invoice_number: '',
     amount: 0,
     status: 'pending',
     issue_date: '',
@@ -57,7 +59,8 @@ export function InvoiceDialog({ open, onOpenChange, invoice }: Props) {
     if (open && invoice) {
       setFormData({
         subscription_id: invoice.subscription_id,
-        amount: invoice.amount,
+        invoice_number: invoice.invoice_number,
+        amount: Number(invoice.amount),
         status: invoice.status,
         issue_date: invoice.issue_date,
         due_date: invoice.due_date,
@@ -65,6 +68,7 @@ export function InvoiceDialog({ open, onOpenChange, invoice }: Props) {
     } else if (open) {
       setFormData({
         subscription_id: '',
+        invoice_number: '',
         amount: 0,
         status: 'pending',
         issue_date: '',
