@@ -115,7 +115,9 @@ export function SubscriptionDialog({ open, onOpenChange, subscription }: Props) 
         amount: formData.amount,
         status: 'active',
         payment_status: 'pending',
-        plan_name: formData.plan_name
+        plan_name: formData.plan_name,
+        expires_at: formData.end_date.toISOString(),
+        payment_method: 'Card'
       })
     }
   }
