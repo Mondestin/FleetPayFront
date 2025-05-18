@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { IconPlus, IconSearch, IconEdit, IconTrash } from '@tabler/icons-react'
-import { ConfirmDialog } from '@/components/ui/confirm-dialog'
+import { ConfirmDialog } from '@/components/confirm-dialog'
 import { PaginatedDataTable } from '@/features/shared/components/PaginatedDataTable'
 import { formatDate } from '@/lib/utils'
 import { InvoiceDialog } from './invoice-dialog'
@@ -27,7 +27,7 @@ const statusMap: StatusMap = {
 export function InvoicesList() {
   const [search, setSearch] = useState('')
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | undefined>()
   const queryClient = useQueryClient()
 
@@ -42,7 +42,7 @@ export function InvoicesList() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['invoices'] })
       toast.success('Facture supprimée avec succès')
-      setConfirmOpen(false)
+      setDeleteDialogOpen(false)
     },
     onError: () => {
       toast.error('Erreur lors de la suppression')
@@ -110,7 +110,7 @@ export function InvoicesList() {
           size="icon"
           onClick={() => {
             setSelectedInvoice(row)
-            setConfirmOpen(true)
+            setDeleteDialogOpen(true)
           }}
         >
           <IconTrash className="h-4 w-4" />
@@ -175,8 +175,8 @@ export function InvoicesList() {
       />
 
       <ConfirmDialog
-        open={confirmOpen}
-        onOpenChange={setConfirmOpen}
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
         title="Supprimer la facture"
         description="Êtes-vous sûr de vouloir supprimer cette facture ? Cette action est irréversible."
         onConfirm={() => {

@@ -7,7 +7,6 @@ export const invoiceService = {
     if (search) params.append('search', search)
     
     const response = await api.get<PaginatedInvoices>(`/api/invoices?${params.toString()}`)
-    
     return response.data
   },
 
@@ -27,6 +26,6 @@ export const invoiceService = {
   },
 
   delete: async (id: string) => {
-    await api.delete(`/invoices/${id}`)
+    await api.delete<Invoice>(`/api/invoices/${id}`)
   },
 } 

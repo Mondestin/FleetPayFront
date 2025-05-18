@@ -36,8 +36,6 @@ export function SubscriptionDialog({ open, onOpenChange, subscription }: Props) 
     plan_name: subscription?.plan_name || 'Free',
   })
 
-  const isExpired = subscription ? new Date(subscription.end_date) < new Date() : false
-
   useEffect(() => {
     if (open) {
       setFormData({
@@ -134,11 +132,8 @@ export function SubscriptionDialog({ open, onOpenChange, subscription }: Props) 
             {subscription ? 'Modifier l\'abonnement' : 'Nouvel abonnement'}
           </DialogTitle>
           <DialogDescription>
-            {isExpired ? (
-              <div className="text-red-500 font-medium">
-                Cet abonnement a expiré. Veuillez renouveler votre abonnement pour continuer à utiliser le service.
-              </div>
-            ) : subscription ? (
+           
+            {subscription ? (
               'Modifiez les informations de l\'abonnement'
             ) : (
               'Remplissez les informations pour créer un nouvel abonnement'
@@ -146,20 +141,7 @@ export function SubscriptionDialog({ open, onOpenChange, subscription }: Props) 
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {isExpired ? (
-            <div className="text-center py-4">
-              <p className="text-muted-foreground mb-4">
-                La date de fin de l'abonnement ({format(new Date(subscription?.end_date || ''), 'dd/MM/yyyy', { locale: fr })}) a été dépassée.
-              </p>
-              <Button 
-                type="button"
-                className="bg-[#01631b] hover:bg-[#01631b]/90"
-                onClick={() => onOpenChange(false)}
-              >
-                Fermer
-              </Button>
-            </div>
-          ) : (
+          
             <>
               <div className="space-y-2">
                 <Label htmlFor="userId">Utilisateur</Label>
@@ -294,7 +276,6 @@ export function SubscriptionDialog({ open, onOpenChange, subscription }: Props) 
                 </Button>
               </div>
             </>
-          )}
         </form>
       </DialogContent>
     </Dialog>
