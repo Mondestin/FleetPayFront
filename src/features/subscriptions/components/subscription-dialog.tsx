@@ -10,8 +10,7 @@ import { type Subscription } from '../data/schema'
 import { userService } from '@/features/users/data/user-service'
 import { DatePicker } from '@/components/ui/date-picker'
 import { StatusBadge } from '@/components/ui/status-badge'
-import { format } from 'date-fns'
-import { fr } from 'date-fns/locale'
+
 
 interface Props {
   open: boolean
