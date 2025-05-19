@@ -10,11 +10,14 @@ interface ChartData {
   value: number
 }
 
+interface Props {
+  selectedWeek: Date
+}
+
 const COLORS = ['#008000', '#000000', '#FF385C']
 
-export function MonthlyRevenueChart() {
-  const today = new Date()
-  const weekStart = format(startOfWeek(today, { locale: fr }), 'yyyy-MM-dd')
+export function MonthlyRevenueChart({ selectedWeek }: Props) {
+  const weekStart = format(startOfWeek(selectedWeek, { locale: fr }), 'yyyy-MM-dd')
 
   //get the current week start date
   const { data: currentWeekData } = useQuery({
@@ -48,17 +51,34 @@ export function MonthlyRevenueChart() {
       </CardHeader>
       <CardContent>
         <div className="h-[300px]">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" className="mt-5">
             <PieChart>
               <Pie
                 data={chartData}
                 cx="50%"
                 cy="50%"
-                labelLine={false}
-                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                labelLine={true}
+                label={({ percent, x, y }) => {
+                  // Only show label if the segment is large enough
+                  if (percent < 0.05) return null;
+                  return (
+                    <text
+                      x={x}
+                      y={y}
+                      fill="white"
+                      textAnchor="middle"
+                      dominantBaseline="central"
+                      fontSize={12}
+                      fontWeight="bold"
+                    >
+                      {`${(percent * 100).toFixed(0)}%`}
+                    </text>
+                  );
+                }}
                 outerRadius={120}
                 fill="#8884d8"
                 dataKey="value"
+                paddingAngle={2}
               >
                 {chartData.map((_entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -66,8 +86,29 @@ export function MonthlyRevenueChart() {
               </Pie>
               <Tooltip 
                 formatter={(value) => `€${Number(value).toFixed(2)}`}
+                content={({ active, payload }) => {
+                  if (active && payload && payload.length) {
+                    const data = payload[0].payload;
+                    return (
+                      <div className="bg-white p-2 border rounded shadow-sm">
+                        <p className="font-medium">{data.name}</p>
+                        <p className="text-sm">€{Number(data.value).toFixed(2)}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {((data.value / chartData.reduce((sum, item) => sum + item.value, 0)) * 100).toFixed(1)}%
+                        </p>
+                      </div>
+                    );
+                  }
+                  return null;
+                }}
               />
-              <Legend />
+              <Legend 
+                formatter={(value, entry: any) => (
+                  <span className="text-sm">
+                    {value} ({((entry.payload?.value || 0) / chartData.reduce((sum, item) => sum + item.value, 0) * 100).toFixed(1)}%)
+                  </span>
+                )}
+              />
             </PieChart>
           </ResponsiveContainer>
         </div>

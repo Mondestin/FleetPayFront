@@ -164,7 +164,7 @@ export default function Dashboard() {
 
           <div className='grid gap-6 md:grid-cols-2'>
             <WeeklyComparisonChart selectedWeek={selectedWeek} />
-            <MonthlyRevenueChart />
+            <MonthlyRevenueChart selectedWeek={selectedWeek} />
           </div>
         </div>
       </Main>
