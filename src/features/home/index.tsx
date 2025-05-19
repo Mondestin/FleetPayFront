@@ -18,6 +18,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { ContactForm } from './components/contact-form'
+import { CookieConsent } from './components/cookie-consent'
 
 export function Home() {
   return (
@@ -529,6 +530,7 @@ export function Home() {
         </section>
       </Main>
       <HomeFooter />
+      <CookieConsent />
     </>
   )
 } 
