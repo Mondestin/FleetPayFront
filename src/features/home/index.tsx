@@ -520,7 +520,7 @@ export function Home() {
                 Contactez-nous
               </h2>
               <p className="mt-4 text-lg text-muted-foreground">
-                Une question ? Un projet ? N'hésitez pas à nous contacter.
+                Une question ? N'hésitez pas à nous contacter.
               </p>
             </div>
             <div className="mx-auto mt-16 max-w-xl">
