@@ -371,66 +371,89 @@ export function Home() {
               <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="item-1">
                   <AccordionTrigger>
-                    Comment fonctionne FleetPay ?
+                    Quelles plateformes sont supportées ?
                   </AccordionTrigger>
                   <AccordionContent>
-                    FleetPay est une plateforme qui simplifie la gestion des paiements pour les flottes de véhicules. 
-                    Vous téléchargez les fichiers de paiements depuis Uber, Bolt et Heetch, les importez dans notre système, 
-                    et nous calculons automatiquement les commissions et facilitons le versement des salaires aux chauffeurs.
+                    FleetPay supporte les trois principales plateformes VTC : Uber, Bolt et Heetch. 
+                    Vous pouvez importer les fichiers de paiements de ces plateformes et les traiter 
+                    automatiquement dans notre système.
                   </AccordionContent>
                 </AccordionItem>
 
                 <AccordionItem value="item-2">
                   <AccordionTrigger>
-                    Comment importer les fichiers de paiements ?
+                    Comment fonctionne l'import des fichiers ?
                   </AccordionTrigger>
                   <AccordionContent>
-                    Pour chaque plateforme (Uber, Bolt, Heetch), vous devez d'abord télécharger le fichier de paiements 
-                    depuis leur interface respective. Ensuite, vous pouvez importer ce fichier dans FleetPay. 
-                    Notre système traitera automatiquement les données et calculera les montants dus.
+                    L'import est simple : téléchargez vos fichiers CSV depuis Uber et Bolt, ou PDF depuis Heetch, 
+                    puis importez-les dans FleetPay. Notre système traite automatiquement les données, 
+                    calcule les commissions et génère les rapports de paiement.
                   </AccordionContent>
                 </AccordionItem>
 
                 <AccordionItem value="item-3">
                   <AccordionTrigger>
-                    Comment sont calculées les commissions ?
+                    Quels sont les avantages du plan Pro ?
                   </AccordionTrigger>
                   <AccordionContent>
-                    Les commissions sont calculées automatiquement selon les règles que vous définissez. 
-                    Vous pouvez configurer différents taux de commission selon les chauffeurs, 
-                    les périodes ou les types de courses.
+                    Le plan Pro (99,99€/mois) inclut jusqu'à 150 chauffeurs, un tableau de bord avancé, 
+                    des rapports détaillés, l'export Excel, et un support prioritaire. 
+                    Parfait pour les flottes en croissance.
                   </AccordionContent>
                 </AccordionItem>
 
                 <AccordionItem value="item-4">
                   <AccordionTrigger>
-                    Comment les chauffeurs sont-ils payés ?
+                    Le plan gratuit est-il vraiment gratuit ?
                   </AccordionTrigger>
                   <AccordionContent>
-                    Les chauffeurs peuvent être payés par virement bancaire ou par d'autres méthodes 
-                    que vous configurez. Le système calcule automatiquement les montants dus et 
-                    génère les rapports nécessaires.
+                    Oui, le plan gratuit est entièrement gratuit sans limite de temps. 
+                    Il inclut jusqu'à 50 chauffeurs, l'import des trois plateformes, 
+                    et un tableau de bord basique. Aucune carte de crédit requise.
                   </AccordionContent>
                 </AccordionItem>
 
                 <AccordionItem value="item-5">
                   <AccordionTrigger>
-                    Y a-t-il un engagement de durée ?
+                    Comment sont calculées les commissions ?
                   </AccordionTrigger>
                   <AccordionContent>
-                    Non, il n'y a pas d'engagement de durée. Vous pouvez annuler votre abonnement 
-                    à tout moment. Le plan gratuit est disponible sans limite de temps.
+                    Les commissions sont calculées automatiquement selon vos règles personnalisées. 
+                    Vous pouvez définir différents taux selon les chauffeurs, les périodes ou les types de courses. 
+                    Le système applique ces règles et génère les rapports de paiement.
                   </AccordionContent>
                 </AccordionItem>
 
                 <AccordionItem value="item-6">
                   <AccordionTrigger>
-                    Comment puis-je obtenir de l'aide ?
+                    Mes données sont-elles sécurisées ?
                   </AccordionTrigger>
                   <AccordionContent>
-                    Nous offrons un support par email et téléphone. Les utilisateurs du plan Pro 
-                    bénéficient d'un support prioritaire, tandis que les clients Entreprise ont 
-                    accès à un support dédié 24/7.
+                    Absolument. Nous utilisons des protocoles de sécurité de niveau bancaire pour protéger vos données. 
+                    Toutes les informations sont chiffrées et stockées de manière sécurisée. 
+                    Nous respectons également le RGPD pour la protection de vos données personnelles.
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="item-7">
+                  <AccordionTrigger>
+                    Puis-je annuler à tout moment ?
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    Oui, vous pouvez annuler votre abonnement à tout moment sans frais supplémentaires. 
+                    Aucun engagement de durée n'est requis. Vous gardez l'accès à vos données 
+                    jusqu'à la fin de votre période de facturation.
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="item-8">
+                  <AccordionTrigger>
+                    Comment obtenir de l'aide ?
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    Notre équipe support est disponible par email et téléphone. Les utilisateurs Pro 
+                    bénéficient d'un support prioritaire, et les clients Entreprise ont accès à un support dédié 24/7. 
+                    Nous répondons généralement dans les 24h.
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
