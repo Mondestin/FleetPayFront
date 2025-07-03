@@ -272,7 +272,7 @@ export function Home() {
                     </span>
                   </div>
                   <div className="mt-4">
-                    <span className="text-4xl font-bold">199,99€</span>
+                    <span className="text-4xl font-bold">99,99€</span>
                     <span className="text-muted-foreground">/mois</span>
                   </div>
                 </CardHeader>
