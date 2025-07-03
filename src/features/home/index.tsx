@@ -30,10 +30,10 @@ export function Home() {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
-                Bienvenue sur FleetPay, votre solution tout-en-un pour la gestion des paiements de chauffeurs VTC.
+                Gestion simplifiée des paiements VTC
               </h1>
               <p className="mt-6 text-lg leading-8 text-muted-foreground max-w-3xl mx-auto">
-                Importez facilement vos fichiers de paiements depuis Uber, Bolt et Heetch. En quelques clics, vous centralisez toutes vos transactions sur une seule plateforme.
+                Importez vos fichiers Uber, Bolt et Heetch. Calculez automatiquement les commissions et gérez vos paiements en quelques clics.
               </p>
               <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-x-6">
                 <Link to="/sign-up">
