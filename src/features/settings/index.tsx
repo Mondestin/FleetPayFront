@@ -30,20 +30,32 @@ export default function Settings() {
           </div>
 
           <Tabs defaultValue="profile" className="space-y-4">
-            <TabsList>
-              <TabsTrigger value="profile" className="flex items-center gap-2">
+            <TabsList className="h-auto bg-transparent border-b w-full justify-start rounded-none p-0 gap-0">
+              <TabsTrigger
+                value="profile"
+                className="flex items-center gap-2 rounded-none border-b-2 border-transparent px-4 pb-3 pt-1 font-medium text-muted-foreground shadow-none data-[state=active]:border-[#01631b] data-[state=active]:text-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+              >
                 <IconUser className="h-4 w-4" />
                 Profil
               </TabsTrigger>
-              <TabsTrigger value="security" className="flex items-center gap-2">
+              <TabsTrigger
+                value="security"
+                className="flex items-center gap-2 rounded-none border-b-2 border-transparent px-4 pb-3 pt-1 font-medium text-muted-foreground shadow-none data-[state=active]:border-[#01631b] data-[state=active]:text-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+              >
                 <IconLock className="h-4 w-4" />
                 Sécurité
               </TabsTrigger>
-              <TabsTrigger value="commission" className="flex items-center gap-2">
+              <TabsTrigger
+                value="commission"
+                className="flex items-center gap-2 rounded-none border-b-2 border-transparent px-4 pb-3 pt-1 font-medium text-muted-foreground shadow-none data-[state=active]:border-[#01631b] data-[state=active]:text-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+              >
                 <IconPercentage className="h-4 w-4" />
                 Commission
               </TabsTrigger>
-              <TabsTrigger value="company" className="flex items-center gap-2">
+              <TabsTrigger
+                value="company"
+                className="flex items-center gap-2 rounded-none border-b-2 border-transparent px-4 pb-3 pt-1 font-medium text-muted-foreground shadow-none data-[state=active]:border-[#01631b] data-[state=active]:text-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+              >
                 <IconBuilding className="h-4 w-4" />
                 Entreprise
               </TabsTrigger>

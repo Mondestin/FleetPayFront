@@ -270,7 +270,7 @@ export function ImportForm({ uploadStatus, selectedWeek, onWeekChange }: Props) 
     <>
       <div className='rounded-xl border bg-background shadow-sm overflow-hidden'>
         {/* Card header */}
-        <div className='px-5 py-4 border-b bg-muted/30'>
+        <div className='px-5 py-4 border-b'>
           <h3 className='font-semibold text-base'>Importer un fichier</h3>
           <p className='text-xs text-muted-foreground mt-0.5'>Sélectionnez une plateforme et importez votre rapport</p>
         </div>
@@ -350,7 +350,7 @@ export function ImportForm({ uploadStatus, selectedWeek, onWeekChange }: Props) 
 
                           {selectedFileName ? (
                             /* Selected file preview */
-                            <div className='flex items-center gap-3 rounded-xl border bg-muted/30 px-4 py-3'>
+                            <div className='flex items-center gap-3 rounded-xl border px-4 py-3'>
                               <div className='flex-1 min-w-0'>
                                 <p className='text-sm font-medium truncate'>{selectedFileName}</p>
                                 <p className='text-xs text-muted-foreground'>Prêt à importer</p>

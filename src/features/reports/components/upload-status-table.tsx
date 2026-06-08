@@ -46,7 +46,7 @@ export function UploadStatusTable({ uploadStatus, onDeleteUpload, weekStart }: P
   return (
     <div className='rounded-xl border bg-background shadow-sm overflow-hidden'>
       {/* Header */}
-      <div className='px-5 py-4 border-b bg-muted/30'>
+      <div className='px-5 py-4 border-b'>
         <div className='flex items-start justify-between'>
           <div>
             <h3 className='font-semibold text-base'>État des imports de la semaine</h3>
