@@ -1,12 +1,3 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import { IconTrash } from '@tabler/icons-react'
 import { format, startOfWeek, endOfWeek } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { Button } from '@/components/ui/button'
@@ -19,7 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { StatusBadge } from '@/components/ui/status-badge'
+import { IconTrash } from '@tabler/icons-react'
 
 interface UploadStatus {
   platform: 'bolt' | 'uber' | 'heetch'
@@ -33,92 +24,116 @@ interface Props {
   weekStart?: Date
 }
 
+const PLATFORMS = [
+  { id: 'bolt' as const, label: 'Bolt', format: 'CSV' },
+  { id: 'uber' as const, label: 'Uber', format: 'CSV' },
+  { id: 'heetch' as const, label: 'Heetch', format: 'PDF ou CSV' },
+]
+
 export function UploadStatusTable({ uploadStatus, onDeleteUpload, weekStart }: Props) {
-  const today = new Date()
-  const startDate = weekStart ? startOfWeek(weekStart, { locale: fr }) : startOfWeek(new Date(), { locale: fr })
-  const weekEnd = weekStart ? endOfWeek(weekStart, { locale: fr }) : endOfWeek(today, { locale: fr })
+  const startDate = weekStart
+    ? startOfWeek(weekStart, { locale: fr })
+    : startOfWeek(new Date(), { locale: fr })
+  const weekEnd = weekStart
+    ? endOfWeek(weekStart, { locale: fr })
+    : endOfWeek(new Date(), { locale: fr })
+
+  const getStatus = (platformId: string) =>
+    uploadStatus.find(s => s.platform === platformId)
+
+  const uploadedCount = PLATFORMS.filter(p => getStatus(p.id)?.uploaded).length
 
   return (
-    <div className="rounded-lg border shadow-sm bg-background">
-      <div className="p-4 border-b">
-        <h3 className="text-lg font-semibold">État des imports de la semaine</h3>
-        <p className="text-sm text-muted-foreground">
-          {format(startDate, 'dd/MM/yyyy', { locale: fr })}
-          {' - '}
-          {format(weekEnd, 'dd/MM/yyyy', { locale: fr })}
-        </p>
+    <div className='rounded-xl border bg-background shadow-sm overflow-hidden'>
+      {/* Header */}
+      <div className='px-5 py-4 border-b bg-muted/30'>
+        <div className='flex items-start justify-between'>
+          <div>
+            <h3 className='font-semibold text-base'>État des imports de la semaine</h3>
+            <p className='text-xs text-muted-foreground mt-0.5'>
+              {format(startDate, 'dd MMM', { locale: fr })}
+              {' – '}
+              {format(weekEnd, 'dd MMM yyyy', { locale: fr })}
+            </p>
+          </div>
+          <div className='text-right'>
+            <p className='text-2xl font-bold'>
+              {uploadedCount}
+              <span className='text-muted-foreground font-normal text-base'>/{PLATFORMS.length}</span>
+            </p>
+            <p className='text-xs text-muted-foreground'>importés</p>
+          </div>
+        </div>
+
+        {/* Progress bar */}
+        <div className='mt-3 h-1.5 rounded-full bg-muted overflow-hidden'>
+          <div
+            className='h-full rounded-full bg-[#01631b] transition-all duration-500'
+            style={{ width: `${(uploadedCount / PLATFORMS.length) * 100}%` }}
+          />
+        </div>
       </div>
-      <Table>
-        <TableHeader>
-          <TableRow className="hover:bg-transparent">
-            <TableHead className="w-[60px]">#</TableHead>
-            <TableHead className="w-[180px]">Plateforme</TableHead>
-            <TableHead>Statut</TableHead>
-            <TableHead className="w-[100px]">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {uploadStatus.map((platform, index) => (
-            <TableRow key={platform.platform} className="hover:bg-muted/50">
-              <TableCell>{index + 1}</TableCell>
-              <TableCell className="font-medium">
-                <div className="flex items-center gap-2">
-                  <span className="capitalize">{platform.platform}</span>
-                </div>
-              </TableCell>
-              <TableCell>
-                <StatusBadge 
-                  status={
-                    platform.uploaded 
-                      ? "imported" 
-                      : platform.uploaded 
-                      ? "imported" 
-                      : "pending"
-                  }
-                />
-              </TableCell>
-              <TableCell>
-                <div className="flex gap-2">
-                  {platform.uploaded && (
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-red-500 hover:text-red-600 hover:bg-red-50"
-                        >
-                          <IconTrash size={16} />
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Supprimer l'importation</DialogTitle>
-                          <DialogDescription>
-                            Êtes-vous sûr de vouloir supprimer l'importation {platform.platform} ?
-                            Cette action est irréversible.
-                          </DialogDescription>
-                        </DialogHeader>
-                        <DialogFooter>
-                          <Button
-                            variant="destructive"
-                            onClick={() => {
-                              onDeleteUpload(platform.platform)
-                              const closeButton = document.querySelector('[data-dialog-close]') as HTMLButtonElement
-                              closeButton?.click()
-                            }}
-                          >
-                            Supprimer
-                          </Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-                  )}
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+
+      {/* Platform rows */}
+      <div className='divide-y'>
+        {PLATFORMS.map((platform) => {
+          const status = getStatus(platform.id)
+          const isUploaded = status?.uploaded ?? false
+
+          return (
+            <div
+              key={platform.id}
+              className='flex items-center gap-4 px-5 py-3.5 hover:bg-muted/30 transition-colors'
+            >
+              {/* Info */}
+              <div className='flex-1 min-w-0'>
+                <p className='text-sm font-medium'>{platform.label}</p>
+                <p className='text-xs text-muted-foreground'>{platform.format}</p>
+              </div>
+
+              {/* Status badge */}
+              {isUploaded ? (
+                <span className='inline-flex items-center text-xs font-medium text-emerald-700 bg-emerald-50 dark:bg-emerald-950/40 dark:text-emerald-400 px-2.5 py-1 rounded-full shrink-0'>
+                  Importé
+                </span>
+              ) : (
+                <span className='inline-flex items-center text-xs font-medium text-amber-700 bg-amber-50 dark:bg-amber-950/40 dark:text-amber-400 px-2.5 py-1 rounded-full shrink-0'>
+                  En attente
+                </span>
+              )}
+
+              {/* Delete */}
+              {isUploaded && (
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant='ghost'
+                      size='icon'
+                      className='h-8 w-8 shrink-0 text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30'
+                    >
+                      <IconTrash size={14} />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Supprimer l'importation {platform.label}</DialogTitle>
+                      <DialogDescription>
+                        Cette action supprimera définitivement l'import {platform.label} de cette semaine.
+                        Elle est irréversible.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                      <Button variant='destructive' onClick={() => onDeleteUpload(platform.id)}>
+                        Supprimer
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              )}
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
-} 
+}

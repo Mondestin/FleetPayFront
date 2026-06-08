@@ -19,7 +19,7 @@ export default function FilesManager() {
   const queryClient = useQueryClient()
   const [selectedWeek, setSelectedWeek] = useState(new Date())
   const weekStart = startOfWeek(selectedWeek, { locale: fr })
-  
+
   const { data: subscription } = useQuery({
     queryKey: ['subscription'],
     queryFn: () => api.get(`/api/subscriptions/${user?.id}/current`).then(res => res.data)
@@ -47,7 +47,6 @@ export default function FilesManager() {
 
   const isExpired = subscription ? new Date(subscription.end_date) < new Date() : false
 
-
   return (
     <>
       <Header fixed>
@@ -58,68 +57,74 @@ export default function FilesManager() {
       </Header>
 
       <Main>
-        <div className="mb-4 items-center justify-between">
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight">Rapports de Paiement</h2>
-            <p className="text-muted-foreground">
-              Consultez les rapports de paiement
-            </p>
-          </div>
-          <div className='flex mt-4'>
-            <div className='w-1/2 mr-4'>
-                <Alert className='border-l-4 border-[#01631b]'>
-                  <IconInfoCircle className="h-4 w-4" />
-                  <AlertDescription>
-                    Pour éviter les incohérences de données, veuillez importer les fichiers dans cet ordre :
-                    <ol className="mt-2 list-decimal">
-                      <li> Bolt (CSV) </li>
-                      <li> Uber (CSV) </li>
-                      <li> Heetch (PDF) </li>
-                    </ol>
-                  </AlertDescription>
-                </Alert>
-            </div>
-              <div className='w-1/2 ml-4'>
-                <Alert className='border-l-4 border-[#ffa500]'>
-                  <IconAlertCircle className="h-4 w-4" />
-                  <AlertDescription>
-                     <span className='font-bold'>Attention :</span>
-                     <br />   
-                     La semaine commence le <span className='font-bold'>lundi</span> et se termine le <span className='font-bold'>dimanche</span>.
-                     <br />
-                     <br />
-                     <span className='font-bold'>Afin d'éviter les erreurs de comptabilité, veuillez exporter les données pour Uber conformément à cette consigne.</span>
-                  </AlertDescription>
-                </Alert>
-            
-            </div>
-          </div>
+        {/* Page header */}
+        <div className='mb-6'>
+          <h2 className='text-2xl font-bold tracking-tight'>Imports de données</h2>
+          <p className='text-sm text-muted-foreground'>
+            Importez les rapports hebdomadaires par plateforme
+          </p>
         </div>
-        <div className='space-y-8'>
-          <div className='grid grid-cols-1 gap-4'>
-            <UploadStatusTable 
-              uploadStatus={uploadStatus} 
+
+        {/* Info alerts at the top */}
+        <div className='grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6'>
+          <Alert className='border-l-4 border-[#01631b] bg-[#01631b]/5'>
+            <IconInfoCircle className='h-4 w-4 text-[#01631b]' />
+            <AlertDescription className='text-sm'>
+              Pour éviter les incohérences de données, importez les fichiers dans cet ordre :
+              <ol className='mt-2 space-y-1 list-decimal list-inside'>
+                <li>Bolt <span className='text-muted-foreground'>(CSV)</span></li>
+                <li>Uber <span className='text-muted-foreground'>(CSV)</span></li>
+                <li>Heetch <span className='text-muted-foreground'>(PDF ou CSV)</span></li>
+              </ol>
+            </AlertDescription>
+          </Alert>
+
+          <Alert className='border-l-4 border-amber-400 bg-amber-50/60 dark:bg-amber-950/20'>
+            <IconAlertCircle className='h-4 w-4 text-amber-500' />
+            <AlertDescription className='text-sm'>
+              <span className='font-semibold'>Attention :</span> la semaine commence le{' '}
+              <span className='font-semibold'>lundi</span> et se termine le{' '}
+              <span className='font-semibold'>dimanche</span>.{' '}
+              Exportez les données Uber en respectant cette période.
+            </AlertDescription>
+          </Alert>
+        </div>
+
+        {/* 2-column layout */}
+        <div className='grid grid-cols-1 lg:grid-cols-2 gap-6 items-start'>
+          {/* Left column — status */}
+          <div>
+            <UploadStatusTable
+              uploadStatus={uploadStatus}
               onDeleteUpload={handleDeleteUpload}
               weekStart={selectedWeek}
             />
+          </div>
+
+          {/* Right column — import form */}
+          <div>
             {isExpired ? (
-              <Alert variant="destructive">
-                <IconAlertCircle className="h-4 w-4" />
+              <Alert variant='destructive'>
+                <IconAlertCircle className='h-4 w-4' />
                 <AlertDescription>
-                  Votre abonnement a expiré le {format(new Date(subscription?.end_date || ''), 'dd/MM/yyyy', { locale: fr })}. 
+                  Votre abonnement a expiré le{' '}
+                  {format(new Date(subscription?.end_date || ''), 'dd/MM/yyyy', { locale: fr })}.{' '}
                   Veuillez renouveler votre abonnement pour continuer à importer des rapports.
                 </AlertDescription>
               </Alert>
             ) : (
-              <ImportForm 
-                uploadStatus={uploadStatus} 
+              <ImportForm
+                uploadStatus={uploadStatus}
                 selectedWeek={selectedWeek}
                 onWeekChange={handleWeekChange}
               />
             )}
           </div>
         </div>
+
+        {/* Preview tables below */}
+        <div className='mt-6' id='data-preview' />
       </Main>
     </>
   )
-} 
+}
