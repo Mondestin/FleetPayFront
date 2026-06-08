@@ -19,6 +19,17 @@ export interface UberDriverData {
     montant: string
   }
 
+  export interface HeetchCsvData {
+    'Chauffeur': string
+    'Solde initial': string
+    'Revenus net': string
+    'Ajustements': string
+    'Espèces collectées': string
+    'Paiement dette': string
+    'Versement flotte': string
+    'Solde final à verser': string
+  }
+
   export interface UploadStatus {
     platform: 'uber' | 'bolt' | 'heetch'
     uploaded: boolean

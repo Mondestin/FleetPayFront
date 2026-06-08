@@ -30,7 +30,7 @@ import { useUser } from '@/features/auth/hooks/use-user'
 import { DataTablesView } from '../components/data-tables-view'
 import { Spinner } from '@/components/ui/spinner'
 import { useToast } from '@/hooks/use-toast'
-import { UberDriverData, BoltDriverData, HeetchData } from '../types'
+import { UberDriverData, BoltDriverData, HeetchData, HeetchCsvData } from '../types'
 
 
 interface UploadStatus {
@@ -50,21 +50,15 @@ const formSchema = z.object({
       message: 'Veuillez sélectionner un fichier.',
     })
     .superRefine((files, ctx) => {
-      const platform = (ctx.path as any)[0]
-      if (platform === 'heetch') {
-        if (files?.[0]?.type !== 'application/pdf') {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: 'Seuls les fichiers PDF sont acceptés pour Heetch.'
-          })
-        }
-      } else {
-        if (files?.[0]?.type !== 'text/csv') {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: 'Seuls les fichiers CSV sont acceptés pour cette plateforme.'
-          })
-        }
+      const file = files?.[0]
+      if (!file) return
+      const isPdf = file.type === 'application/pdf' || file.name.endsWith('.pdf')
+      const isCsv = file.type === 'text/csv' || file.name.endsWith('.csv')
+      if (!isPdf && !isCsv) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Seuls les fichiers PDF ou CSV sont acceptés.'
+        })
       }
     }),
 })
@@ -80,6 +74,7 @@ interface Props {
 export function ImportForm({ uploadStatus, selectedWeek, onWeekChange }: Props) {
   const [csvData, setCsvData] = useState<UberDriverData[]>([])
   const [boltCsvData, setBoltCsvData] = useState<BoltDriverData[]>([])
+  const [heetchCsvData, setHeetchCsvData] = useState<HeetchCsvData[]>([])
   const [pdfFile, setPdfFile] = useState<File | null>(null)
   const [pdfData, setPdfData] = useState<HeetchData[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -119,6 +114,7 @@ export function ImportForm({ uploadStatus, selectedWeek, onWeekChange }: Props) 
     form.reset()
     setCsvData([])
     setBoltCsvData([])
+    setHeetchCsvData([])
     setPdfFile(null)
     toast({
       title: 'Données validées avec succès',
@@ -175,6 +171,31 @@ export function ImportForm({ uploadStatus, selectedWeek, onWeekChange }: Props) 
     }
   }
 
+  const handleHeetchCsvData = async (weekDate: Date, data: HeetchCsvData[]) => {
+    const filtered = data.filter(row => row['Chauffeur'] && row['Chauffeur'].toUpperCase() !== 'TOTAL')
+    const formattedData = filtered.map(row => ({
+      firstName: row['Chauffeur'].trim().split(' ')[0],
+      lastName: row['Chauffeur'].trim().split(' ').slice(1).join(' ').trim(),
+      phoneNumber: '',
+      fullName: row['Chauffeur'].trim(),
+      email: '',
+      totalRevenue: String(Math.abs(parseFloat((row['Versement flotte'] || '0').replace(',', '.')))),
+      platform: 'heetch',
+      weekDate,
+      user: user?.id
+    }))
+
+    try {
+      await api.post('/api/reports/platforms/import/heetch', {
+        weekDate,
+        data: formattedData
+      })
+    } catch (error) {
+      console.error('Error processing Heetch CSV data:', error)
+      throw error
+    }
+  }
+
   const handlePlatformData = async (platform: string, weekDate: Date, data: UberDriverData[] | BoltDriverData[]) => {
     setIsSubmitting(true)
     try {
@@ -186,7 +207,11 @@ export function ImportForm({ uploadStatus, selectedWeek, onWeekChange }: Props) 
           await handleUberData(weekDate, data as UberDriverData[])
           break
         case 'heetch':
-          await handleHeetchPdfUpload(pdfFile!, weekDate, user?.id)
+          if (heetchCsvData.length > 0) {
+            await handleHeetchCsvData(weekDate, heetchCsvData)
+          } else {
+            await handleHeetchPdfUpload(pdfFile!, weekDate, user?.id)
+          }
           break
         default:
           throw new Error('Platform not supported')
@@ -207,29 +232,58 @@ export function ImportForm({ uploadStatus, selectedWeek, onWeekChange }: Props) 
     const file = data.file[0]
 
     if (data.platform === 'heetch') {
-      setIsLoading(true)
       setPdfFile(file)
-      
-      handleHeetchPdfUpload(file, data.weekDate, user?.id)
-        .then((extractedData) => {
-          
-          setPdfData(extractedData)
-          toast({
-            title: 'PDF importé avec succès',
-            description: `${extractedData.length} chauffeurs trouvés`,
-            variant: 'success'
+
+      if (file.name.endsWith('.pdf') || file.type === 'application/pdf') {
+        setIsLoading(true)
+        handleHeetchPdfUpload(file, data.weekDate, user?.id)
+          .then((extractedData) => {
+            setPdfData(extractedData)
+            toast({
+              title: 'PDF importé avec succès',
+              description: `${extractedData.length} chauffeurs trouvés`,
+              variant: 'success'
+            })
           })
-        })
-        .catch((error) => {
-          console.error('Error processing PDF:', error)
-          toast({
-            title: 'Erreur lors de la lecture du PDF',
-            variant: 'error'
+          .catch((error) => {
+            console.error('Error processing PDF:', error)
+            toast({
+              title: 'Erreur lors de la lecture du PDF',
+              variant: 'error'
+            })
           })
+          .finally(() => {
+            setIsLoading(false)
+          })
+      } else {
+        Papa.parse(file, {
+          header: true,
+          delimiter: ';',
+          skipEmptyLines: true,
+          transformHeader: (header: string) => header.replace(/^﻿/, ''),
+          complete: (results) => {
+            const rows = results.data as HeetchCsvData[]
+            const filtered = rows.filter(row => row['Chauffeur'] && row['Chauffeur'].toUpperCase() !== 'TOTAL')
+            setHeetchCsvData(filtered)
+            setPdfData(filtered.map(row => ({
+              chauffeur: row['Chauffeur'],
+              montant: row['Versement flotte']
+            })))
+            toast({
+              title: 'CSV importé avec succès',
+              description: `${filtered.length} chauffeurs trouvés`,
+              variant: 'success'
+            })
+          },
+          error: (error: Error) => {
+            toast({
+              title: 'Erreur de lecture CSV',
+              description: error.message,
+              variant: 'error'
+            })
+          }
         })
-        .finally(() => {
-          setIsLoading(false)
-        })
+      }
       return
     }
 
@@ -323,23 +377,18 @@ export function ImportForm({ uploadStatus, selectedWeek, onWeekChange }: Props) 
                   <FormItem>
                     {selectedPlatform === 'heetch' ? (
                       <>
-                        <FormLabel>Fichier PDF Heetch</FormLabel>
+                        <FormLabel>Fichier Heetch (PDF ou CSV)</FormLabel>
                         <FormControl>
                           <Input
                             type="file"
-                            accept=".pdf"
+                            accept=".pdf,.csv"
                             onChange={(e) => {
                               onChange(e.target.files)
-                              if (e.target.files?.[0]) {
-                                setIsLoading(true)
-                                setPdfFile(e.target.files[0])
-                
-                              }
                             }}
                           />
                         </FormControl>
                         <FormDescription>
-                          Sélectionnez le fichier PDF de paiement Heetch
+                          Sélectionnez le fichier PDF ou CSV de paiement Heetch
                         </FormDescription>
                       </>
                     ) : (
@@ -366,7 +415,7 @@ export function ImportForm({ uploadStatus, selectedWeek, onWeekChange }: Props) 
             <div className="flex justify-end gap-2">
               <Button
                 type="submit"
-                disabled={!form.formState.isValid || csvData.length > 0 || (selectedPlatform === 'heetch' && pdfFile === null)}
+                disabled={!form.formState.isValid || csvData.length > 0}
               >
                 <IconUpload className="mr-2 h-4 w-4" />
                 Importer
